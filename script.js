@@ -78,38 +78,39 @@ class MultiplicationApp {
     }
     
     setupEventListeners() {
-        this.startButton.addEventListener('click', () => this.startExercise());
-        this.finishButton.addEventListener('click', () => this.finishExercise());
-        this.backToSettingsButton.addEventListener('click', () => this.showSettings());
-        this.restartButton.addEventListener('click', () => this.showSettings());
+        // Only set up event listeners if the DOM elements exist (not in test environment)
+        if (this.startButton) this.startButton.addEventListener('click', () => this.startExercise());
+        if (this.finishButton) this.finishButton.addEventListener('click', () => this.finishExercise());
+        if (this.backToSettingsButton) this.backToSettingsButton.addEventListener('click', () => this.showSettings());
+        if (this.restartButton) this.restartButton.addEventListener('click', () => this.showSettings());
         
         // Language selection
-        this.languageSelect.addEventListener('change', (e) => this.changeLanguage(e.target.value));
+        if (this.languageSelect) this.languageSelect.addEventListener('change', (e) => this.changeLanguage(e.target.value));
         
         // Input validation
-        this.minMultiplierInput.addEventListener('input', () => this.validateRanges());
-        this.maxMultiplierInput.addEventListener('input', () => this.validateRanges());
+        if (this.minMultiplierInput) this.minMultiplierInput.addEventListener('input', () => this.validateRanges());
+        if (this.maxMultiplierInput) this.maxMultiplierInput.addEventListener('input', () => this.validateRanges());
     }
     
     loadSettings() {
         const savedSettings = localStorage.getItem('multiplicationSettings');
         if (savedSettings) {
             const settings = JSON.parse(savedSettings);
-            this.minMultiplierInput.value = settings.minMultiplier || 1;
-            this.maxMultiplierInput.value = settings.maxMultiplier || 10;
-            this.timerMinutesInput.value = settings.timeLimit || 5;
-            this.totalExercisesInput.value = settings.totalExercises || 20;
+            if (this.minMultiplierInput) this.minMultiplierInput.value = settings.minMultiplier || 1;
+            if (this.maxMultiplierInput) this.maxMultiplierInput.value = settings.maxMultiplier || 10;
+            if (this.timerMinutesInput) this.timerMinutesInput.value = settings.timeLimit || 5;
+            if (this.totalExercisesInput) this.totalExercisesInput.value = settings.totalExercises || 20;
             this.currentLanguage = settings.language || 'en';
-            this.languageSelect.value = this.currentLanguage;
+            if (this.languageSelect) this.languageSelect.value = this.currentLanguage;
         }
     }
     
     saveSettings() {
         const settings = {
-            minMultiplier: parseInt(this.minMultiplierInput.value),
-            maxMultiplier: parseInt(this.maxMultiplierInput.value),
-            timeLimit: parseInt(this.timerMinutesInput.value),
-            totalExercises: parseInt(this.totalExercisesInput.value),
+            minMultiplier: this.minMultiplierInput ? parseInt(this.minMultiplierInput.value) : 1,
+            maxMultiplier: this.maxMultiplierInput ? parseInt(this.maxMultiplierInput.value) : 10,
+            timeLimit: this.timerMinutesInput ? parseInt(this.timerMinutesInput.value) : 5,
+            totalExercises: this.totalExercisesInput ? parseInt(this.totalExercisesInput.value) : 20,
             language: this.currentLanguage
         };
         localStorage.setItem('multiplicationSettings', JSON.stringify(settings));
@@ -139,6 +140,8 @@ class MultiplicationApp {
     }
     
     validateRanges() {
+        if (!this.minMultiplierInput || !this.maxMultiplierInput) return;
+        
         const min = parseInt(this.minMultiplierInput.value);
         const max = parseInt(this.maxMultiplierInput.value);
         
@@ -207,6 +210,9 @@ class MultiplicationApp {
             this.exercisesContainer.appendChild(exerciseDiv);
         });
         
+        // Add numerical keyboard
+        this.addNumericalKeyboard();
+        
         // Add input event listeners
         this.exercisesContainer.querySelectorAll('.exercise-input').forEach(input => {
             input.addEventListener('input', (e) => this.handleAnswerInput(e));
@@ -218,30 +224,126 @@ class MultiplicationApp {
         });
     }
     
+    addNumericalKeyboard() {
+        const keyboardContainer = document.createElement('div');
+        keyboardContainer.className = 'numerical-keyboard';
+        keyboardContainer.innerHTML = `
+            <div class="keyboard-row">
+                <button class="keyboard-btn number-btn" data-number="1">1</button>
+                <button class="keyboard-btn number-btn" data-number="2">2</button>
+                <button class="keyboard-btn number-btn" data-number="3">3</button>
+            </div>
+            <div class="keyboard-row">
+                <button class="keyboard-btn number-btn" data-number="4">4</button>
+                <button class="keyboard-btn number-btn" data-number="5">5</button>
+                <button class="keyboard-btn number-btn" data-number="6">6</button>
+            </div>
+            <div class="keyboard-row">
+                <button class="keyboard-btn number-btn" data-number="7">7</button>
+                <button class="keyboard-btn number-btn" data-number="8">8</button>
+                <button class="keyboard-btn number-btn" data-number="9">9</button>
+            </div>
+            <div class="keyboard-row">
+                <button class="keyboard-btn action-btn" data-action="backspace" data-i18n="backspace">⌫</button>
+                <button class="keyboard-btn number-btn" data-number="0">0</button>
+                <button class="keyboard-btn action-btn" data-action="enter" data-i18n="enter">Enter</button>
+            </div>
+        `;
+        
+        this.exercisesContainer.appendChild(keyboardContainer);
+        
+        // Update keyboard button text with translations
+        this.updateLanguage();
+        
+        // Add event listeners to keyboard buttons
+        keyboardContainer.addEventListener('click', (e) => {
+            if (e.target.classList.contains('keyboard-btn')) {
+                this.handleKeyboardInput(e.target);
+            }
+        });
+    }
+    
+    handleKeyboardInput(button) {
+        const activeInput = document.activeElement;
+        
+        // Use the currently focused input, or find the first empty input if none focused
+        let targetInput = activeInput;
+        if (!activeInput || !activeInput.classList.contains('exercise-input')) {
+            const inputs = Array.from(this.exercisesContainer.querySelectorAll('.exercise-input'));
+            targetInput = inputs.find(input => input.value === '') || inputs[0];
+            if (targetInput) {
+                targetInput.focus();
+            }
+        }
+        
+        if (!targetInput || !targetInput.classList.contains('exercise-input')) {
+            return;
+        }
+        
+        if (button.classList.contains('number-btn')) {
+            const number = button.dataset.number;
+            targetInput.value = (targetInput.value || '') + number;
+            
+            // Trigger input event to update exercise state
+            const inputEvent = new Event('input', { bubbles: true });
+            targetInput.dispatchEvent(inputEvent);
+            
+        } else if (button.dataset.action === 'backspace') {
+            if (targetInput.value.length > 0) {
+                targetInput.value = targetInput.value.slice(0, -1);
+                
+                // Trigger input event to update exercise state
+                const inputEvent = new Event('input', { bubbles: true });
+                targetInput.dispatchEvent(inputEvent);
+            }
+            
+        } else if (button.dataset.action === 'enter') {
+            this.focusNextInput(targetInput);
+        }
+    }
+    
     handleAnswerInput(e) {
         const index = parseInt(e.target.dataset.index);
-        const userAnswer = parseInt(e.target.value);
+        const inputValue = e.target.value.trim();
         
-        if (!isNaN(userAnswer)) {
-            this.exercises[index].userAnswer = userAnswer;
-            this.exercises[index].isCorrect = userAnswer === this.exercises[index].answer;
+        if (inputValue === '') {
+            // Handle empty input (cleared by backspace)
+            this.exercises[index].userAnswer = null;
+            this.exercises[index].isCorrect = null;
             
-            // Update the visual feedback
+            // Reset visual feedback
             const exerciseItem = e.target.closest('.exercise-item');
             const statusElement = exerciseItem.querySelector('.exercise-status');
             
             exerciseItem.classList.remove('correct', 'incorrect');
-            if (this.exercises[index].isCorrect) {
-                exerciseItem.classList.add('correct');
-                statusElement.className = 'exercise-status correct';
-                statusElement.textContent = '✓';
-            } else {
-                exerciseItem.classList.add('incorrect');
-                statusElement.className = 'exercise-status incorrect';
-                statusElement.textContent = '✗';
-            }
+            statusElement.className = 'exercise-status pending';
+            statusElement.textContent = '?';
             
             this.updateProgress();
+        } else {
+            const userAnswer = parseInt(inputValue);
+            
+            if (!isNaN(userAnswer)) {
+                this.exercises[index].userAnswer = userAnswer;
+                this.exercises[index].isCorrect = userAnswer === this.exercises[index].answer;
+                
+                // Update the visual feedback
+                const exerciseItem = e.target.closest('.exercise-item');
+                const statusElement = exerciseItem.querySelector('.exercise-status');
+                
+                exerciseItem.classList.remove('correct', 'incorrect');
+                if (this.exercises[index].isCorrect) {
+                    exerciseItem.classList.add('correct');
+                    statusElement.className = 'exercise-status correct';
+                    statusElement.textContent = '✓';
+                } else {
+                    exerciseItem.classList.add('incorrect');
+                    statusElement.className = 'exercise-status incorrect';
+                    statusElement.textContent = '✗';
+                }
+                
+                this.updateProgress();
+            }
         }
     }
     

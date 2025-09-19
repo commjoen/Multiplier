@@ -15,7 +15,9 @@
     "noAnswer": "No answer",
     "practiceAgain": "Practice Again",
     "score": "Score",
-    "percentage": "Percentage"
+    "percentage": "Percentage",
+    "enter": "Enter",
+    "backspace": "⌫"
   },
   "nl": {
     "title": "Tafel Oefening",
@@ -33,7 +35,9 @@
     "noAnswer": "Geen antwoord",
     "practiceAgain": "Opnieuw Oefenen",
     "score": "Score",
-    "percentage": "Percentage"
+    "percentage": "Percentage",
+    "enter": "Enter",
+    "backspace": "⌫"
   },
   "de": {
     "title": "Multiplikations Übung",
@@ -51,6 +55,8 @@
     "noAnswer": "Keine Antwort",
     "practiceAgain": "Erneut Üben",
     "score": "Punkte",
-    "percentage": "Prozentsatz"
+    "percentage": "Prozentsatz",
+    "enter": "Enter",
+    "backspace": "⌫"
   }
 }

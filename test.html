@@ -112,6 +112,128 @@
                 });
         });
 
+        // Test focusNextInput functionality
+        runTest('Focus next input functionality', () => {
+            const tempApp = {
+                exercisesContainer: {
+                    querySelectorAll: (selector) => {
+                        // Mock inputs array
+                        return [
+                            { focus: () => {} },
+                            { focus: () => {} },
+                            { focus: () => {} }
+                        ];
+                    }
+                },
+                focusNextInput: MultiplicationApp.prototype.focusNextInput
+            };
+            
+            // Test that the method exists and can be called
+            assert(typeof tempApp.focusNextInput === 'function', 'focusNextInput should be a function');
+            
+            // Test with mock inputs - this should not throw an error
+            try {
+                tempApp.focusNextInput(tempApp.exercisesContainer.querySelectorAll('.exercise-input')[0]);
+            } catch (error) {
+                throw new Error('focusNextInput should handle input navigation without errors');
+            }
+        });
+
+        // Test progress update functionality 
+        runTest('Progress update functionality', () => {
+            const tempApp = {
+                exercises: [
+                    { userAnswer: 10, isCorrect: true },
+                    { userAnswer: null, isCorrect: null },
+                    { userAnswer: 15, isCorrect: false }
+                ],
+                totalExercises: 3,
+                progressDisplay: { textContent: '' },
+                updateProgress: MultiplicationApp.prototype.updateProgress
+            };
+            
+            tempApp.updateProgress();
+            assert(tempApp.progressDisplay.textContent === '2/3', 'Progress should show 2/3 answered');
+        });
+
+        // Test input handling functionality
+        runTest('Answer input handling', () => {
+            const tempApp = {
+                exercises: [{ answer: 20, userAnswer: null, isCorrect: null }],
+                handleAnswerInput: MultiplicationApp.prototype.handleAnswerInput,
+                updateProgress: () => {} // Mock function
+            };
+            
+            const mockEvent = {
+                target: {
+                    dataset: { index: '0' },
+                    value: '20',
+                    closest: () => ({
+                        querySelector: () => ({ className: '', textContent: '' }),
+                        classList: { remove: () => {}, add: () => {} }
+                    })
+                }
+            };
+            
+            tempApp.handleAnswerInput(mockEvent);
+            assert(tempApp.exercises[0].userAnswer === 20, 'User answer should be stored');
+            assert(tempApp.exercises[0].isCorrect === true, 'Answer should be marked as correct');
+        });
+
+        // Test keyboard input handling
+        runTest('Keyboard input functionality', () => {
+            const tempApp = {
+                exercisesContainer: {
+                    querySelectorAll: (selector) => {
+                        // Mock inputs array
+                        const mockInput = { 
+                            value: '',
+                            focus: () => {},
+                            classList: { contains: (cls) => cls === 'exercise-input' },
+                            dispatchEvent: () => {}
+                        };
+                        return [mockInput];
+                    }
+                },
+                handleKeyboardInput: MultiplicationApp.prototype.handleKeyboardInput
+            };
+            
+            // Test number button
+            const mockNumberButton = {
+                classList: { contains: (cls) => cls === 'number-btn' },
+                dataset: { number: '5' }
+            };
+            
+            // Test that the method exists and can be called
+            assert(typeof tempApp.handleKeyboardInput === 'function', 'handleKeyboardInput should be a function');
+            
+            // Mock document.activeElement
+            const originalActiveElement = document.activeElement;
+            Object.defineProperty(document, 'activeElement', {
+                writable: true,
+                value: tempApp.exercisesContainer.querySelectorAll('.exercise-input')[0]
+            });
+            
+            try {
+                tempApp.handleKeyboardInput(mockNumberButton);
+            } catch (error) {
+                throw new Error('handleKeyboardInput should handle number input without errors');
+            } finally {
+                Object.defineProperty(document, 'activeElement', {
+                    writable: true,
+                    value: originalActiveElement
+                });
+            }
+        });
+
+        // Test that new methods exist
+        runTest('New keyboard methods exist', () => {
+            const methods = ['addNumericalKeyboard', 'handleKeyboardInput'];
+            for (let method of methods) {
+                assert(typeof MultiplicationApp.prototype[method] === 'function', `${method} should exist`);
+            }
+        });
+
         // Show summary
         setTimeout(() => {
             const resultsDiv = document.getElementById('test-results');
