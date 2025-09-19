@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multiplication App Tests</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-case { margin: 10px 0; padding: 10px; border-left: 4px solid #ddd; }
+        .test-case.pass { border-color: #4CAF50; background-color: #f1f8e9; }
+        .test-case.fail { border-color: #f44336; background-color: #ffebee; }
+        .test-summary { font-weight: bold; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <h1>Multiplication App Test Suite</h1>
+    <div id="test-results"></div>
+    
+    <script src="script.js"></script>
+    <script>
+        let testResults = { passed: 0, failed: 0 };
+
+        function addResult(name, passed, error = '') {
+            const resultsDiv = document.getElementById('test-results');
+            const testDiv = document.createElement('div');
+            testDiv.className = `test-case ${passed ? 'pass' : 'fail'}`;
+            testDiv.innerHTML = `
+                <strong>${passed ? '✓' : '✗'} ${name}</strong>
+                ${error ? `<br><span style="color: #d32f2f;">${error}</span>` : ''}
+            `;
+            resultsDiv.appendChild(testDiv);
+            
+            if (passed) testResults.passed++;
+            else testResults.failed++;
+        }
+
+        function assert(condition, message) {
+            if (!condition) throw new Error(message);
+        }
+
+        function runTest(name, testFn) {
+            try {
+                testFn();
+                addResult(name, true);
+            } catch (error) {
+                addResult(name, false, error.message);
+            }
+        }
+
+        // Simple test for class instantiation
+        runTest('MultiplicationApp class exists', () => {
+            assert(typeof MultiplicationApp === 'function', 'MultiplicationApp should be a function');
+        });
+
+        // Test basic methods exist
+        runTest('Required methods exist', () => {
+            const methods = ['generateExercises', 'getRandomNumber', 'validateRanges', 'startExercise'];
+            for (let method of methods) {
+                assert(typeof MultiplicationApp.prototype[method] === 'function', `${method} should exist`);
+            }
+        });
+
+        // Test random number generation
+        runTest('Random number generator works', () => {
+            // Create temporary instance for testing
+            const tempApp = { getRandomNumber: MultiplicationApp.prototype.getRandomNumber };
+            for (let i = 0; i < 50; i++) {
+                const num = tempApp.getRandomNumber(1, 10);
+                assert(num >= 1 && num <= 10, 'Random number should be within bounds');
+                assert(Number.isInteger(num), 'Random number should be integer');
+            }
+        });
+
+        // Test exercise structure
+        runTest('Exercise generation creates proper structure', () => {
+            const tempApp = {
+                exercises: [],
+                minMultiplier: 2,
+                maxMultiplier: 5,
+                getRandomNumber: MultiplicationApp.prototype.getRandomNumber,
+                generateExercises: MultiplicationApp.prototype.generateExercises
+            };
+            
+            tempApp.generateExercises();
+            assert(tempApp.exercises.length === 20, 'Should generate 20 exercises');
+            
+            for (let exercise of tempApp.exercises) {
+                assert(typeof exercise.num1 === 'number', 'num1 should be number');
+                assert(typeof exercise.num2 === 'number', 'num2 should be number');
+                assert(exercise.answer === exercise.num1 * exercise.num2, 'Answer should be correct');
+                assert(exercise.num1 >= 2 && exercise.num1 <= 5, 'num1 should be in range');
+                assert(exercise.num2 >= 2 && exercise.num2 <= 5, 'num2 should be in range');
+            }
+        });
+
+        // Test translations loading
+        runTest('Translations system', () => {
+            fetch('translations.json')
+                .then(response => response.json())
+                .then(translations => {
+                    assert(typeof translations === 'object', 'Translations should be object');
+                    assert(translations.en && translations.nl && translations.de, 'Should have all languages');
+                    assert(translations.en.title, 'Should have title translation');
+                    addResult('Translations load correctly', true);
+                })
+                .catch(error => {
+                    addResult('Translations load correctly', false, error.message);
+                });
+        });
+
+        // Show summary
+        setTimeout(() => {
+            const resultsDiv = document.getElementById('test-results');
+            const summaryDiv = document.createElement('div');
+            summaryDiv.className = 'test-summary';
+            summaryDiv.innerHTML = `
+                <h2>Test Summary</h2>
+                <p>Total Tests: ${testResults.passed + testResults.failed}</p>
+                <p style="color: #4CAF50;">Passed: ${testResults.passed}</p>
+                <p style="color: #f44336;">Failed: ${testResults.failed}</p>
+                <p><strong>Success Rate: ${Math.round((testResults.passed / (testResults.passed + testResults.failed)) * 100)}%</strong></p>
+            `;
+            resultsDiv.insertBefore(summaryDiv, resultsDiv.firstChild);
+        }, 1000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+{
+  "en": {
+    "title": "Multiplication Practice",
+    "minNumber": "Minimum Number:",
+    "maxNumber": "Maximum Number:",
+    "timerMinutes": "Timer (minutes):",
+    "readyButton": "Ready - Start Practice!",
+    "progress": "Progress",
+    "finish": "Finish",
+    "settings": "Settings",
+    "practiceComplete": "Practice Complete!",
+    "time": "Time:",
+    "yourAnswer": "Your answer:",
+    "noAnswer": "No answer",
+    "practiceAgain": "Practice Again",
+    "score": "Score",
+    "percentage": "Percentage"
+  },
+  "nl": {
+    "title": "Tafel Oefening",
+    "minNumber": "Minimum Getal:",
+    "maxNumber": "Maximum Getal:",
+    "timerMinutes": "Timer (minuten):",
+    "readyButton": "Klaar - Start Oefening!",
+    "progress": "Voortgang",
+    "finish": "Voltooien",
+    "settings": "Instellingen",
+    "practiceComplete": "Oefening Voltooid!",
+    "time": "Tijd:",
+    "yourAnswer": "Jouw antwoord:",
+    "noAnswer": "Geen antwoord",
+    "practiceAgain": "Opnieuw Oefenen",
+    "score": "Score",
+    "percentage": "Percentage"
+  },
+  "de": {
+    "title": "Multiplikations Übung",
+    "minNumber": "Minimum Zahl:",
+    "maxNumber": "Maximum Zahl:",
+    "timerMinutes": "Timer (Minuten):",
+    "readyButton": "Bereit - Übung Starten!",
+    "progress": "Fortschritt",
+    "finish": "Beenden",
+    "settings": "Einstellungen",
+    "practiceComplete": "Übung Abgeschlossen!",
+    "time": "Zeit:",
+    "yourAnswer": "Ihre Antwort:",
+    "noAnswer": "Keine Antwort",
+    "practiceAgain": "Erneut Üben",
+    "score": "Punkte",
+    "percentage": "Prozentsatz"
+  }
+}
