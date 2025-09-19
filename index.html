@@ -24,17 +24,22 @@
                 
                 <div class="settings-group">
                     <label for="min-multiplier" data-i18n="minNumber">Minimum Number:</label>
-                    <input type="number" id="min-multiplier" min="1" max="12" value="1">
+                    <input type="number" id="min-multiplier" min="1" max="12" value="1" inputmode="numeric">
                 </div>
                 
                 <div class="settings-group">
                     <label for="max-multiplier" data-i18n="maxNumber">Maximum Number:</label>
-                    <input type="number" id="max-multiplier" min="1" max="12" value="10">
+                    <input type="number" id="max-multiplier" min="1" max="12" value="10" inputmode="numeric">
                 </div>
                 
                 <div class="settings-group">
                     <label for="timer-minutes" data-i18n="timerMinutes">Timer (minutes):</label>
-                    <input type="number" id="timer-minutes" min="1" max="30" value="5">
+                    <input type="number" id="timer-minutes" min="1" max="30" value="5" inputmode="numeric">
+                </div>
+                
+                <div class="settings-group">
+                    <label for="total-exercises" data-i18n="totalExercises">Total Exercises:</label>
+                    <input type="number" id="total-exercises" min="5" max="50" value="20" inputmode="numeric">
                 </div>
                 
                 <button id="start-button" class="btn-primary" data-i18n="readyButton">Ready - Start Practice!</button>
