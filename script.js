@@ -207,6 +207,9 @@ class MultiplicationApp {
             this.exercisesContainer.appendChild(exerciseDiv);
         });
         
+        // Add numerical keyboard
+        this.addNumericalKeyboard();
+        
         // Add input event listeners
         this.exercisesContainer.querySelectorAll('.exercise-input').forEach(input => {
             input.addEventListener('input', (e) => this.handleAnswerInput(e));
@@ -218,30 +221,124 @@ class MultiplicationApp {
         });
     }
     
+    addNumericalKeyboard() {
+        const keyboardContainer = document.createElement('div');
+        keyboardContainer.className = 'numerical-keyboard';
+        keyboardContainer.innerHTML = `
+            <div class="keyboard-row">
+                <button class="keyboard-btn number-btn" data-number="1">1</button>
+                <button class="keyboard-btn number-btn" data-number="2">2</button>
+                <button class="keyboard-btn number-btn" data-number="3">3</button>
+            </div>
+            <div class="keyboard-row">
+                <button class="keyboard-btn number-btn" data-number="4">4</button>
+                <button class="keyboard-btn number-btn" data-number="5">5</button>
+                <button class="keyboard-btn number-btn" data-number="6">6</button>
+            </div>
+            <div class="keyboard-row">
+                <button class="keyboard-btn number-btn" data-number="7">7</button>
+                <button class="keyboard-btn number-btn" data-number="8">8</button>
+                <button class="keyboard-btn number-btn" data-number="9">9</button>
+            </div>
+            <div class="keyboard-row">
+                <button class="keyboard-btn action-btn" data-action="backspace" data-i18n="backspace">⌫</button>
+                <button class="keyboard-btn number-btn" data-number="0">0</button>
+                <button class="keyboard-btn action-btn" data-action="enter" data-i18n="enter">Enter</button>
+            </div>
+        `;
+        
+        this.exercisesContainer.appendChild(keyboardContainer);
+        
+        // Update keyboard button text with translations
+        this.updateLanguage();
+        
+        // Add event listeners to keyboard buttons
+        keyboardContainer.addEventListener('click', (e) => {
+            if (e.target.classList.contains('keyboard-btn')) {
+                this.handleKeyboardInput(e.target);
+            }
+        });
+    }
+    
+    handleKeyboardInput(button) {
+        const activeInput = document.activeElement;
+        
+        // If no input is focused, focus the first empty input
+        let targetInput = activeInput;
+        if (!activeInput || !activeInput.classList.contains('exercise-input')) {
+            const inputs = Array.from(this.exercisesContainer.querySelectorAll('.exercise-input'));
+            targetInput = inputs.find(input => input.value === '') || inputs[0];
+            if (targetInput) {
+                targetInput.focus();
+            }
+        }
+        
+        if (!targetInput || !targetInput.classList.contains('exercise-input')) {
+            return;
+        }
+        
+        if (button.classList.contains('number-btn')) {
+            const number = button.dataset.number;
+            targetInput.value = (targetInput.value || '') + number;
+            
+            // Trigger input event to update exercise state
+            const inputEvent = new Event('input', { bubbles: true });
+            targetInput.dispatchEvent(inputEvent);
+            
+        } else if (button.dataset.action === 'backspace') {
+            targetInput.value = targetInput.value.slice(0, -1);
+            
+            // Trigger input event to update exercise state
+            const inputEvent = new Event('input', { bubbles: true });
+            targetInput.dispatchEvent(inputEvent);
+            
+        } else if (button.dataset.action === 'enter') {
+            this.focusNextInput(targetInput);
+        }
+    }
+    
     handleAnswerInput(e) {
         const index = parseInt(e.target.dataset.index);
-        const userAnswer = parseInt(e.target.value);
+        const inputValue = e.target.value.trim();
         
-        if (!isNaN(userAnswer)) {
-            this.exercises[index].userAnswer = userAnswer;
-            this.exercises[index].isCorrect = userAnswer === this.exercises[index].answer;
+        if (inputValue === '') {
+            // Handle empty input (cleared by backspace)
+            this.exercises[index].userAnswer = null;
+            this.exercises[index].isCorrect = null;
             
-            // Update the visual feedback
+            // Reset visual feedback
             const exerciseItem = e.target.closest('.exercise-item');
             const statusElement = exerciseItem.querySelector('.exercise-status');
             
             exerciseItem.classList.remove('correct', 'incorrect');
-            if (this.exercises[index].isCorrect) {
-                exerciseItem.classList.add('correct');
-                statusElement.className = 'exercise-status correct';
-                statusElement.textContent = '✓';
-            } else {
-                exerciseItem.classList.add('incorrect');
-                statusElement.className = 'exercise-status incorrect';
-                statusElement.textContent = '✗';
-            }
+            statusElement.className = 'exercise-status pending';
+            statusElement.textContent = '?';
             
             this.updateProgress();
+        } else {
+            const userAnswer = parseInt(inputValue);
+            
+            if (!isNaN(userAnswer)) {
+                this.exercises[index].userAnswer = userAnswer;
+                this.exercises[index].isCorrect = userAnswer === this.exercises[index].answer;
+                
+                // Update the visual feedback
+                const exerciseItem = e.target.closest('.exercise-item');
+                const statusElement = exerciseItem.querySelector('.exercise-status');
+                
+                exerciseItem.classList.remove('correct', 'incorrect');
+                if (this.exercises[index].isCorrect) {
+                    exerciseItem.classList.add('correct');
+                    statusElement.className = 'exercise-status correct';
+                    statusElement.textContent = '✓';
+                } else {
+                    exerciseItem.classList.add('incorrect');
+                    statusElement.className = 'exercise-status incorrect';
+                    statusElement.textContent = '✗';
+                }
+                
+                this.updateProgress();
+            }
         }
     }
     

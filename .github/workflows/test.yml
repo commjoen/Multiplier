@@ -1,0 +1,76 @@
+name: Run Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+
+    - name: Install Playwright
+      run: |
+        npm install -g playwright-chromium
+        npx playwright install chromium
+
+    - name: Start HTTP Server
+      run: |
+        python3 -m http.server 8080 &
+        sleep 3
+      
+    - name: Run Tests with Playwright
+      run: |
+        npx playwright eval "
+        (async () => {
+          const { chromium } = require('playwright');
+          const browser = await chromium.launch();
+          const page = await browser.newPage();
+          
+          // Navigate to test page
+          await page.goto('http://localhost:8080/test.html');
+          
+          // Wait for tests to complete
+          await page.waitForTimeout(3000);
+          
+          // Extract test results
+          const results = await page.evaluate(() => {
+            const summary = document.querySelector('.test-summary');
+            if (!summary) return null;
+            
+            const passedMatch = summary.textContent.match(/Passed: (\d+)/);
+            const failedMatch = summary.textContent.match(/Failed: (\d+)/);
+            
+            return {
+              passed: passedMatch ? parseInt(passedMatch[1]) : 0,
+              failed: failedMatch ? parseInt(failedMatch[1]) : 0,
+              summary: summary.textContent
+            };
+          });
+          
+          console.log('Test Results:', results);
+          
+          if (results && results.failed > 0) {
+            console.error('Some tests failed!');
+            process.exit(1);
+          }
+          
+          if (!results || results.passed === 0) {
+            console.error('No tests passed - possible test runner issue');
+            process.exit(1);
+          }
+          
+          console.log('All tests passed successfully!');
+          await browser.close();
+        })()
+        "
