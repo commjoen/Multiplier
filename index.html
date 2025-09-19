@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multiplication Exercise</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app">
+        <!-- Settings Screen -->
+        <div id="settings-screen" class="screen active">
+            <div class="container">
+                <h1>Multiplication Practice</h1>
+                
+                <div class="settings-group">
+                    <label for="min-multiplier">Minimum Number:</label>
+                    <input type="number" id="min-multiplier" min="1" max="12" value="1">
+                </div>
+                
+                <div class="settings-group">
+                    <label for="max-multiplier">Maximum Number:</label>
+                    <input type="number" id="max-multiplier" min="1" max="12" value="10">
+                </div>
+                
+                <div class="settings-group">
+                    <label for="timer-minutes">Timer (minutes):</label>
+                    <input type="number" id="timer-minutes" min="1" max="30" value="5">
+                </div>
+                
+                <button id="start-button" class="btn-primary">Ready - Start Practice!</button>
+            </div>
+        </div>
+
+        <!-- Exercise Screen -->
+        <div id="exercise-screen" class="screen">
+            <div class="container">
+                <div class="header">
+                    <div class="timer-display" id="timer-display">5:00</div>
+                    <div class="progress" id="progress">0/20</div>
+                </div>
+                
+                <div class="exercises-container" id="exercises-container">
+                    <!-- Exercises will be generated here -->
+                </div>
+                
+                <div class="footer">
+                    <button id="finish-button" class="btn-secondary">Finish</button>
+                    <button id="back-to-settings" class="btn-secondary">Settings</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="results-screen" class="screen">
+            <div class="container">
+                <h2>Practice Complete!</h2>
+                <div class="results">
+                    <div class="score" id="final-score">0/20</div>
+                    <div class="time-taken" id="time-taken">Time: 0:00</div>
+                    <div class="percentage" id="percentage">0%</div>
+                </div>
+                
+                <div class="results-details" id="results-details">
+                    <!-- Detailed results will be shown here -->
+                </div>
+                
+                <button id="restart-button" class="btn-primary">Practice Again</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

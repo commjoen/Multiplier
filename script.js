@@ -1,0 +1,309 @@
+class MultiplicationApp {
+    constructor() {
+        this.exercises = [];
+        this.currentExercise = 0;
+        this.score = 0;
+        this.timeLimit = 5; // minutes
+        this.timer = null;
+        this.timeRemaining = 0;
+        this.startTime = null;
+        this.minMultiplier = 1;
+        this.maxMultiplier = 10;
+        
+        this.initializeElements();
+        this.setupEventListeners();
+        this.loadSettings();
+    }
+    
+    initializeElements() {
+        // Screens
+        this.settingsScreen = document.getElementById('settings-screen');
+        this.exerciseScreen = document.getElementById('exercise-screen');
+        this.resultsScreen = document.getElementById('results-screen');
+        
+        // Settings elements
+        this.minMultiplierInput = document.getElementById('min-multiplier');
+        this.maxMultiplierInput = document.getElementById('max-multiplier');
+        this.timerMinutesInput = document.getElementById('timer-minutes');
+        this.startButton = document.getElementById('start-button');
+        
+        // Exercise elements
+        this.timerDisplay = document.getElementById('timer-display');
+        this.progressDisplay = document.getElementById('progress');
+        this.exercisesContainer = document.getElementById('exercises-container');
+        this.finishButton = document.getElementById('finish-button');
+        this.backToSettingsButton = document.getElementById('back-to-settings');
+        
+        // Results elements
+        this.finalScore = document.getElementById('final-score');
+        this.timeTaken = document.getElementById('time-taken');
+        this.percentage = document.getElementById('percentage');
+        this.resultsDetails = document.getElementById('results-details');
+        this.restartButton = document.getElementById('restart-button');
+    }
+    
+    setupEventListeners() {
+        this.startButton.addEventListener('click', () => this.startExercise());
+        this.finishButton.addEventListener('click', () => this.finishExercise());
+        this.backToSettingsButton.addEventListener('click', () => this.showSettings());
+        this.restartButton.addEventListener('click', () => this.showSettings());
+        
+        // Input validation
+        this.minMultiplierInput.addEventListener('input', () => this.validateRanges());
+        this.maxMultiplierInput.addEventListener('input', () => this.validateRanges());
+    }
+    
+    loadSettings() {
+        const savedSettings = localStorage.getItem('multiplicationSettings');
+        if (savedSettings) {
+            const settings = JSON.parse(savedSettings);
+            this.minMultiplierInput.value = settings.minMultiplier || 1;
+            this.maxMultiplierInput.value = settings.maxMultiplier || 10;
+            this.timerMinutesInput.value = settings.timeLimit || 5;
+        }
+    }
+    
+    saveSettings() {
+        const settings = {
+            minMultiplier: parseInt(this.minMultiplierInput.value),
+            maxMultiplier: parseInt(this.maxMultiplierInput.value),
+            timeLimit: parseInt(this.timerMinutesInput.value)
+        };
+        localStorage.setItem('multiplicationSettings', JSON.stringify(settings));
+    }
+    
+    validateRanges() {
+        const min = parseInt(this.minMultiplierInput.value);
+        const max = parseInt(this.maxMultiplierInput.value);
+        
+        if (min > max) {
+            this.maxMultiplierInput.value = min;
+        }
+    }
+    
+    generateExercises() {
+        this.exercises = [];
+        this.minMultiplier = parseInt(this.minMultiplierInput.value);
+        this.maxMultiplier = parseInt(this.maxMultiplierInput.value);
+        
+        for (let i = 0; i < 20; i++) {
+            const num1 = this.getRandomNumber(this.minMultiplier, this.maxMultiplier);
+            const num2 = this.getRandomNumber(this.minMultiplier, this.maxMultiplier);
+            
+            this.exercises.push({
+                num1: num1,
+                num2: num2,
+                answer: num1 * num2,
+                userAnswer: null,
+                isCorrect: null,
+                index: i
+            });
+        }
+    }
+    
+    getRandomNumber(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+    
+    startExercise() {
+        this.saveSettings();
+        this.generateExercises();
+        this.timeLimit = parseInt(this.timerMinutesInput.value);
+        this.timeRemaining = this.timeLimit * 60; // Convert to seconds
+        this.startTime = Date.now();
+        
+        this.showScreen('exercise');
+        this.renderExercises();
+        this.startTimer();
+        this.updateProgress();
+    }
+    
+    renderExercises() {
+        this.exercisesContainer.innerHTML = '';
+        
+        this.exercises.forEach((exercise, index) => {
+            const exerciseDiv = document.createElement('div');
+            exerciseDiv.className = 'exercise-item';
+            exerciseDiv.innerHTML = `
+                <span class="exercise-question">${exercise.num1} × ${exercise.num2} =</span>
+                <input type="number" class="exercise-input" data-index="${index}" 
+                       placeholder="?" ${exercise.userAnswer !== null ? `value="${exercise.userAnswer}"` : ''}>
+                <span class="exercise-status ${this.getStatusClass(exercise)}">
+                    ${this.getStatusSymbol(exercise)}
+                </span>
+            `;
+            
+            if (exercise.isCorrect !== null) {
+                exerciseDiv.classList.add(exercise.isCorrect ? 'correct' : 'incorrect');
+            }
+            
+            this.exercisesContainer.appendChild(exerciseDiv);
+        });
+        
+        // Add input event listeners
+        this.exercisesContainer.querySelectorAll('.exercise-input').forEach(input => {
+            input.addEventListener('input', (e) => this.handleAnswerInput(e));
+            input.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    this.focusNextInput(e.target);
+                }
+            });
+        });
+    }
+    
+    handleAnswerInput(e) {
+        const index = parseInt(e.target.dataset.index);
+        const userAnswer = parseInt(e.target.value);
+        
+        if (!isNaN(userAnswer)) {
+            this.exercises[index].userAnswer = userAnswer;
+            this.exercises[index].isCorrect = userAnswer === this.exercises[index].answer;
+            
+            // Update the visual feedback
+            const exerciseItem = e.target.closest('.exercise-item');
+            const statusElement = exerciseItem.querySelector('.exercise-status');
+            
+            exerciseItem.classList.remove('correct', 'incorrect');
+            if (this.exercises[index].isCorrect) {
+                exerciseItem.classList.add('correct');
+                statusElement.className = 'exercise-status correct';
+                statusElement.textContent = '✓';
+            } else {
+                exerciseItem.classList.add('incorrect');
+                statusElement.className = 'exercise-status incorrect';
+                statusElement.textContent = '✗';
+            }
+            
+            this.updateProgress();
+        }
+    }
+    
+    focusNextInput(currentInput) {
+        const inputs = Array.from(this.exercisesContainer.querySelectorAll('.exercise-input'));
+        const currentIndex = inputs.indexOf(currentInput);
+        const nextInput = inputs[currentIndex + 1];
+        
+        if (nextInput) {
+            nextInput.focus();
+        }
+    }
+    
+    getStatusClass(exercise) {
+        if (exercise.isCorrect === null) return 'pending';
+        return exercise.isCorrect ? 'correct' : 'incorrect';
+    }
+    
+    getStatusSymbol(exercise) {
+        if (exercise.isCorrect === null) return '?';
+        return exercise.isCorrect ? '✓' : '✗';
+    }
+    
+    updateProgress() {
+        const answeredCount = this.exercises.filter(ex => ex.userAnswer !== null).length;
+        this.progressDisplay.textContent = `${answeredCount}/20`;
+        
+        if (answeredCount === 20) {
+            setTimeout(() => this.finishExercise(), 1000);
+        }
+    }
+    
+    startTimer() {
+        this.updateTimerDisplay();
+        
+        this.timer = setInterval(() => {
+            this.timeRemaining--;
+            this.updateTimerDisplay();
+            
+            if (this.timeRemaining <= 60) {
+                this.timerDisplay.classList.add('timer-warning');
+            }
+            
+            if (this.timeRemaining <= 0) {
+                this.finishExercise();
+            }
+        }, 1000);
+    }
+    
+    updateTimerDisplay() {
+        const minutes = Math.floor(this.timeRemaining / 60);
+        const seconds = this.timeRemaining % 60;
+        this.timerDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    }
+    
+    finishExercise() {
+        if (this.timer) {
+            clearInterval(this.timer);
+            this.timer = null;
+        }
+        
+        this.calculateResults();
+        this.showResults();
+    }
+    
+    calculateResults() {
+        this.score = this.exercises.filter(ex => ex.isCorrect === true).length;
+        
+        const endTime = Date.now();
+        const totalTimeMs = endTime - this.startTime;
+        const totalTimeSeconds = Math.floor(totalTimeMs / 1000);
+        const minutes = Math.floor(totalTimeSeconds / 60);
+        const seconds = totalTimeSeconds % 60;
+        
+        this.timeTaken.textContent = `Time: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+        this.finalScore.textContent = `${this.score}/20`;
+        
+        const percentage = Math.round((this.score / 20) * 100);
+        this.percentage.textContent = `${percentage}%`;
+        
+        if (percentage >= 90) {
+            this.percentage.style.color = '#27ae60';
+        } else if (percentage >= 70) {
+            this.percentage.style.color = '#f39c12';
+        } else {
+            this.percentage.style.color = '#e74c3c';
+        }
+    }
+    
+    showResults() {
+        this.resultsDetails.innerHTML = '';
+        
+        this.exercises.forEach(exercise => {
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `result-item ${exercise.isCorrect ? 'correct' : 'incorrect'}`;
+            resultDiv.innerHTML = `
+                <span class="result-question">${exercise.num1} × ${exercise.num2} = ${exercise.answer}</span>
+                <span class="result-answer">Your answer: ${exercise.userAnswer || 'No answer'}</span>
+            `;
+            this.resultsDetails.appendChild(resultDiv);
+        });
+        
+        this.showScreen('results');
+    }
+    
+    showSettings() {
+        this.showScreen('settings');
+        if (this.timer) {
+            clearInterval(this.timer);
+            this.timer = null;
+        }
+    }
+    
+    showScreen(screenName) {
+        // Hide all screens
+        document.querySelectorAll('.screen').forEach(screen => {
+            screen.classList.remove('active');
+        });
+        
+        // Show target screen
+        const targetScreen = document.getElementById(`${screenName}-screen`);
+        if (targetScreen) {
+            targetScreen.classList.add('active');
+            targetScreen.classList.add('fade-in');
+        }
+    }
+}
+
+// Initialize the app when the DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    new MultiplicationApp();
+});
