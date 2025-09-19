@@ -263,7 +263,7 @@ class MultiplicationApp {
     handleKeyboardInput(button) {
         const activeInput = document.activeElement;
         
-        // If no input is focused, focus the first empty input
+        // Use the currently focused input, or find the first empty input if none focused
         let targetInput = activeInput;
         if (!activeInput || !activeInput.classList.contains('exercise-input')) {
             const inputs = Array.from(this.exercisesContainer.querySelectorAll('.exercise-input'));
@@ -286,11 +286,13 @@ class MultiplicationApp {
             targetInput.dispatchEvent(inputEvent);
             
         } else if (button.dataset.action === 'backspace') {
-            targetInput.value = targetInput.value.slice(0, -1);
-            
-            // Trigger input event to update exercise state
-            const inputEvent = new Event('input', { bubbles: true });
-            targetInput.dispatchEvent(inputEvent);
+            if (targetInput.value.length > 0) {
+                targetInput.value = targetInput.value.slice(0, -1);
+                
+                // Trigger input event to update exercise state
+                const inputEvent = new Event('input', { bubbles: true });
+                targetInput.dispatchEvent(inputEvent);
+            }
             
         } else if (button.dataset.action === 'enter') {
             this.focusNextInput(targetInput);
