@@ -17,7 +17,8 @@
     "score": "Score",
     "percentage": "Percentage",
     "enter": "Enter",
-    "backspace": "⌫"
+    "backspace": "⌫",
+    "showKeyboard": "Show On-Screen Keyboard"
   },
   "nl": {
     "title": "Tafel Oefening",
@@ -37,7 +38,8 @@
     "score": "Score",
     "percentage": "Percentage",
     "enter": "Enter",
-    "backspace": "⌫"
+    "backspace": "⌫",
+    "showKeyboard": "Toetsenbord Tonen"
   },
   "de": {
     "title": "Multiplikations Übung",
@@ -57,6 +59,7 @@
     "score": "Punkte",
     "percentage": "Prozentsatz",
     "enter": "Enter",
-    "backspace": "⌫"
+    "backspace": "⌫",
+    "showKeyboard": "Bildschirmtastatur Anzeigen"
   }
 }

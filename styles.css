@@ -91,6 +91,23 @@ h2 {
     border-color: #3498db;
 }
 
+/* Checkbox styling */
+.settings-group input[type="checkbox"] {
+    width: auto;
+    margin-right: 0.5rem;
+    transform: scale(1.2);
+}
+
+.settings-group label:has(input[type="checkbox"]) {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.settings-group label:has(input[type="checkbox"]) span {
+    user-select: none;
+}
+
 /* Buttons */
 .btn-primary, .btn-secondary {
     width: 100%;
