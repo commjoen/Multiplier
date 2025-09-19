@@ -78,38 +78,39 @@ class MultiplicationApp {
     }
     
     setupEventListeners() {
-        this.startButton.addEventListener('click', () => this.startExercise());
-        this.finishButton.addEventListener('click', () => this.finishExercise());
-        this.backToSettingsButton.addEventListener('click', () => this.showSettings());
-        this.restartButton.addEventListener('click', () => this.showSettings());
+        // Only set up event listeners if the DOM elements exist (not in test environment)
+        if (this.startButton) this.startButton.addEventListener('click', () => this.startExercise());
+        if (this.finishButton) this.finishButton.addEventListener('click', () => this.finishExercise());
+        if (this.backToSettingsButton) this.backToSettingsButton.addEventListener('click', () => this.showSettings());
+        if (this.restartButton) this.restartButton.addEventListener('click', () => this.showSettings());
         
         // Language selection
-        this.languageSelect.addEventListener('change', (e) => this.changeLanguage(e.target.value));
+        if (this.languageSelect) this.languageSelect.addEventListener('change', (e) => this.changeLanguage(e.target.value));
         
         // Input validation
-        this.minMultiplierInput.addEventListener('input', () => this.validateRanges());
-        this.maxMultiplierInput.addEventListener('input', () => this.validateRanges());
+        if (this.minMultiplierInput) this.minMultiplierInput.addEventListener('input', () => this.validateRanges());
+        if (this.maxMultiplierInput) this.maxMultiplierInput.addEventListener('input', () => this.validateRanges());
     }
     
     loadSettings() {
         const savedSettings = localStorage.getItem('multiplicationSettings');
         if (savedSettings) {
             const settings = JSON.parse(savedSettings);
-            this.minMultiplierInput.value = settings.minMultiplier || 1;
-            this.maxMultiplierInput.value = settings.maxMultiplier || 10;
-            this.timerMinutesInput.value = settings.timeLimit || 5;
-            this.totalExercisesInput.value = settings.totalExercises || 20;
+            if (this.minMultiplierInput) this.minMultiplierInput.value = settings.minMultiplier || 1;
+            if (this.maxMultiplierInput) this.maxMultiplierInput.value = settings.maxMultiplier || 10;
+            if (this.timerMinutesInput) this.timerMinutesInput.value = settings.timeLimit || 5;
+            if (this.totalExercisesInput) this.totalExercisesInput.value = settings.totalExercises || 20;
             this.currentLanguage = settings.language || 'en';
-            this.languageSelect.value = this.currentLanguage;
+            if (this.languageSelect) this.languageSelect.value = this.currentLanguage;
         }
     }
     
     saveSettings() {
         const settings = {
-            minMultiplier: parseInt(this.minMultiplierInput.value),
-            maxMultiplier: parseInt(this.maxMultiplierInput.value),
-            timeLimit: parseInt(this.timerMinutesInput.value),
-            totalExercises: parseInt(this.totalExercisesInput.value),
+            minMultiplier: this.minMultiplierInput ? parseInt(this.minMultiplierInput.value) : 1,
+            maxMultiplier: this.maxMultiplierInput ? parseInt(this.maxMultiplierInput.value) : 10,
+            timeLimit: this.timerMinutesInput ? parseInt(this.timerMinutesInput.value) : 5,
+            totalExercises: this.totalExercisesInput ? parseInt(this.totalExercisesInput.value) : 20,
             language: this.currentLanguage
         };
         localStorage.setItem('multiplicationSettings', JSON.stringify(settings));
@@ -139,6 +140,8 @@ class MultiplicationApp {
     }
     
     validateRanges() {
+        if (!this.minMultiplierInput || !this.maxMultiplierInput) return;
+        
         const min = parseInt(this.minMultiplierInput.value);
         const max = parseInt(this.maxMultiplierInput.value);
         
