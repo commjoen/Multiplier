@@ -5,19 +5,23 @@ A mobile-first Single Page Application for practicing multiplication exercises, 
 ## Features
 
 - **Mobile-First Design**: Optimized for mobile devices with responsive layout
-- **20 Exercise Sets**: Each practice session includes 20 randomly generated multiplication problems
+- **Configurable Exercise Count**: Set total number of exercises (5-50), defaults to 20
 - **Configurable Range**: Set minimum and maximum numbers for multiplication (1-12)
 - **Countdown Timer**: Adjustable timer (1-30 minutes) with visual warnings
+- **Mobile-Optimized Input**: Numerical keyboard on mobile devices for easier input
+- **Responsive Grid Layout**: Shows more exercises on larger screens (1 column on mobile, 2 on tablet, 3 on desktop)
 - **Real-Time Feedback**: Instant visual feedback for correct/incorrect answers
 - **Scrollable Interface**: Smooth scrolling through exercises
 - **Results Summary**: Detailed results with score, time taken, and percentage
 - **Local Storage**: Settings are saved between sessions
+- **Docker Support**: Container deployment with GHCR publishing
 
 ## How to Use
 
 1. **Settings Screen**: 
    - Set the minimum and maximum numbers for multiplication
    - Choose the timer duration (in minutes)
+   - Set the total number of exercises (5-50)
    - Click "Ready - Start Practice!" to begin
 
 2. **Exercise Screen**:
@@ -54,6 +58,31 @@ A mobile-first Single Page Application for practicing multiplication exercises, 
 ## Deployment
 
 This app is configured for automatic deployment to GitHub Pages via GitHub Actions. The deployment workflow runs on every push to the main branch.
+
+## Docker Deployment
+
+The app is also available as a Docker container and published to GitHub Container Registry (GHCR).
+
+### Running with Docker
+
+```bash
+# Pull and run the latest image
+docker run -p 3000:3000 ghcr.io/commjoen/multiplier:main
+
+# Or build locally
+docker build -t multiplication-practice .
+docker run -p 3000:3000 multiplication-practice
+```
+
+The app will be available at `http://localhost:3000`.
+
+### Container Registry
+
+- **Registry**: GitHub Container Registry (GHCR)
+- **Image**: `ghcr.io/commjoen/multiplier`
+- **Tags**: `main` (latest), version tags, and commit SHAs
+- **Base**: Node.js Alpine for minimal size
+- **Size**: ~50MB compressed
 
 ## Browser Support
 

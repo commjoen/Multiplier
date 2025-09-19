@@ -77,12 +77,16 @@
                 exercises: [],
                 minMultiplier: 2,
                 maxMultiplier: 5,
+                totalExercises: 10,
+                minMultiplierInput: { value: '2' },
+                maxMultiplierInput: { value: '5' },
+                totalExercisesInput: { value: '10' },
                 getRandomNumber: MultiplicationApp.prototype.getRandomNumber,
                 generateExercises: MultiplicationApp.prototype.generateExercises
             };
             
             tempApp.generateExercises();
-            assert(tempApp.exercises.length === 20, 'Should generate 20 exercises');
+            assert(tempApp.exercises.length === 10, 'Should generate 10 exercises');
             
             for (let exercise of tempApp.exercises) {
                 assert(typeof exercise.num1 === 'number', 'num1 should be number');

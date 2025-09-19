@@ -9,6 +9,7 @@ class MultiplicationApp {
         this.startTime = null;
         this.minMultiplier = 1;
         this.maxMultiplier = 10;
+        this.totalExercises = 20;
         this.currentLanguage = 'en';
         this.translations = {};
         
@@ -58,6 +59,7 @@ class MultiplicationApp {
         this.minMultiplierInput = document.getElementById('min-multiplier');
         this.maxMultiplierInput = document.getElementById('max-multiplier');
         this.timerMinutesInput = document.getElementById('timer-minutes');
+        this.totalExercisesInput = document.getElementById('total-exercises');
         this.startButton = document.getElementById('start-button');
         
         // Exercise elements
@@ -96,6 +98,7 @@ class MultiplicationApp {
             this.minMultiplierInput.value = settings.minMultiplier || 1;
             this.maxMultiplierInput.value = settings.maxMultiplier || 10;
             this.timerMinutesInput.value = settings.timeLimit || 5;
+            this.totalExercisesInput.value = settings.totalExercises || 20;
             this.currentLanguage = settings.language || 'en';
             this.languageSelect.value = this.currentLanguage;
         }
@@ -106,6 +109,7 @@ class MultiplicationApp {
             minMultiplier: parseInt(this.minMultiplierInput.value),
             maxMultiplier: parseInt(this.maxMultiplierInput.value),
             timeLimit: parseInt(this.timerMinutesInput.value),
+            totalExercises: parseInt(this.totalExercisesInput.value),
             language: this.currentLanguage
         };
         localStorage.setItem('multiplicationSettings', JSON.stringify(settings));
@@ -147,8 +151,9 @@ class MultiplicationApp {
         this.exercises = [];
         this.minMultiplier = parseInt(this.minMultiplierInput.value);
         this.maxMultiplier = parseInt(this.maxMultiplierInput.value);
+        this.totalExercises = parseInt(this.totalExercisesInput.value);
         
-        for (let i = 0; i < 20; i++) {
+        for (let i = 0; i < this.totalExercises; i++) {
             const num1 = this.getRandomNumber(this.minMultiplier, this.maxMultiplier);
             const num2 = this.getRandomNumber(this.minMultiplier, this.maxMultiplier);
             
@@ -189,7 +194,7 @@ class MultiplicationApp {
             exerciseDiv.innerHTML = `
                 <span class="exercise-question">${exercise.num1} × ${exercise.num2} =</span>
                 <input type="number" class="exercise-input" data-index="${index}" 
-                       placeholder="?" ${exercise.userAnswer !== null ? `value="${exercise.userAnswer}"` : ''}>
+                       placeholder="?" inputmode="numeric" ${exercise.userAnswer !== null ? `value="${exercise.userAnswer}"` : ''}>
                 <span class="exercise-status ${this.getStatusClass(exercise)}">
                     ${this.getStatusSymbol(exercise)}
                 </span>
@@ -262,9 +267,9 @@ class MultiplicationApp {
     
     updateProgress() {
         const answeredCount = this.exercises.filter(ex => ex.userAnswer !== null).length;
-        this.progressDisplay.textContent = `${answeredCount}/20`;
+        this.progressDisplay.textContent = `${answeredCount}/${this.totalExercises}`;
         
-        if (answeredCount === 20) {
+        if (answeredCount === this.totalExercises) {
             setTimeout(() => this.finishExercise(), 1000);
         }
     }
@@ -312,9 +317,9 @@ class MultiplicationApp {
         const seconds = totalTimeSeconds % 60;
         
         this.timeTaken.innerHTML = `<span data-i18n="time">${this.t('time')}</span> ${minutes}:${seconds.toString().padStart(2, '0')}`;
-        this.finalScore.textContent = `${this.score}/20`;
+        this.finalScore.textContent = `${this.score}/${this.totalExercises}`;
         
-        const percentage = Math.round((this.score / 20) * 100);
+        const percentage = Math.round((this.score / this.totalExercises) * 100);
         this.percentage.textContent = `${percentage}%`;
         
         if (percentage >= 90) {
