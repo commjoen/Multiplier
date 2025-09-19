@@ -9,10 +9,42 @@ class MultiplicationApp {
         this.startTime = null;
         this.minMultiplier = 1;
         this.maxMultiplier = 10;
+        this.currentLanguage = 'en';
+        this.translations = {};
         
-        this.initializeElements();
-        this.setupEventListeners();
-        this.loadSettings();
+        this.loadTranslations().then(() => {
+            this.initializeElements();
+            this.setupEventListeners();
+            this.loadSettings();
+            this.updateLanguage();
+        });
+    }
+    
+    async loadTranslations() {
+        try {
+            const response = await fetch('translations.json');
+            this.translations = await response.json();
+        } catch (error) {
+            console.error('Failed to load translations:', error);
+            // Fallback translations
+            this.translations = {
+                en: {
+                    title: "Multiplication Practice",
+                    minNumber: "Minimum Number:",
+                    maxNumber: "Maximum Number:",
+                    timerMinutes: "Timer (minutes):",
+                    readyButton: "Ready - Start Practice!",
+                    progress: "Progress",
+                    finish: "Finish",
+                    settings: "Settings",
+                    practiceComplete: "Practice Complete!",
+                    time: "Time:",
+                    yourAnswer: "Your answer:",
+                    noAnswer: "No answer",
+                    practiceAgain: "Practice Again"
+                }
+            };
+        }
     }
     
     initializeElements() {
@@ -22,6 +54,7 @@ class MultiplicationApp {
         this.resultsScreen = document.getElementById('results-screen');
         
         // Settings elements
+        this.languageSelect = document.getElementById('language-select');
         this.minMultiplierInput = document.getElementById('min-multiplier');
         this.maxMultiplierInput = document.getElementById('max-multiplier');
         this.timerMinutesInput = document.getElementById('timer-minutes');
@@ -48,6 +81,9 @@ class MultiplicationApp {
         this.backToSettingsButton.addEventListener('click', () => this.showSettings());
         this.restartButton.addEventListener('click', () => this.showSettings());
         
+        // Language selection
+        this.languageSelect.addEventListener('change', (e) => this.changeLanguage(e.target.value));
+        
         // Input validation
         this.minMultiplierInput.addEventListener('input', () => this.validateRanges());
         this.maxMultiplierInput.addEventListener('input', () => this.validateRanges());
@@ -60,6 +96,8 @@ class MultiplicationApp {
             this.minMultiplierInput.value = settings.minMultiplier || 1;
             this.maxMultiplierInput.value = settings.maxMultiplier || 10;
             this.timerMinutesInput.value = settings.timeLimit || 5;
+            this.currentLanguage = settings.language || 'en';
+            this.languageSelect.value = this.currentLanguage;
         }
     }
     
@@ -67,9 +105,33 @@ class MultiplicationApp {
         const settings = {
             minMultiplier: parseInt(this.minMultiplierInput.value),
             maxMultiplier: parseInt(this.maxMultiplierInput.value),
-            timeLimit: parseInt(this.timerMinutesInput.value)
+            timeLimit: parseInt(this.timerMinutesInput.value),
+            language: this.currentLanguage
         };
         localStorage.setItem('multiplicationSettings', JSON.stringify(settings));
+    }
+    
+    changeLanguage(language) {
+        this.currentLanguage = language;
+        this.updateLanguage();
+        this.saveSettings();
+    }
+    
+    updateLanguage() {
+        const elements = document.querySelectorAll('[data-i18n]');
+        elements.forEach(element => {
+            const key = element.getAttribute('data-i18n');
+            if (this.translations[this.currentLanguage] && this.translations[this.currentLanguage][key]) {
+                element.textContent = this.translations[this.currentLanguage][key];
+            }
+        });
+        
+        // Update document title
+        document.title = this.translations[this.currentLanguage]?.title || 'Multiplication Exercise';
+    }
+    
+    t(key) {
+        return this.translations[this.currentLanguage]?.[key] || this.translations.en?.[key] || key;
     }
     
     validateRanges() {
@@ -249,7 +311,7 @@ class MultiplicationApp {
         const minutes = Math.floor(totalTimeSeconds / 60);
         const seconds = totalTimeSeconds % 60;
         
-        this.timeTaken.textContent = `Time: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+        this.timeTaken.innerHTML = `<span data-i18n="time">${this.t('time')}</span> ${minutes}:${seconds.toString().padStart(2, '0')}`;
         this.finalScore.textContent = `${this.score}/20`;
         
         const percentage = Math.round((this.score / 20) * 100);
@@ -272,7 +334,7 @@ class MultiplicationApp {
             resultDiv.className = `result-item ${exercise.isCorrect ? 'correct' : 'incorrect'}`;
             resultDiv.innerHTML = `
                 <span class="result-question">${exercise.num1} × ${exercise.num2} = ${exercise.answer}</span>
-                <span class="result-answer">Your answer: ${exercise.userAnswer || 'No answer'}</span>
+                <span class="result-answer">${this.t('yourAnswer')} ${exercise.userAnswer || this.t('noAnswer')}</span>
             `;
             this.resultsDetails.appendChild(resultDiv);
         });
@@ -305,5 +367,8 @@ class MultiplicationApp {
 
 // Initialize the app when the DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    new MultiplicationApp();
+    // Add a small delay to ensure all elements are properly loaded
+    setTimeout(() => {
+        new MultiplicationApp();
+    }, 100);
 });

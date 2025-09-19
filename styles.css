@@ -75,7 +75,18 @@ h2 {
     transition: border-color 0.3s ease;
 }
 
-.settings-group input:focus {
+.settings-group select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    background-color: white;
+    transition: border-color 0.3s ease;
+}
+
+.settings-group input:focus,
+.settings-group select:focus {
     outline: none;
     border-color: #3498db;
 }

@@ -11,24 +11,33 @@
         <!-- Settings Screen -->
         <div id="settings-screen" class="screen active">
             <div class="container">
-                <h1>Multiplication Practice</h1>
+                <h1 data-i18n="title">Multiplication Practice</h1>
                 
                 <div class="settings-group">
-                    <label for="min-multiplier">Minimum Number:</label>
+                    <label for="language-select">Language / Taal / Sprache:</label>
+                    <select id="language-select">
+                        <option value="en">English</option>
+                        <option value="nl">Nederlands</option>
+                        <option value="de">Deutsch</option>
+                    </select>
+                </div>
+                
+                <div class="settings-group">
+                    <label for="min-multiplier" data-i18n="minNumber">Minimum Number:</label>
                     <input type="number" id="min-multiplier" min="1" max="12" value="1">
                 </div>
                 
                 <div class="settings-group">
-                    <label for="max-multiplier">Maximum Number:</label>
+                    <label for="max-multiplier" data-i18n="maxNumber">Maximum Number:</label>
                     <input type="number" id="max-multiplier" min="1" max="12" value="10">
                 </div>
                 
                 <div class="settings-group">
-                    <label for="timer-minutes">Timer (minutes):</label>
+                    <label for="timer-minutes" data-i18n="timerMinutes">Timer (minutes):</label>
                     <input type="number" id="timer-minutes" min="1" max="30" value="5">
                 </div>
                 
-                <button id="start-button" class="btn-primary">Ready - Start Practice!</button>
+                <button id="start-button" class="btn-primary" data-i18n="readyButton">Ready - Start Practice!</button>
             </div>
         </div>
 
@@ -45,8 +54,8 @@
                 </div>
                 
                 <div class="footer">
-                    <button id="finish-button" class="btn-secondary">Finish</button>
-                    <button id="back-to-settings" class="btn-secondary">Settings</button>
+                    <button id="finish-button" class="btn-secondary" data-i18n="finish">Finish</button>
+                    <button id="back-to-settings" class="btn-secondary" data-i18n="settings">Settings</button>
                 </div>
             </div>
         </div>
@@ -54,10 +63,10 @@
         <!-- Results Screen -->
         <div id="results-screen" class="screen">
             <div class="container">
-                <h2>Practice Complete!</h2>
+                <h2 data-i18n="practiceComplete">Practice Complete!</h2>
                 <div class="results">
                     <div class="score" id="final-score">0/20</div>
-                    <div class="time-taken" id="time-taken">Time: 0:00</div>
+                    <div class="time-taken" id="time-taken"><span data-i18n="time">Time:</span> 0:00</div>
                     <div class="percentage" id="percentage">0%</div>
                 </div>
                 
@@ -65,7 +74,7 @@
                     <!-- Detailed results will be shown here -->
                 </div>
                 
-                <button id="restart-button" class="btn-primary">Practice Again</button>
+                <button id="restart-button" class="btn-primary" data-i18n="practiceAgain">Practice Again</button>
             </div>
         </div>
     </div>
