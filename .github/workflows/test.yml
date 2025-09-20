@@ -21,7 +21,7 @@ jobs:
 
     - name: Install Playwright
       run: |
-        npm install -g playwright-chromium
+        npm install playwright
         npx playwright install chromium
 
     - name: Start HTTP Server
