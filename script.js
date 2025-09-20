@@ -60,6 +60,7 @@ class MultiplicationApp {
         this.maxMultiplierInput = document.getElementById('max-multiplier');
         this.timerMinutesInput = document.getElementById('timer-minutes');
         this.totalExercisesInput = document.getElementById('total-exercises');
+        this.showKeyboardInput = document.getElementById('show-keyboard');
         this.startButton = document.getElementById('start-button');
         
         // Exercise elements
@@ -100,6 +101,7 @@ class MultiplicationApp {
             if (this.maxMultiplierInput) this.maxMultiplierInput.value = settings.maxMultiplier || 10;
             if (this.timerMinutesInput) this.timerMinutesInput.value = settings.timeLimit || 5;
             if (this.totalExercisesInput) this.totalExercisesInput.value = settings.totalExercises || 20;
+            if (this.showKeyboardInput) this.showKeyboardInput.checked = settings.showKeyboard !== false; // default to true
             this.currentLanguage = settings.language || 'en';
             if (this.languageSelect) this.languageSelect.value = this.currentLanguage;
         }
@@ -111,6 +113,7 @@ class MultiplicationApp {
             maxMultiplier: this.maxMultiplierInput ? parseInt(this.maxMultiplierInput.value) : 10,
             timeLimit: this.timerMinutesInput ? parseInt(this.timerMinutesInput.value) : 5,
             totalExercises: this.totalExercisesInput ? parseInt(this.totalExercisesInput.value) : 20,
+            showKeyboard: this.showKeyboardInput ? this.showKeyboardInput.checked : true,
             language: this.currentLanguage
         };
         localStorage.setItem('multiplicationSettings', JSON.stringify(settings));
@@ -210,8 +213,10 @@ class MultiplicationApp {
             this.exercisesContainer.appendChild(exerciseDiv);
         });
         
-        // Add numerical keyboard
-        this.addNumericalKeyboard();
+        // Add numerical keyboard if enabled
+        if (this.showKeyboardInput ? this.showKeyboardInput.checked : true) {
+            this.addNumericalKeyboard();
+        }
         
         // Add input event listeners
         this.exercisesContainer.querySelectorAll('.exercise-input').forEach(input => {
