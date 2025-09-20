@@ -98,13 +98,13 @@ h2 {
     transform: scale(1.2);
 }
 
-.settings-group label:has(input[type="checkbox"]) {
+.settings-group label[for="show-keyboard"] {
     display: flex;
     align-items: center;
     cursor: pointer;
 }
 
-.settings-group label:has(input[type="checkbox"]) span {
+.settings-group label[for="show-keyboard"] span {
     user-select: none;
 }
 
