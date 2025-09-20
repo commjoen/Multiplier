@@ -234,6 +234,48 @@
             }
         });
 
+        // Test highscore functionality
+        runTest('Highscore system functionality', () => {
+            const tempApp = {
+                minMultiplierInput: { value: '2' },
+                maxMultiplierInput: { value: '5' },
+                totalExercisesInput: { value: '10' },
+                loadHighscores: MultiplicationApp.prototype.loadHighscores,
+                saveHighscore: MultiplicationApp.prototype.saveHighscore,
+                getDifficultyKey: MultiplicationApp.prototype.getDifficultyKey,
+                getHighscore: MultiplicationApp.prototype.getHighscore
+            };
+            
+            // Test difficulty key generation
+            const difficultyKey = tempApp.getDifficultyKey();
+            assert(difficultyKey === '2-5-10', 'Difficulty key should be formatted correctly');
+            
+            // Clear any existing highscores for this test
+            localStorage.removeItem('multiplicationHighscores');
+            
+            // Test saving a new highscore
+            const isNewHighscore1 = tempApp.saveHighscore(80, '8/10', 120);
+            assert(isNewHighscore1 === true, 'First highscore should be new');
+            
+            // Test retrieving the highscore
+            const savedHighscore = tempApp.getHighscore();
+            assert(savedHighscore !== null, 'Highscore should be retrievable');
+            assert(savedHighscore.percentage === 80, 'Saved percentage should match');
+            assert(savedHighscore.score === '8/10', 'Saved score should match');
+            
+            // Test saving a better highscore
+            const isNewHighscore2 = tempApp.saveHighscore(90, '9/10', 100);
+            assert(isNewHighscore2 === true, 'Better score should be new highscore');
+            
+            // Test that worse scores don't replace highscore
+            const isNewHighscore3 = tempApp.saveHighscore(70, '7/10', 150);
+            assert(isNewHighscore3 === false, 'Worse score should not be new highscore');
+            
+            // Verify the best score is still saved
+            const finalHighscore = tempApp.getHighscore();
+            assert(finalHighscore.percentage === 90, 'Best score should be preserved');
+        });
+
         // Show summary
         setTimeout(() => {
             const resultsDiv = document.getElementById('test-results');

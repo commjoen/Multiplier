@@ -76,6 +76,9 @@ class MultiplicationApp {
         this.percentage = document.getElementById('percentage');
         this.resultsDetails = document.getElementById('results-details');
         this.restartButton = document.getElementById('restart-button');
+        this.highscoreDisplay = document.getElementById('highscore-display');
+        this.highscoreValue = document.getElementById('highscore-value');
+        this.newHighscoreDisplay = document.getElementById('new-highscore');
     }
     
     setupEventListeners() {
@@ -126,6 +129,50 @@ class MultiplicationApp {
             return settings.showKeyboard !== false; // default to true if not explicitly false
         }
         return true; // default to true for new users
+    }
+    
+    loadHighscores() {
+        const savedHighscores = localStorage.getItem('multiplicationHighscores');
+        if (savedHighscores) {
+            return JSON.parse(savedHighscores);
+        }
+        return {};
+    }
+    
+    getDifficultyKey() {
+        const minMult = this.minMultiplierInput ? parseInt(this.minMultiplierInput.value) : 1;
+        const maxMult = this.maxMultiplierInput ? parseInt(this.maxMultiplierInput.value) : 10;
+        const totalEx = this.totalExercisesInput ? parseInt(this.totalExercisesInput.value) : 20;
+        return `${minMult}-${maxMult}-${totalEx}`;
+    }
+    
+    saveHighscore(percentage, score, timeSeconds) {
+        const highscores = this.loadHighscores();
+        const difficultyKey = this.getDifficultyKey();
+        
+        // Only save if this is a new highscore (better percentage)
+        if (!highscores[difficultyKey] || percentage > highscores[difficultyKey].percentage) {
+            const minutes = Math.floor(timeSeconds / 60);
+            const seconds = timeSeconds % 60;
+            const timeFormatted = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            highscores[difficultyKey] = {
+                percentage: percentage,
+                score: score,
+                time: timeFormatted,
+                date: new Date().toISOString().split('T')[0] // YYYY-MM-DD format
+            };
+            
+            localStorage.setItem('multiplicationHighscores', JSON.stringify(highscores));
+            return true; // New highscore achieved
+        }
+        return false; // No new highscore
+    }
+    
+    getHighscore() {
+        const highscores = this.loadHighscores();
+        const difficultyKey = this.getDifficultyKey();
+        return highscores[difficultyKey] || null;
     }
     
     changeLanguage(language) {
@@ -445,6 +492,23 @@ class MultiplicationApp {
             this.percentage.style.color = '#f39c12';
         } else {
             this.percentage.style.color = '#e74c3c';
+        }
+        
+        // Handle highscore
+        const isNewHighscore = this.saveHighscore(percentage, `${this.score}/${this.totalExercises}`, totalTimeSeconds);
+        const currentHighscore = this.getHighscore();
+        
+        // Show highscore display
+        if (currentHighscore && this.highscoreDisplay && this.highscoreValue) {
+            this.highscoreDisplay.style.display = 'block';
+            this.highscoreValue.textContent = `${currentHighscore.percentage}%`;
+        }
+        
+        // Show new highscore notification
+        if (isNewHighscore && this.newHighscoreDisplay) {
+            this.newHighscoreDisplay.style.display = 'block';
+        } else if (this.newHighscoreDisplay) {
+            this.newHighscoreDisplay.style.display = 'none';
         }
     }
     

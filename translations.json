@@ -18,7 +18,9 @@
     "percentage": "Percentage",
     "enter": "Enter",
     "backspace": "⌫",
-    "showKeyboard": "Show On-Screen Keyboard"
+    "showKeyboard": "Show On-Screen Keyboard",
+    "highscore": "Best Score",
+    "newHighscore": "🎉 New Best Score!"
   },
   "nl": {
     "title": "Tafel Oefening",
@@ -39,7 +41,9 @@
     "percentage": "Percentage",
     "enter": "Enter",
     "backspace": "⌫",
-    "showKeyboard": "Toetsenbord Tonen"
+    "showKeyboard": "Toetsenbord Tonen",
+    "highscore": "Beste Score",
+    "newHighscore": "🎉 Nieuwe Beste Score!"
   },
   "de": {
     "title": "Multiplikations Übung",
@@ -60,6 +64,8 @@
     "percentage": "Prozentsatz",
     "enter": "Enter",
     "backspace": "⌫",
-    "showKeyboard": "Bildschirmtastatur Anzeigen"
+    "showKeyboard": "Bildschirmtastatur Anzeigen",
+    "highscore": "Beste Punktzahl",
+    "newHighscore": "🎉 Neue Beste Punktzahl!"
   }
 }
