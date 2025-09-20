@@ -119,6 +119,15 @@ class MultiplicationApp {
         localStorage.setItem('multiplicationSettings', JSON.stringify(settings));
     }
     
+    getKeyboardSetting() {
+        const savedSettings = localStorage.getItem('multiplicationSettings');
+        if (savedSettings) {
+            const settings = JSON.parse(savedSettings);
+            return settings.showKeyboard !== false; // default to true if not explicitly false
+        }
+        return true; // default to true for new users
+    }
+    
     changeLanguage(language) {
         this.currentLanguage = language;
         this.updateLanguage();
@@ -214,7 +223,8 @@ class MultiplicationApp {
         });
         
         // Add numerical keyboard if enabled
-        if (this.showKeyboardInput ? this.showKeyboardInput.checked : true) {
+        const shouldShowKeyboard = this.showKeyboardInput ? this.showKeyboardInput.checked : this.getKeyboardSetting();
+        if (shouldShowKeyboard) {
             this.addNumericalKeyboard();
         }
         
