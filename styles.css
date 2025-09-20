@@ -352,6 +352,27 @@ h2 {
     color: #27ae60;
 }
 
+.highscore {
+    font-size: 1.1rem;
+    color: #8e44ad;
+    margin-top: 0.5rem;
+    font-weight: 500;
+}
+
+.new-highscore {
+    font-size: 1.2rem;
+    color: #e67e22;
+    margin-top: 0.5rem;
+    font-weight: bold;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
 .results-details {
     max-height: 40vh;
     overflow-y: auto;
