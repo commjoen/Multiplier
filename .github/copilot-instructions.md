@@ -16,10 +16,12 @@ NEVER CANCEL: No build process required - this is a static HTML/CSS/JavaScript a
 
 ## Timeouts and Build Information
 
-**NEVER CANCEL any commands** - All operations complete in under 5 seconds:
+**NEVER CANCEL any commands** - All operations complete quickly except Docker builds:
 - Server startup: Set timeout to 10+ seconds (actual: ~1 second)
 - Test execution: Set timeout to 10+ seconds (actual: ~1-3 seconds)  
-- No builds, compilation, or long-running processes exist in this repository
+- Docker builds: Set timeout to 120+ seconds (actual: 60-90 seconds when network available)
+- Playwright installation: Set timeout to 180+ seconds (actual: 60-120 seconds when network available)
+- No builds, compilation, or long-running processes exist for core development
 
 ## Validation
 
@@ -47,12 +49,14 @@ ALWAYS manually validate changes by running through complete user scenarios:
 
 ### Known Issues:
 - **Answer input bug**: Multiple rapid inputs may concatenate values. Users should input answers one at a time and press Enter between inputs.
-- **Test failure**: One test in the automated test suite fails due to missing DOM elements during testing - this is expected behavior.
+- **Docker build**: Requires network access to npm registry. Build may fail in restricted environments due to network timeouts.
+- **CI test runner**: Requires Playwright installation (`npm install && npx playwright install chromium`) which may fail in restricted networks.
 
 ### Test Suite:
 - Run automated tests: Open `http://localhost:8080/test.html`
-- EXPECTED: 5 tests pass, 1 test fails (known issue: "Exercise generation creates proper structure")
+- EXPECTED: All 12 tests pass successfully 
 - Test execution time: < 3 seconds
+- Tests include: MultiplicationApp class, required methods, random number generator, exercise generation, translations system, focus navigation, progress updates, answer input handling, keyboard functionality, and highscore system
 
 ## Repository Structure
 
@@ -62,7 +66,13 @@ ALWAYS manually validate changes by running through complete user scenarios:
 - `styles.css` - Responsive CSS with mobile-first design
 - `translations.json` - Internationalization support (en/nl/de)
 - `test.html` - Simple test suite for core functionality
-- `.github/workflows/deploy.yml` - Automatic GitHub Pages deployment
+- `test-runner.js` - Playwright-based automated test runner for CI
+- `package.json` - Contains Playwright dependency for testing
+- `manifest.json` - PWA manifest for app installation
+- `sw.js` - Service worker for offline functionality
+- `icons/` - PWA icons in multiple sizes (72x72 to 512x512)
+- `Dockerfile` - Container deployment configuration
+- `.github/workflows/` - CI/CD workflows (deploy.yml, test.yml, docker.yml)
 
 ### Core Application Components:
 - **Settings Screen**: Language selection, number range configuration, timer setup
@@ -96,16 +106,38 @@ ALWAYS manually validate changes by running through complete user scenarios:
 ```
 .
 ├── .github/
+│   ├── copilot-instructions.md
 │   └── workflows/
-│       └── deploy.yml
+│       ├── deploy.yml
+│       ├── test.yml
+│       └── docker.yml
+├── icons/
+│   ├── icon-72x72.png
+│   ├── icon-96x96.png
+│   ├── icon-128x128.png
+│   ├── icon-144x144.png
+│   ├── icon-152x152.png
+│   ├── icon-192x192.png
+│   ├── icon-384x384.png
+│   ├── icon-512x512.png
+│   └── icon.svg
+├── .dockerignore
 ├── .gitignore
+├── Dockerfile
 ├── README.md
 ├── index.html
+├── manifest.json
+├── package.json
+├── package-lock.json
 ├── script.js
 ├── styles.css
+├── sw.js
 ├── test.html
+├── test-runner.js
 └── translations.json
 ```
+
+## Common Tasks
 
 ### Starting development server:
 ```bash
@@ -113,6 +145,31 @@ cd /path/to/repository
 python3 -m http.server 8080
 # Application available at http://localhost:8080
 # Tests available at http://localhost:8080/test.html
+```
+
+### Running CI tests locally:
+```bash
+# Install dependencies (requires network access)
+npm install
+npx playwright install chromium
+
+# Start server in background
+python3 -m http.server 8080 &
+sleep 3
+
+# Run automated tests
+node test-runner.js
+```
+
+### Docker deployment:
+```bash
+# NEVER CANCEL: Docker build takes 60-90 seconds when network is available
+# Set timeout to 120+ seconds for docker build commands
+docker build -t multiplication-practice .  # May fail in restricted networks
+docker run -p 3000:3000 multiplication-practice
+
+# Or use published image
+docker run -p 3000:3000 ghcr.io/commjoen/multiplier:main
 ```
 
 ### Key code locations:
@@ -126,14 +183,19 @@ python3 -m http.server 8080
 - Server startup: < 2 seconds (usually ~1 second)
 - Page load: < 1 second (usually immediate)  
 - Test suite execution: < 3 seconds (usually ~1 second)
+- Docker build: 60-90 seconds (when network is available)
+- Playwright installation: 60-120 seconds (when network is available)
 - Complete user journey validation: < 2 minutes
-- No build or compilation steps required
+- No build or compilation steps required for development
 
 ## Deployment
 
-- **Automatic**: Pushes to `main` branch trigger GitHub Actions deployment to GitHub Pages
+- **Automatic GitHub Pages**: Pushes to `main` branch trigger GitHub Actions deployment to GitHub Pages
+- **Automatic Docker**: Pushes to `main` branch build and publish to GitHub Container Registry (GHCR)
 - **Manual**: No manual deployment steps needed - everything is automatic
-- **URL**: Application deploys to GitHub Pages at repository's GitHub Pages URL
+- **URLs**: 
+  - GitHub Pages: `https://commjoen.github.io/Multiplier/`
+  - Docker: `ghcr.io/commjoen/multiplier:main`
 
 ## Browser Support
 
