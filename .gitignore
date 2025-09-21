@@ -22,3 +22,7 @@ npm-debug.log*
 # Temporary files
 tmp/
 temp/
+
+# Icon generation scripts
+generate_icons.py
+generate_better_icons.py
