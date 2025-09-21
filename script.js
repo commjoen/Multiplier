@@ -280,7 +280,11 @@ class MultiplicationApp {
             input.addEventListener('input', (e) => this.handleAnswerInput(e));
             input.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') {
-                    this.focusNextInput(e.target);
+                    // Only move to next input if the current answer is correct
+                    const index = parseInt(e.target.dataset.index);
+                    if (this.exercises[index] && this.exercises[index].isCorrect === true) {
+                        this.focusNextInput(e.target);
+                    }
                 }
             });
         });
@@ -360,7 +364,11 @@ class MultiplicationApp {
             }
             
         } else if (button.dataset.action === 'enter') {
-            this.focusNextInput(targetInput);
+            // Only move to next input if the current answer is correct
+            const index = parseInt(targetInput.dataset.index);
+            if (this.exercises[index] && this.exercises[index].isCorrect === true) {
+                this.focusNextInput(targetInput);
+            }
         }
     }
     
