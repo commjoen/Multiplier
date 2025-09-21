@@ -1,6 +1,6 @@
 # Multiplication Practice SPA
 
-A mobile-first Single Page Application for practicing multiplication exercises, designed for deployment on GitHub Pages.
+A mobile-first Single Page Application for practicing multiplication exercises, designed for deployment on GitHub Pages. https://commjoen.github.io/Multiplier/
 
 ## Features
 
