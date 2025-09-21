@@ -5,6 +5,7 @@ A mobile-first Single Page Application for practicing multiplication exercises, 
 ## Features
 
 - **Mobile-First Design**: Optimized for mobile devices with responsive layout
+- **Progressive Web App (PWA)**: Installable app with offline support
 - **Configurable Exercise Count**: Set total number of exercises (5-50), defaults to 20
 - **Configurable Range**: Set minimum and maximum numbers for multiplication (1-12)
 - **Countdown Timer**: Adjustable timer (1-30 minutes) with visual warnings
@@ -14,14 +15,19 @@ A mobile-first Single Page Application for practicing multiplication exercises, 
 - **Scrollable Interface**: Smooth scrolling through exercises
 - **Results Summary**: Detailed results with score, time taken, and percentage
 - **Local Storage**: Settings are saved between sessions
+- **Offline Support**: Works completely offline after first visit
+- **Installable**: Can be installed as a standalone app on mobile and desktop
+- **Multi-language Support**: Available in English, Nederlands, and Deutsch
 - **Docker Support**: Container deployment with GHCR publishing
 
 ## How to Use
 
+### Regular Web Usage
 1. **Settings Screen**: 
    - Set the minimum and maximum numbers for multiplication
    - Choose the timer duration (in minutes)
    - Set the total number of exercises (5-50)
+   - Select your preferred language
    - Click "Ready - Start Practice!" to begin
 
 2. **Exercise Screen**:
@@ -38,11 +44,32 @@ A mobile-first Single Page Application for practicing multiplication exercises, 
    - Review all questions with correct answers
    - Click "Practice Again" to start over
 
+### PWA Installation
+📱 **Install as App on Mobile:**
+- Open the app in your browser (Chrome, Safari, Edge, etc.)
+- Look for "Add to Home Screen" or "Install App" option
+- Follow the prompts to install
+- The app will appear on your home screen like a native app
+
+💻 **Install as App on Desktop:**
+- Open the app in Chrome, Edge, or other PWA-compatible browser
+- Look for the install icon in the address bar
+- Click "Install" to add to your desktop
+- The app will run in standalone mode without browser chrome
+
+🔄 **Offline Usage:**
+- Once installed, the app works completely offline
+- All features available without internet connection
+- Settings and progress are saved locally
+
 ## Technical Details
 
 - **Pure HTML/CSS/JavaScript**: No frameworks or dependencies
+- **Progressive Web App (PWA)**: Service worker for offline functionality
 - **Responsive Design**: CSS Grid and Flexbox for mobile-first layout
 - **Local Storage**: Settings persistence across sessions
+- **Web App Manifest**: Enables installation on mobile and desktop
+- **Service Worker**: Caches resources for offline functionality
 - **GitHub Pages Ready**: Static files optimized for GitHub Pages deployment
 
 ## Screenshots

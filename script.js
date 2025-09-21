@@ -551,6 +551,19 @@ class MultiplicationApp {
     }
 }
 
+// Register service worker for PWA functionality
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+            .then(registration => {
+                console.log('SW registered: ', registration);
+            })
+            .catch(registrationError => {
+                console.log('SW registration failed: ', registrationError);
+            });
+    });
+}
+
 // Initialize the app when the DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     // Add a small delay to ensure all elements are properly loaded
