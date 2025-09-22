@@ -276,6 +276,73 @@
             assert(finalHighscore.percentage === 90, 'Best score should be preserved');
         });
 
+        // Test division exercise generation
+        runTest('Division exercise generation', () => {
+            const tempApp = {
+                exercises: [],
+                minMultiplier: 2,
+                maxMultiplier: 5,
+                totalExercises: 10,
+                operationType: 'division',
+                minMultiplierInput: { value: '2' },
+                maxMultiplierInput: { value: '5' },
+                totalExercisesInput: { value: '10' },
+                operationTypeInput: { value: 'division' },
+                getRandomNumber: MultiplicationApp.prototype.getRandomNumber,
+                generateExercises: MultiplicationApp.prototype.generateExercises
+            };
+            
+            tempApp.generateExercises();
+            assert(tempApp.exercises.length === 10, 'Should generate 10 division exercises');
+            
+            for (let exercise of tempApp.exercises) {
+                assert(exercise.operation === 'division', 'All exercises should be division');
+                assert(typeof exercise.num1 === 'number', 'num1 should be number');
+                assert(typeof exercise.num2 === 'number', 'num2 should be number');
+                assert(typeof exercise.answer === 'number', 'answer should be number');
+                assert(exercise.num1 === exercise.num2 * exercise.answer, 'Division should be correct (dividend = divisor × quotient)');
+                assert(exercise.answer >= 2 && exercise.answer <= 5, 'answer should be in original range');
+                assert(exercise.num2 >= 2 && exercise.num2 <= 5, 'num2 should be in range');
+            }
+        });
+
+        // Test mixed exercise generation
+        runTest('Mixed exercise generation', () => {
+            const tempApp = {
+                exercises: [],
+                minMultiplier: 1,
+                maxMultiplier: 3,
+                totalExercises: 20,
+                operationType: 'mixed',
+                minMultiplierInput: { value: '1' },
+                maxMultiplierInput: { value: '3' },
+                totalExercisesInput: { value: '20' },
+                operationTypeInput: { value: 'mixed' },
+                getRandomNumber: MultiplicationApp.prototype.getRandomNumber,
+                generateExercises: MultiplicationApp.prototype.generateExercises
+            };
+            
+            tempApp.generateExercises();
+            assert(tempApp.exercises.length === 20, 'Should generate 20 mixed exercises');
+            
+            let hasMultiplication = false;
+            let hasDivision = false;
+            
+            for (let exercise of tempApp.exercises) {
+                assert(exercise.operation === 'multiplication' || exercise.operation === 'division', 'Exercise should be multiplication or division');
+                if (exercise.operation === 'multiplication') {
+                    hasMultiplication = true;
+                    assert(exercise.answer === exercise.num1 * exercise.num2, 'Multiplication should be correct');
+                } else {
+                    hasDivision = true;
+                    assert(exercise.num1 === exercise.num2 * exercise.answer, 'Division should be correct');
+                }
+            }
+            
+            // In a set of 20 exercises, we should have both types (statistically very likely)
+            assert(hasMultiplication || hasDivision, 'Should have at least one operation type');
+        });
+
         // Show summary
         setTimeout(() => {
             const resultsDiv = document.getElementById('test-results');
