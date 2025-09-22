@@ -60,6 +60,7 @@ class MultiplicationApp {
         this.maxMultiplierInput = document.getElementById('max-multiplier');
         this.timerMinutesInput = document.getElementById('timer-minutes');
         this.totalExercisesInput = document.getElementById('total-exercises');
+        this.operationTypeInput = document.getElementById('operation-type');
         this.showKeyboardInput = document.getElementById('show-keyboard');
         this.startButton = document.getElementById('start-button');
         
@@ -113,6 +114,7 @@ class MultiplicationApp {
             if (this.maxMultiplierInput) this.maxMultiplierInput.value = settings.maxMultiplier || 10;
             if (this.timerMinutesInput) this.timerMinutesInput.value = settings.timeLimit || 5;
             if (this.totalExercisesInput) this.totalExercisesInput.value = settings.totalExercises || 20;
+            if (this.operationTypeInput) this.operationTypeInput.value = settings.operationType || 'multiplication';
             if (this.showKeyboardInput) this.showKeyboardInput.checked = settings.showKeyboard !== false; // default to true
             this.currentLanguage = settings.language || 'en';
             if (this.languageSelect) this.languageSelect.value = this.currentLanguage;
@@ -125,6 +127,7 @@ class MultiplicationApp {
             maxMultiplier: this.maxMultiplierInput ? parseInt(this.maxMultiplierInput.value) : 10,
             timeLimit: this.timerMinutesInput ? parseInt(this.timerMinutesInput.value) : 5,
             totalExercises: this.totalExercisesInput ? parseInt(this.totalExercisesInput.value) : 20,
+            operationType: this.operationTypeInput ? this.operationTypeInput.value : 'multiplication',
             showKeyboard: this.showKeyboardInput ? this.showKeyboardInput.checked : true,
             language: this.currentLanguage
         };
@@ -223,19 +226,52 @@ class MultiplicationApp {
         this.minMultiplier = parseInt(this.minMultiplierInput.value);
         this.maxMultiplier = parseInt(this.maxMultiplierInput.value);
         this.totalExercises = parseInt(this.totalExercisesInput.value);
+        this.operationType = this.operationTypeInput ? this.operationTypeInput.value : 'multiplication';
         
         for (let i = 0; i < this.totalExercises; i++) {
-            const num1 = this.getRandomNumber(this.minMultiplier, this.maxMultiplier);
-            const num2 = this.getRandomNumber(this.minMultiplier, this.maxMultiplier);
+            let operationType;
             
-            this.exercises.push({
-                num1: num1,
-                num2: num2,
-                answer: num1 * num2,
-                userAnswer: null,
-                isCorrect: null,
-                index: i
-            });
+            if (this.operationType === 'mixed') {
+                // Randomly choose between multiplication and division
+                operationType = Math.random() < 0.5 ? 'multiplication' : 'division';
+            } else {
+                operationType = this.operationType;
+            }
+            
+            let exercise;
+            if (operationType === 'division') {
+                // For division, we generate multiplication first then present as division
+                // This ensures we always have whole number answers
+                const num1 = this.getRandomNumber(this.minMultiplier, this.maxMultiplier);
+                const num2 = this.getRandomNumber(this.minMultiplier, this.maxMultiplier);
+                const product = num1 * num2;
+                
+                exercise = {
+                    num1: product,  // dividend
+                    num2: num2,     // divisor
+                    answer: num1,   // quotient
+                    operation: 'division',
+                    userAnswer: null,
+                    isCorrect: null,
+                    index: i
+                };
+            } else {
+                // Multiplication
+                const num1 = this.getRandomNumber(this.minMultiplier, this.maxMultiplier);
+                const num2 = this.getRandomNumber(this.minMultiplier, this.maxMultiplier);
+                
+                exercise = {
+                    num1: num1,
+                    num2: num2,
+                    answer: num1 * num2,
+                    operation: 'multiplication',
+                    userAnswer: null,
+                    isCorrect: null,
+                    index: i
+                };
+            }
+            
+            this.exercises.push(exercise);
         }
     }
     
@@ -262,8 +298,9 @@ class MultiplicationApp {
         this.exercises.forEach((exercise, index) => {
             const exerciseDiv = document.createElement('div');
             exerciseDiv.className = 'exercise-item';
+            const symbol = exercise.operation === 'division' ? '÷' : '×';
             exerciseDiv.innerHTML = `
-                <span class="exercise-question">${exercise.num1} × ${exercise.num2} =</span>
+                <span class="exercise-question">${exercise.num1} ${symbol} ${exercise.num2} =</span>
                 <input type="number" class="exercise-input" data-index="${index}" 
                        placeholder="?" inputmode="numeric" ${exercise.userAnswer !== null ? `value="${exercise.userAnswer}"` : ''}>
                 <span class="exercise-status ${this.getStatusClass(exercise)}">
@@ -549,8 +586,9 @@ class MultiplicationApp {
         this.exercises.forEach(exercise => {
             const resultDiv = document.createElement('div');
             resultDiv.className = `result-item ${exercise.isCorrect ? 'correct' : 'incorrect'}`;
+            const symbol = exercise.operation === 'division' ? '÷' : '×';
             resultDiv.innerHTML = `
-                <span class="result-question">${exercise.num1} × ${exercise.num2} = ${exercise.answer}</span>
+                <span class="result-question">${exercise.num1} ${symbol} ${exercise.num2} = ${exercise.answer}</span>
                 <span class="result-answer">${this.t('yourAnswer')} ${exercise.userAnswer || this.t('noAnswer')}</span>
             `;
             this.resultsDetails.appendChild(resultDiv);
