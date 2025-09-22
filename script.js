@@ -80,6 +80,10 @@ class MultiplicationApp {
         this.highscoreDisplay = document.getElementById('highscore-display');
         this.highscoreValue = document.getElementById('highscore-value');
         this.newHighscoreDisplay = document.getElementById('new-highscore');
+        this.socialSharingContainer = document.getElementById('social-sharing');
+        this.shareTwitterBtn = document.getElementById('share-twitter');
+        this.shareFacebookBtn = document.getElementById('share-facebook');
+        this.shareGenericBtn = document.getElementById('share-generic');
     }
     
     setupEventListeners() {
@@ -91,6 +95,11 @@ class MultiplicationApp {
         
         // Language selection
         if (this.languageSelect) this.languageSelect.addEventListener('change', (e) => this.changeLanguage(e.target.value));
+        
+        // Social sharing
+        if (this.shareTwitterBtn) this.shareTwitterBtn.addEventListener('click', () => this.shareOnTwitter());
+        if (this.shareFacebookBtn) this.shareFacebookBtn.addEventListener('click', () => this.shareOnFacebook());
+        if (this.shareGenericBtn) this.shareGenericBtn.addEventListener('click', () => this.shareGeneric());
         
         // Input validation
         if (this.minMultiplierInput) this.minMultiplierInput.addEventListener('input', () => this.validateRanges());
@@ -555,6 +564,20 @@ class MultiplicationApp {
         } else if (this.newHighscoreDisplay) {
             this.newHighscoreDisplay.style.display = 'none';
         }
+        
+        // Show social sharing if score is worth sharing (>= 50% or new highscore)
+        if (this.socialSharingContainer && (percentage >= 50 || isNewHighscore)) {
+            this.socialSharingContainer.style.display = 'block';
+            // Store data for sharing
+            this.shareData = {
+                score: percentage,
+                correct: this.score,
+                total: this.totalExercises,
+                time: `${minutes}:${seconds.toString().padStart(2, '0')}`
+            };
+        } else if (this.socialSharingContainer) {
+            this.socialSharingContainer.style.display = 'none';
+        }
     }
     
     showResults() {
@@ -594,6 +617,92 @@ class MultiplicationApp {
             targetScreen.classList.add('active');
             targetScreen.classList.add('fade-in');
         }
+    }
+    
+    // Social Media Sharing Methods
+    getShareMessage() {
+        if (!this.shareData) return '';
+        
+        const template = this.t('shareMessage');
+        return template
+            .replace('{score}', this.shareData.score)
+            .replace('{correct}', this.shareData.correct)
+            .replace('{total}', this.shareData.total)
+            .replace('{time}', this.shareData.time);
+    }
+    
+    getShareUrl() {
+        return window.location.origin + window.location.pathname;
+    }
+    
+    shareOnTwitter() {
+        const message = this.getShareMessage();
+        const url = this.getShareUrl();
+        const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(message)}&url=${encodeURIComponent(url)}`;
+        window.open(twitterUrl, '_blank', 'width=600,height=400');
+    }
+    
+    shareOnFacebook() {
+        const url = this.getShareUrl();
+        const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+        window.open(facebookUrl, '_blank', 'width=600,height=400');
+    }
+    
+    async shareGeneric() {
+        const message = this.getShareMessage();
+        const url = this.getShareUrl();
+        
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: this.t('title'),
+                    text: message,
+                    url: url
+                });
+            } catch (err) {
+                console.log('Error sharing:', err);
+                this.fallbackShare(message, url);
+            }
+        } else {
+            this.fallbackShare(message, url);
+        }
+    }
+    
+    fallbackShare(message, url) {
+        // Fallback: copy to clipboard
+        const textToCopy = `${message} ${url}`;
+        
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                alert('Share text copied to clipboard!');
+            }).catch(() => {
+                this.legacyFallbackShare(textToCopy);
+            });
+        } else {
+            this.legacyFallbackShare(textToCopy);
+        }
+    }
+    
+    legacyFallbackShare(text) {
+        // Legacy fallback for older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        
+        try {
+            document.execCommand('copy');
+            alert('Share text copied to clipboard!');
+        } catch (err) {
+            console.log('Fallback copy failed:', err);
+            alert('Unable to copy. Share manually: ' + text);
+        }
+        
+        document.body.removeChild(textArea);
     }
 }
 

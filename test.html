@@ -276,6 +276,46 @@
             assert(finalHighscore.percentage === 90, 'Best score should be preserved');
         });
 
+
+        // Test social sharing functionality
+        runTest('Social sharing functionality', () => {
+            const tempApp = {
+                translations: { 
+                    en: { 
+                        shareMessage: "I just scored {score}% ({correct}/{total}) in {time} on Multiplication Practice! 🎯"
+                    }
+                },
+                currentLanguage: 'en',
+                shareData: {
+                    score: 85,
+                    correct: 17,
+                    total: 20,
+                    time: '2:30'
+                },
+                getShareMessage: MultiplicationApp.prototype.getShareMessage,
+                getShareUrl: MultiplicationApp.prototype.getShareUrl,
+                t: MultiplicationApp.prototype.t
+            };
+            
+            // Test share message generation
+            const shareMessage = tempApp.getShareMessage();
+            assert(typeof shareMessage === 'string', 'Share message should be a string');
+            assert(shareMessage.includes('85%'), 'Share message should include score percentage');
+            assert(shareMessage.includes('17/20'), 'Share message should include correct/total');
+            assert(shareMessage.includes('2:30'), 'Share message should include time');
+            
+            // Test share URL generation
+            const shareUrl = tempApp.getShareUrl();
+            assert(typeof shareUrl === 'string', 'Share URL should be a string');
+            assert(shareUrl.includes(window.location.origin), 'Share URL should include origin');
+            
+            // Test that social sharing methods exist
+            const methods = ['getShareMessage', 'getShareUrl', 'shareOnTwitter', 'shareOnFacebook', 'shareGeneric'];
+            for (let method of methods) {
+                assert(typeof MultiplicationApp.prototype[method] === 'function', `${method} should exist`);
+            }
+        });
+          
         // Test division exercise generation
         runTest('Division exercise generation', () => {
             const tempApp = {
