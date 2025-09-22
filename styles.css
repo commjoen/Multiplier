@@ -524,9 +524,18 @@ h2 {
     }
 }
 
+/* Desktop layouts - only use 3 columns when there's enough space */
 @media (min-width: 1024px) {
     .exercises-container {
         max-height: 65vh;
+        /* Use 2 columns for medium desktop screens to prevent content wrapping */
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Only use 3 columns on very wide screens where content definitely fits on one line */
+@media (min-width: 1200px) {
+    .exercises-container {
         grid-template-columns: repeat(3, 1fr);
     }
 }
