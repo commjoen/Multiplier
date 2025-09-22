@@ -373,6 +373,80 @@ h2 {
     100% { transform: scale(1); }
 }
 
+/* Social Sharing */
+.social-sharing {
+    margin-top: 1.5rem;
+    text-align: center;
+}
+
+.social-sharing h3 {
+    font-size: 1.1rem;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.share-buttons {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.share-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: white;
+    text-decoration: none;
+    min-width: 100px;
+    justify-content: center;
+}
+
+.share-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.share-btn:active {
+    transform: translateY(0);
+}
+
+.share-btn svg {
+    flex-shrink: 0;
+}
+
+.twitter-btn {
+    background-color: #1da1f2;
+}
+
+.twitter-btn:hover {
+    background-color: #0d8bd9;
+}
+
+.facebook-btn {
+    background-color: #4267b2;
+}
+
+.facebook-btn:hover {
+    background-color: #365899;
+}
+
+.generic-btn {
+    background-color: #6c757d;
+}
+
+.generic-btn:hover {
+    background-color: #5a6268;
+}
+
 .results-details {
     max-height: 40vh;
     overflow-y: auto;
@@ -439,6 +513,14 @@ h2 {
     .keyboard-btn {
         height: 3.5rem;
         font-size: 1.2rem;
+    }
+    
+    .share-buttons {
+        gap: 1rem;
+    }
+    
+    .share-btn {
+        min-width: 120px;
     }
 }
 
