@@ -25,8 +25,10 @@
     "showKeyboard": "Show On-Screen Keyboard",
     "highscore": "Best Score",
     "newHighscore": "🎉 New Best Score!",
-    "shareScore": "Share Your Score",
-    "shareMessage": "I just scored {score}% ({correct}/{total}) in {time} on Multiplication Practice! 🎯"
+    "shareScore": "🚀 Share Your Achievement",
+    "shareMessage": "🎯 Just mastered multiplication! Scored {score}% ({correct}/{total}) in {time} 🧮✨ Challenge yourself with this awesome math practice app!",
+    "shareTitle": "Multiplication Practice - Test Your Math Skills!",
+    "shareHashtags": "#MathPractice #Multiplication #BrainTraining #Education #LearningIsFun"
   },
   "nl": {
     "title": "Rekenen Oefening",
@@ -54,8 +56,10 @@
     "showKeyboard": "Toetsenbord Tonen",
     "highscore": "Beste Score",
     "newHighscore": "🎉 Nieuwe Beste Score!",
-    "shareScore": "Deel Jouw Score",
-    "shareMessage": "Ik heb zojuist {score}% ({correct}/{total}) gescoord in {time} bij Tafel Oefening! 🎯"
+    "shareScore": "🚀 Deel Jouw Prestatie",
+    "shareMessage": "🎯 Zojuist rekenen gemeesterd! Scoorde {score}% ({correct}/{total}) in {time} 🧮✨ Daag jezelf uit met deze geweldige rekenapp!",
+    "shareTitle": "Rekenen Oefening - Test Je Rekenvaardigheden!",
+    "shareHashtags": "#Rekenen #Vermenigvuldigen #HersenTraining #Onderwijs #LerenIsTof"
   },
   "de": {
     "title": "Mathematik Übung",
@@ -83,7 +87,9 @@
     "showKeyboard": "Bildschirmtastatur Anzeigen",
     "highscore": "Beste Punktzahl",
     "newHighscore": "🎉 Neue Beste Punktzahl!",
-    "shareScore": "Teile Deine Punktzahl",
-    "shareMessage": "Ich habe gerade {score}% ({correct}/{total}) in {time} bei Multiplikations Übung erreicht! 🎯"
+    "shareScore": "🚀 Teile Deine Leistung",
+    "shareMessage": "🎯 Gerade Mathematik gemeistert! Erreichte {score}% ({correct}/{total}) in {time} 🧮✨ Fordere dich selbst mit dieser tollen Mathe-App heraus!",
+    "shareTitle": "Mathematik Übung - Teste Deine Mathematikfähigkeiten!",
+    "shareHashtags": "#Mathematik #Multiplikation #Gehirntraining #Bildung #LernenMachtSpaß"
   }
 }
