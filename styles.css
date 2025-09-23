@@ -413,15 +413,21 @@ h2 {
 
 /* Social Sharing */
 .social-sharing {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px;
+    padding: 1.5rem;
     margin-top: 1.5rem;
     text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
 .social-sharing h3 {
-    font-size: 1.1rem;
-    color: #2c3e50;
+    color: white;
+    font-size: 1.3rem;
     margin-bottom: 1rem;
     font-weight: 600;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .share-buttons {
@@ -435,7 +441,7 @@ h2 {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.6rem 1rem;
+    padding: 0.75rem 1rem;
     border: none;
     border-radius: 8px;
     font-size: 0.9rem;
@@ -446,11 +452,29 @@ h2 {
     text-decoration: none;
     min-width: 100px;
     justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    position: relative;
+    overflow: hidden;
+}
+
+.share-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.share-btn:hover::before {
+    left: 100%;
 }
 
 .share-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
 }
 
 .share-btn:active {
@@ -461,29 +485,36 @@ h2 {
     flex-shrink: 0;
 }
 
+.share-btn span {
+    font-weight: 600;
+}
+
 .twitter-btn {
-    background-color: #1da1f2;
+    background: linear-gradient(135deg, #1da1f2 0%, #0d8bd9 100%);
 }
 
 .twitter-btn:hover {
-    background-color: #0d8bd9;
+    background: linear-gradient(135deg, #0d8bd9 0%, #0a73b8 100%);
 }
 
 .facebook-btn {
-    background-color: #4267b2;
+    background: linear-gradient(135deg, #4267b2 0%, #365899 100%);
 }
 
 .facebook-btn:hover {
-    background-color: #365899;
+    background: linear-gradient(135deg, #365899 0%, #2d4373 100%);
 }
 
 .generic-btn {
-    background-color: #6c757d;
+    background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
 }
 
 .generic-btn:hover {
-    background-color: #5a6268;
+    background: linear-gradient(135deg, #5a6268 0%, #495057 100%);
 }
+}
+
+
 
 .results-details {
     max-height: 40vh;

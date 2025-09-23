@@ -640,55 +640,79 @@ class MultiplicationApp {
             .replace('{time}', this.shareData.time);
     }
     
+    getShareTitle() {
+        return this.t('shareTitle');
+    }
+    
+    getShareHashtags() {
+        return this.t('shareHashtags');
+    }
+    
     getShareUrl() {
-        return window.location.origin + window.location.pathname;
+        // Use GitHub Pages URL when deployed, or local URL when testing locally
+        if (window.location.hostname === 'commjoen.github.io') {
+            return 'https://commjoen.github.io/Multiplier/';
+        } else {
+            // For local development or other environments, use the current location
+            return window.location.origin + window.location.pathname;
+        }
     }
     
     shareOnTwitter() {
         const message = this.getShareMessage();
         const url = this.getShareUrl();
-        const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(message)}&url=${encodeURIComponent(url)}`;
+        const hashtags = this.getShareHashtags().replace(/^#/, '').replace(/ #/g, ',').replace(/#/g, '');
+        
+        // Create an engaging Twitter post with proper hashtags
+        const twitterText = `${message}\n\n🌟 Try it yourself: ${url}`;
+        const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(twitterText)}&hashtags=${encodeURIComponent(hashtags)}`;
+        
         window.open(twitterUrl, '_blank', 'width=600,height=400');
     }
     
     shareOnFacebook() {
         const url = this.getShareUrl();
-        const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+        const message = this.getShareMessage();
+        
+        // Facebook sharing with quote parameter for better engagement
+        const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(message + '\n\n🌟 Try this awesome multiplication practice app!')}`;
         window.open(facebookUrl, '_blank', 'width=600,height=400');
     }
     
     async shareGeneric() {
         const message = this.getShareMessage();
         const url = this.getShareUrl();
+        const title = this.getShareTitle();
+        const fullMessage = `${message}\n\n🌟 Try it yourself: ${url}`;
         
         if (navigator.share) {
             try {
                 await navigator.share({
-                    title: this.t('title'),
-                    text: message,
+                    title: title,
+                    text: fullMessage,
                     url: url
                 });
             } catch (err) {
                 console.log('Error sharing:', err);
-                this.fallbackShare(message, url);
+                this.fallbackShare(fullMessage, url);
             }
         } else {
-            this.fallbackShare(message, url);
+            this.fallbackShare(fullMessage, url);
         }
     }
     
     fallbackShare(message, url) {
-        // Fallback: copy to clipboard
-        const textToCopy = `${message} ${url}`;
+        // Fallback: copy to clipboard with enhanced message
+        const fullMessage = `${message}\n\n${this.getShareHashtags()}\n\n🌟 Try it yourself: ${url}`;
         
         if (navigator.clipboard) {
-            navigator.clipboard.writeText(textToCopy).then(() => {
-                alert('Share text copied to clipboard!');
+            navigator.clipboard.writeText(fullMessage).then(() => {
+                this.showShareSuccessMessage();
             }).catch(() => {
-                this.legacyFallbackShare(textToCopy);
+                this.legacyFallbackShare(fullMessage);
             });
         } else {
-            this.legacyFallbackShare(textToCopy);
+            this.legacyFallbackShare(fullMessage);
         }
     }
     
@@ -705,13 +729,75 @@ class MultiplicationApp {
         
         try {
             document.execCommand('copy');
-            alert('Share text copied to clipboard!');
+            this.showShareSuccessMessage();
         } catch (err) {
             console.log('Fallback copy failed:', err);
-            alert('Unable to copy. Share manually: ' + text);
+            this.showShareFailureMessage(text);
         }
         
         document.body.removeChild(textArea);
+    }
+    
+    showShareSuccessMessage() {
+        // Create a more engaging success message
+        const message = document.createElement('div');
+        message.innerHTML = `
+            <div style="
+                position: fixed; 
+                top: 20px; 
+                left: 50%; 
+                transform: translateX(-50%); 
+                background: #27ae60; 
+                color: white; 
+                padding: 12px 24px; 
+                border-radius: 8px; 
+                font-weight: bold; 
+                z-index: 1000;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                animation: slideDown 0.3s ease-out;
+            ">
+                🎉 Share text copied! Paste it anywhere to share your achievement!
+            </div>
+            <style>
+                @keyframes slideDown {
+                    from { transform: translateX(-50%) translateY(-100%); opacity: 0; }
+                    to { transform: translateX(-50%) translateY(0); opacity: 1; }
+                }
+            </style>
+        `;
+        
+        document.body.appendChild(message);
+        setTimeout(() => {
+            document.body.removeChild(message);
+        }, 3000);
+    }
+    
+    showShareFailureMessage(text) {
+        const message = document.createElement('div');
+        message.innerHTML = `
+            <div style="
+                position: fixed; 
+                top: 20px; 
+                left: 50%; 
+                transform: translateX(-50%); 
+                background: #e74c3c; 
+                color: white; 
+                padding: 12px 24px; 
+                border-radius: 8px; 
+                font-weight: bold; 
+                z-index: 1000;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                max-width: 90%;
+                text-align: center;
+            ">
+                📋 Copy manually:<br><small>${text.substring(0, 100)}...</small>
+            </div>
+        `;
+        
+        document.body.appendChild(message);
+        setTimeout(() => {
+            document.body.removeChild(message);
+        }, 5000);
     }
 }
 
