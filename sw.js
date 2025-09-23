@@ -1,4 +1,5 @@
 const CACHE_NAME = 'multiplication-practice-v3';
+const TRUSTED_ORIGIN = 'https://www.example.com'; // <-- Set this to your app's origin
 const urlsToCache = [
   './',
   './index.html',
@@ -60,7 +61,18 @@ self.addEventListener('activate', event => {
 
 // Handle messages from the main thread
 self.addEventListener('message', event => {
-  if (event.data && event.data.type === 'SKIP_WAITING') {
-    self.skipWaiting();
+  // Origin verification
+  if (!event.source || !event.source.id) {
+    // Unable to verify sender, do nothing
+    return;
   }
+  self.clients.get(event.source.id).then(client => {
+    if (!client || !client.url || !client.url.startsWith(TRUSTED_ORIGIN)) {
+      // Not from a trusted origin
+      return;
+    }
+    if (event.data && event.data.type === 'SKIP_WAITING') {
+      self.skipWaiting();
+    }
+  });
 });
