@@ -383,6 +383,21 @@
             assert(hasMultiplication || hasDivision, 'Should have at least one operation type');
         });
 
+        // Test version loading functionality
+        runTest('Version loading functionality', () => {
+            fetch('package.json')
+                .then(response => response.json())
+                .then(packageInfo => {
+                    assert(typeof packageInfo === 'object', 'Package info should be object');
+                    assert(typeof packageInfo.version === 'string', 'Should have version string');
+                    assert(/^\d+\.\d+\.\d+$/.test(packageInfo.version), 'Version should follow semver format');
+                    addResult('Version loads correctly from package.json', true);
+                })
+                .catch(error => {
+                    addResult('Version loads correctly from package.json', false, error.message);
+                });
+        });
+
         // Show summary
         setTimeout(() => {
             const resultsDiv = document.getElementById('test-results');

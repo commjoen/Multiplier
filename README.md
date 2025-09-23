@@ -130,6 +130,30 @@ To run locally:
 2. Serve the files using any static web server (e.g., `python -m http.server`)
 3. Open in browser
 
+## Versioning
+
+This project follows [Semantic Versioning](https://semver.org/) for releases:
+
+- **App Version Display**: Current version is shown in the bottom-right corner of the settings screen
+- **Release Process**: Manual releases via GitHub Actions workflow
+- **Docker Tags**: Each release creates versioned Docker images
+  - `ghcr.io/commjoen/multiplier:v1.0.0` (specific version)
+  - `ghcr.io/commjoen/multiplier:latest` (latest release)
+  - `ghcr.io/commjoen/multiplier:main` (latest main branch)
+
+### Creating a Release
+
+Releases are created manually through GitHub Actions:
+
+1. Go to Actions → "Create Release" workflow
+2. Click "Run workflow"
+3. Enter version (e.g., `v1.0.0`) and optional release notes
+4. The workflow will:
+   - Update `package.json` version
+   - Create Git tag and GitHub release
+   - Build and publish Docker images
+   - Generate release notes with Docker run instructions
+
 ## License
 
 Open source - feel free to use and modify for educational purposes.
