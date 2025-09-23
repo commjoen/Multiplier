@@ -31,7 +31,8 @@
     "shareScore": "🚀 Share Your Achievement",
     "shareMessage": "🎯 Just mastered multiplication! Scored {score}% ({correct}/{total}) in {time} 🧮✨ Challenge yourself with this awesome math practice app!",
     "shareTitle": "Multiplication Practice - Test Your Math Skills!",
-    "shareHashtags": "#MathPractice #Multiplication #BrainTraining #Education #LearningIsFun"
+    "shareHashtags": "#MathPractice #Multiplication #BrainTraining #Education #LearningIsFun",
+    "sourceCode": "Source Code"
   },
   "nl": {
     "title": "Rekenen Oefening",
@@ -65,7 +66,8 @@
     "shareScore": "🚀 Deel Jouw Prestatie",
     "shareMessage": "🎯 Zojuist rekenen gemeesterd! Scoorde {score}% ({correct}/{total}) in {time} 🧮✨ Daag jezelf uit met deze geweldige rekenapp!",
     "shareTitle": "Rekenen Oefening - Test Je Rekenvaardigheden!",
-    "shareHashtags": "#Rekenen #Vermenigvuldigen #HersenTraining #Onderwijs #LerenIsTof"
+    "shareHashtags": "#Rekenen #Vermenigvuldigen #HersenTraining #Onderwijs #LerenIsTof",
+    "sourceCode": "Broncode"
   },
   "de": {
     "title": "Mathematik Übung",
@@ -99,6 +101,7 @@
     "shareScore": "🚀 Teile Deine Leistung",
     "shareMessage": "🎯 Gerade Mathematik gemeistert! Erreichte {score}% ({correct}/{total}) in {time} 🧮✨ Fordere dich selbst mit dieser tollen Mathe-App heraus!",
     "shareTitle": "Mathematik Übung - Teste Deine Mathematikfähigkeiten!",
-    "shareHashtags": "#Mathematik #Multiplikation #Gehirntraining #Bildung #LernenMachtSpaß"
+    "shareHashtags": "#Mathematik #Multiplikation #Gehirntraining #Bildung #LernenMachtSpaß",
+    "sourceCode": "Quellcode"
   }
 }
