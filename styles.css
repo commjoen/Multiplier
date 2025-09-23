@@ -174,6 +174,44 @@ h2 {
     gap: 0.5rem;
 }
 
+/* Grid mode (default) - tiles layout */
+.exercises-container.grid-mode {
+    grid-template-columns: 1fr;
+}
+
+/* Line mode - list layout */
+.exercises-container.line-mode {
+    display: block;
+}
+
+.exercises-container.line-mode .exercise-item {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-bottom: 0.75rem;
+    padding: 0.75rem;
+    border: 1px solid #ecf0f1;
+    border-radius: 8px;
+    background-color: #fff;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.exercises-container.line-mode .exercise-question {
+    min-width: 120px;
+    margin-right: 1rem;
+    font-size: 1.1rem;
+}
+
+.exercises-container.line-mode .exercise-input {
+    width: 80px;
+    margin-right: 1rem;
+}
+
+.exercises-container.line-mode .exercise-status {
+    margin-left: auto;
+}
+
 .exercise-item {
     display: flex;
     align-items: center;
@@ -491,7 +529,7 @@ h2 {
         font-size: 2.2rem;
     }
     
-    .exercises-container {
+    .exercises-container.grid-mode {
         max-height: 55vh;
         grid-template-columns: repeat(2, 1fr);
         gap: 0.75rem;
@@ -522,11 +560,22 @@ h2 {
     .share-btn {
         min-width: 120px;
     }
+    
+    /* Line mode responsive improvements */
+    .exercises-container.line-mode .exercise-question {
+        min-width: 150px;
+        font-size: 1.3rem;
+    }
+    
+    .exercises-container.line-mode .exercise-input {
+        width: 100px;
+        font-size: 1.2rem;
+    }
 }
 
 /* Desktop layouts - only use 3 columns when there's enough space */
 @media (min-width: 1024px) {
-    .exercises-container {
+    .exercises-container.grid-mode {
         max-height: 65vh;
         /* Use 2 columns for medium desktop screens to prevent content wrapping */
         grid-template-columns: repeat(2, 1fr);
@@ -535,7 +584,7 @@ h2 {
 
 /* Only use 3 columns on very wide screens where content definitely fits on one line */
 @media (min-width: 1200px) {
-    .exercises-container {
+    .exercises-container.grid-mode {
         grid-template-columns: repeat(3, 1fr);
     }
 }
