@@ -67,7 +67,19 @@ self.addEventListener('message', event => {
     return;
   }
   self.clients.get(event.source.id).then(client => {
-    if (!client || !client.url || !client.url.startsWith(TRUSTED_ORIGIN)) {
+    if (!client || !client.url) {
+      // Not from a trusted origin
+      return;
+    }
+    // Compare the origins strictly using the URL API
+    let clientOrigin;
+    try {
+      clientOrigin = new URL(client.url).origin;
+    } catch (e) {
+      // Malformed URL, do not proceed
+      return;
+    }
+    if (clientOrigin !== TRUSTED_ORIGIN) {
       // Not from a trusted origin
       return;
     }
