@@ -640,7 +640,13 @@ class MultiplicationApp {
     }
     
     getShareUrl() {
-        return 'https://commjoen.github.io/Multiplier/';
+        // Use GitHub Pages URL when deployed, or local URL when testing locally
+        if (window.location.hostname === 'commjoen.github.io') {
+            return 'https://commjoen.github.io/Multiplier/';
+        } else {
+            // For local development or other environments, use the current location
+            return window.location.origin + window.location.pathname;
+        }
     }
     
     shareOnTwitter() {
