@@ -18,6 +18,7 @@ class MultiplicationApp {
             this.setupEventListeners();
             this.loadSettings();
             this.updateLanguage();
+            this.loadVersion();
         });
     }
     
@@ -45,6 +46,20 @@ class MultiplicationApp {
                     practiceAgain: "Practice Again"
                 }
             };
+        }
+    }
+    
+    async loadVersion() {
+        try {
+            const response = await fetch('package.json');
+            const packageInfo = await response.json();
+            const versionElement = document.getElementById('app-version');
+            if (versionElement && packageInfo.version) {
+                versionElement.textContent = packageInfo.version;
+            }
+        } catch (error) {
+            console.error('Failed to load version information:', error);
+            // Keep default version from HTML if loading fails
         }
     }
     
