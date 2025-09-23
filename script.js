@@ -61,6 +61,7 @@ class MultiplicationApp {
         this.timerMinutesInput = document.getElementById('timer-minutes');
         this.totalExercisesInput = document.getElementById('total-exercises');
         this.operationTypeInput = document.getElementById('operation-type');
+        this.displayModeInput = document.getElementById('display-mode');
         this.showKeyboardInput = document.getElementById('show-keyboard');
         this.startButton = document.getElementById('start-button');
         
@@ -115,6 +116,7 @@ class MultiplicationApp {
             if (this.timerMinutesInput) this.timerMinutesInput.value = settings.timeLimit || 5;
             if (this.totalExercisesInput) this.totalExercisesInput.value = settings.totalExercises || 20;
             if (this.operationTypeInput) this.operationTypeInput.value = settings.operationType || 'multiplication';
+            if (this.displayModeInput) this.displayModeInput.value = settings.displayMode || 'grid';
             if (this.showKeyboardInput) this.showKeyboardInput.checked = settings.showKeyboard !== false; // default to true
             this.currentLanguage = settings.language || 'en';
             if (this.languageSelect) this.languageSelect.value = this.currentLanguage;
@@ -128,6 +130,7 @@ class MultiplicationApp {
             timeLimit: this.timerMinutesInput ? parseInt(this.timerMinutesInput.value) : 5,
             totalExercises: this.totalExercisesInput ? parseInt(this.totalExercisesInput.value) : 20,
             operationType: this.operationTypeInput ? this.operationTypeInput.value : 'multiplication',
+            displayMode: this.displayModeInput ? this.displayModeInput.value : 'grid',
             showKeyboard: this.showKeyboardInput ? this.showKeyboardInput.checked : true,
             language: this.currentLanguage
         };
@@ -294,6 +297,12 @@ class MultiplicationApp {
     
     renderExercises() {
         this.exercisesContainer.innerHTML = '';
+        
+        // Get display mode setting
+        const displayMode = this.displayModeInput ? this.displayModeInput.value : 'grid';
+        
+        // Apply display mode class to exercises container
+        this.exercisesContainer.className = `exercises-container ${displayMode}-mode`;
         
         this.exercises.forEach((exercise, index) => {
             const exerciseDiv = document.createElement('div');
