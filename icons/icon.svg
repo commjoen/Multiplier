@@ -1,7 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-  <rect width="512" height="512" fill="#3498db" rx="72"/>
-  <circle cx="256" cy="256" r="200" fill="#ffffff"/>
-  <text x="256" y="200" font-family="Arial, sans-serif" font-size="120" font-weight="bold" text-anchor="middle" fill="#3498db">×</text>
-  <text x="256" y="320" font-family="Arial, sans-serif" font-size="60" font-weight="bold" text-anchor="middle" fill="#3498db">MATH</text>
+  <!-- Definitions for gradients -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3498db;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2980b9;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Main background with rounded corners -->
+  <rect width="512" height="512" fill="url(#bgGradient)" rx="80"/>
+  
+  <!-- Lightbulb outline in white -->
+  <path d="M 256 60 C 320 60 372 112 372 176 C 372 220 352 260 320 284 L 320 340 C 320 360 304 376 284 376 L 228 376 C 208 376 192 360 192 340 L 192 284 C 160 260 140 220 140 176 C 140 112 192 60 256 60 Z" fill="white" opacity="0.9"/>
+  
+  <!-- Colorful sections with mathematical symbols -->
+  
+  <!-- Top left - Multiplication (×) in green -->
+  <circle cx="210" cy="150" r="35" fill="#27ae60"/>
+  <text x="210" y="160" font-family="Arial, sans-serif" font-size="32" font-weight="bold" text-anchor="middle" fill="white">×</text>
+  
+  <!-- Top right - Division (÷) in orange -->
+  <circle cx="302" cy="150" r="35" fill="#f39c12"/>
+  <text x="302" y="160" font-family="Arial, sans-serif" font-size="28" font-weight="bold" text-anchor="middle" fill="white">÷</text>
+  
+  <!-- Bottom left - Plus (+) in red -->
+  <circle cx="210" cy="220" r="35" fill="#e74c3c"/>
+  <text x="210" y="232" font-family="Arial, sans-serif" font-size="32" font-weight="bold" text-anchor="middle" fill="white">+</text>
+  
+  <!-- Bottom right - Equals (=) in purple -->
+  <circle cx="302" cy="220" r="35" fill="#9b59b6"/>
+  <text x="302" y="230" font-family="Arial, sans-serif" font-size="28" font-weight="bold" text-anchor="middle" fill="white">=</text>
+  
+  <!-- Lightbulb base -->
+  <rect x="228" y="376" width="56" height="20" rx="10" fill="white" opacity="0.9"/>
+  <rect x="240" y="396" width="32" height="16" rx="8" fill="white" opacity="0.7"/>
 </svg>
