@@ -33,7 +33,9 @@
     "shareTitle": "Multiplication Practice - Test Your Math Skills!",
     "shareHashtags": "#MathPractice #Multiplication #BrainTraining #Education #LearningIsFun",
     "sourceCode": "Source Code",
-    "version": "Version"
+    "version": "Version",
+    "starOnGitHub": "Star on GitHub",
+    "installApp": "Install App"
   },
   "nl": {
     "title": "Rekenen Oefening",
@@ -69,7 +71,9 @@
     "shareTitle": "Rekenen Oefening - Test Je Rekenvaardigheden!",
     "shareHashtags": "#Rekenen #Vermenigvuldigen #HersenTraining #Onderwijs #LerenIsTof",
     "sourceCode": "Broncode",
-    "version": "Versie"
+    "version": "Versie",
+    "starOnGitHub": "Ster op GitHub",
+    "installApp": "App Installeren"
   },
   "de": {
     "title": "Mathematik Übung",
@@ -105,6 +109,8 @@
     "shareTitle": "Mathematik Übung - Teste Deine Mathematikfähigkeiten!",
     "shareHashtags": "#Mathematik #Multiplikation #Gehirntraining #Bildung #LernenMachtSpaß",
     "sourceCode": "Quellcode",
-    "version": "Version"
+    "version": "Version",
+    "starOnGitHub": "Auf GitHub bewerten",
+    "installApp": "App installieren"
   }
 }
