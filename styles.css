@@ -42,7 +42,7 @@ body {
 /* Typography */
 h1 {
     text-align: center;
-    margin-bottom: 2rem;
+    margin-bottom: 0;
     color: #2c3e50;
     font-size: 1.8rem;
 }
@@ -52,6 +52,83 @@ h2 {
     margin-bottom: 1.5rem;
     color: #2c3e50;
     font-size: 1.5rem;
+}
+
+/* App Header */
+.app-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 2rem;
+    gap: 1rem;
+}
+
+.header-buttons {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.header-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    color: white;
+    min-height: 36px;
+}
+
+.star-btn {
+    background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+}
+
+.star-btn:hover {
+    background: linear-gradient(135deg, #e67e22 0%, #d35400 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.install-btn {
+    background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+}
+
+.install-btn:hover {
+    background: linear-gradient(135deg, #229954 0%, #1e8449 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.header-btn svg {
+    flex-shrink: 0;
+}
+
+@media (max-width: 480px) {
+    .app-header {
+        gap: 0.75rem;
+    }
+    
+    .header-buttons {
+        gap: 0.5rem;
+    }
+    
+    .header-btn {
+        padding: 0.4rem 0.6rem;
+        font-size: 0.8rem;
+        min-height: 32px;
+    }
+    
+    .header-btn svg {
+        width: 14px;
+        height: 14px;
+    }
 }
 
 /* Settings Screen */

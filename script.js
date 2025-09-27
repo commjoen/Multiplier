@@ -12,6 +12,7 @@ class MultiplicationApp {
         this.totalExercises = 20;
         this.currentLanguage = 'en';
         this.translations = {};
+        this.deferredPrompt = null; // For PWA install
         
         this.loadTranslations().then(() => {
             this.initializeElements();
@@ -19,6 +20,7 @@ class MultiplicationApp {
             this.loadSettings();
             this.updateLanguage();
             this.loadVersion();
+            this.setupPWAInstall();
         });
     }
     
@@ -100,6 +102,10 @@ class MultiplicationApp {
         this.shareTwitterBtn = document.getElementById('share-twitter');
         this.shareFacebookBtn = document.getElementById('share-facebook');
         this.shareGenericBtn = document.getElementById('share-generic');
+        
+        // Header buttons
+        this.githubStarButton = document.getElementById('github-star-btn');
+        this.installAppButton = document.getElementById('install-app-btn');
     }
     
     setupEventListeners() {
@@ -116,6 +122,10 @@ class MultiplicationApp {
         if (this.shareTwitterBtn) this.shareTwitterBtn.addEventListener('click', () => this.shareOnTwitter());
         if (this.shareFacebookBtn) this.shareFacebookBtn.addEventListener('click', () => this.shareOnFacebook());
         if (this.shareGenericBtn) this.shareGenericBtn.addEventListener('click', () => this.shareGeneric());
+        
+        // Header buttons
+        if (this.githubStarButton) this.githubStarButton.addEventListener('click', () => this.openGitHubRepo());
+        if (this.installAppButton) this.installAppButton.addEventListener('click', () => this.installApp());
         
         // Input validation
         if (this.minMultiplierInput) this.minMultiplierInput.addEventListener('input', () => this.validateRanges());
@@ -813,6 +823,59 @@ class MultiplicationApp {
         setTimeout(() => {
             document.body.removeChild(message);
         }, 5000);
+    }
+    
+    setupPWAInstall() {
+        // Listen for the beforeinstallprompt event
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Prevent Chrome 67 and earlier from automatically showing the prompt
+            e.preventDefault();
+            // Stash the event so it can be triggered later
+            this.deferredPrompt = e;
+            // Show the install button
+            if (this.installAppButton) {
+                this.installAppButton.style.display = 'inline-flex';
+            }
+        });
+        
+        // Handle the app installed event
+        window.addEventListener('appinstalled', () => {
+            console.log('PWA was installed');
+            // Hide the install button
+            if (this.installAppButton) {
+                this.installAppButton.style.display = 'none';
+            }
+            this.deferredPrompt = null;
+        });
+    }
+    
+    installApp() {
+        if (!this.deferredPrompt) {
+            console.log('Install prompt not available');
+            return;
+        }
+        
+        // Show the install prompt
+        this.deferredPrompt.prompt();
+        
+        // Wait for the user to respond to the prompt
+        this.deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+                console.log('User accepted the install prompt');
+            } else {
+                console.log('User dismissed the install prompt');
+            }
+            this.deferredPrompt = null;
+            // Hide the install button after user interaction
+            if (this.installAppButton) {
+                this.installAppButton.style.display = 'none';
+            }
+        });
+    }
+    
+    openGitHubRepo() {
+        const githubUrl = 'https://github.com/commjoen/Multiplier';
+        window.open(githubUrl, '_blank', 'noopener,noreferrer');
     }
 }
 
