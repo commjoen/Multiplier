@@ -787,6 +787,27 @@ h2 {
     box-shadow: 0 1px 4px rgba(52, 152, 219, 0.2);
 }
 
+/* Star button in footer - more subtle styling */
+.star-footer-btn {
+    background-color: rgba(241, 196, 15, 0.1) !important;
+    border-color: rgba(241, 196, 15, 0.3) !important;
+    color: #f1c40f !important;
+    border: 1px solid !important;
+    cursor: pointer;
+    font-family: inherit;
+    gap: 6px;
+}
+
+.star-footer-btn:hover {
+    background-color: rgba(241, 196, 15, 0.2) !important;
+    border-color: rgba(241, 196, 15, 0.5) !important;
+    color: #e67e22 !important;
+}
+
+.star-footer-btn svg {
+    flex-shrink: 0;
+}
+
 .version-info {
     display: inline-flex;
     align-items: center;

@@ -651,6 +651,16 @@ class MultiplicationApp {
             targetScreen.classList.add('active');
             targetScreen.classList.add('fade-in');
         }
+        
+        // Show/hide star button based on screen
+        const starButton = document.getElementById('github-star-btn');
+        if (starButton) {
+            if (screenName === 'exercise') {
+                starButton.style.display = 'none';
+            } else {
+                starButton.style.display = 'inline-flex';
+            }
+        }
     }
     
     // Social Media Sharing Methods
