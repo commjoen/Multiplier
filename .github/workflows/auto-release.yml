@@ -1,0 +1,180 @@
+name: Auto Release
+
+on:
+  push:
+    branches: [ main ]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.github/**'
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  auto-release:
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, '[skip release]')"
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v5
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Analyze commits for version bump
+      id: version
+      run: |
+        # Get the current version from package.json
+        CURRENT_VERSION=$(grep '"version"' package.json | sed 's/.*"version": "\(.*\)".*/\1/')
+        echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+        
+        # Get commits since last tag (or all commits if no tags)
+        LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+        if [ -n "$LAST_TAG" ]; then
+          COMMITS=$(git log $LAST_TAG..HEAD --oneline)
+        else
+          COMMITS=$(git log --oneline)
+        fi
+        
+        echo "Analyzing commits for version bump type..."
+        echo "$COMMITS"
+        
+        # Determine version bump type based on conventional commits
+        BUMP_TYPE="none"
+        if echo "$COMMITS" | grep -E "^[a-f0-9]+ (feat|feature)(\(.+\))?\!:" ; then
+          BUMP_TYPE="major"
+        elif echo "$COMMITS" | grep -E "^[a-f0-9]+ (BREAKING CHANGE|feat|feature)(\(.+\))?:" ; then
+          BUMP_TYPE="minor"
+        elif echo "$COMMITS" | grep -E "^[a-f0-9]+ (fix|patch|perf|refactor)(\(.+\))?:" ; then
+          BUMP_TYPE="patch"
+        fi
+        
+        echo "bump_type=$BUMP_TYPE" >> $GITHUB_OUTPUT
+        
+        # Calculate new version
+        if [ "$BUMP_TYPE" != "none" ]; then
+          IFS='.' read -ra VERSION_PARTS <<< "$CURRENT_VERSION"
+          MAJOR=${VERSION_PARTS[0]}
+          MINOR=${VERSION_PARTS[1]}
+          PATCH=${VERSION_PARTS[2]}
+          
+          case $BUMP_TYPE in
+            major)
+              MAJOR=$((MAJOR + 1))
+              MINOR=0
+              PATCH=0
+              ;;
+            minor)
+              MINOR=$((MINOR + 1))
+              PATCH=0
+              ;;
+            patch)
+              PATCH=$((PATCH + 1))
+              ;;
+          esac
+          
+          NEW_VERSION="$MAJOR.$MINOR.$PATCH"
+          NEW_TAG="v$NEW_VERSION"
+          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "new_tag=$NEW_TAG" >> $GITHUB_OUTPUT
+          echo "should_release=true" >> $GITHUB_OUTPUT
+        else
+          echo "should_release=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Update version and create release
+      if: steps.version.outputs.should_release == 'true'
+      run: |
+        NEW_VERSION="${{ steps.version.outputs.new_version }}"
+        NEW_TAG="${{ steps.version.outputs.new_tag }}"
+        
+        # Update package.json
+        sed -i "s/\"version\": \".*\"/\"version\": \"$NEW_VERSION\"/" package.json
+        
+        # Configure git
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        
+        # Commit version update
+        git add package.json
+        git commit -m "chore: bump version to $NEW_TAG [skip release]"
+        git push
+        
+        # Create tag
+        git tag $NEW_TAG
+        git push origin $NEW_TAG
+
+    - name: Generate release notes
+      if: steps.version.outputs.should_release == 'true'
+      id: release_notes
+      run: |
+        NEW_TAG="${{ steps.version.outputs.new_tag }}"
+        CURRENT_VERSION="${{ steps.version.outputs.current_version }}"
+        
+        # Get commits since last tag
+        LAST_TAG=$(git describe --tags --abbrev=0 HEAD~1 2>/dev/null || echo "")
+        if [ -n "$LAST_TAG" ]; then
+          COMMIT_RANGE="$LAST_TAG..HEAD~1"
+        else
+          COMMIT_RANGE="HEAD~10..HEAD~1"
+        fi
+        
+        echo "## What's Changed" > release_notes.md
+        echo "" >> release_notes.md
+        echo "This release was automatically generated based on conventional commit messages." >> release_notes.md
+        echo "" >> release_notes.md
+        echo "### Changes since v$CURRENT_VERSION:" >> release_notes.md
+        git log $COMMIT_RANGE --oneline --no-merges | sed 's/^/- /' >> release_notes.md || echo "- Automatic release" >> release_notes.md
+        
+        echo "" >> release_notes.md
+        echo "## 🎮 Play the Game" >> release_notes.md
+        echo "- **Live Demo**: https://commjoen.github.io/Multiplier/" >> release_notes.md
+        echo "- **Docker**: \`docker run -p 3000:3000 ghcr.io/commjoen/multiplier:${NEW_TAG#v}\`" >> release_notes.md
+        echo "" >> release_notes.md
+        echo "## 📦 Docker Images" >> release_notes.md
+        echo "- \`ghcr.io/commjoen/multiplier:${NEW_TAG#v}\` - This specific version" >> release_notes.md
+        echo "- \`ghcr.io/commjoen/multiplier:main\` - Latest main branch" >> release_notes.md
+
+    - name: Create GitHub Release
+      if: steps.version.outputs.should_release == 'true'
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: ${{ steps.version.outputs.new_tag }}
+        name: "Multiplication Practice ${{ steps.version.outputs.new_tag }}"
+        body_path: release_notes.md
+        draft: false
+        prerelease: false
+        generate_release_notes: true
+
+    - name: Log in to Container Registry
+      if: steps.version.outputs.should_release == 'true'
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Build and push Docker image
+      if: steps.version.outputs.should_release == 'true'
+      uses: docker/build-push-action@v6
+      with:
+        context: .
+        push: true
+        tags: |
+          ghcr.io/${{ github.repository }}:${{ steps.version.outputs.new_version }}
+          ghcr.io/${{ github.repository }}:latest
+        labels: |
+          org.opencontainers.image.title=Multiplication Practice
+          org.opencontainers.image.description=A mobile-first multiplication practice app
+          org.opencontainers.image.version=${{ steps.version.outputs.new_tag }}
+          org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+
+    - name: No release needed
+      if: steps.version.outputs.should_release == 'false'
+      run: |
+        echo "No conventional commit patterns found that warrant a release."
+        echo "Use 'feat:', 'fix:', 'perf:', or 'refactor:' prefixes to trigger automatic releases."
+        echo "Or use the manual release workflow for custom releases."
