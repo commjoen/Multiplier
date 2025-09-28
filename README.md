@@ -135,7 +135,7 @@ To run locally:
 This project follows [Semantic Versioning](https://semver.org/) for releases:
 
 - **App Version Display**: Current version is shown in the bottom-right corner of the settings screen
-- **Release Process**: Manual releases via GitHub Actions workflow
+- **Release Process**: Both automated and manual releases via GitHub Actions workflows  
 - **Docker Tags**: Each release creates versioned Docker images
   - `ghcr.io/commjoen/multiplier:v1.0.0` (specific version)
   - `ghcr.io/commjoen/multiplier:latest` (latest release)
@@ -143,7 +143,16 @@ This project follows [Semantic Versioning](https://semver.org/) for releases:
 
 ### Creating a Release
 
-Releases are created manually through GitHub Actions:
+#### Automatic Releases
+Releases are automatically created when pushing commits with conventional commit prefixes to the main branch:
+
+- `feat:` or `feature:` → Minor version bump (e.g., 1.0.0 → 1.1.0)
+- `fix:`, `patch:`, `perf:`, `refactor:` → Patch version bump (e.g., 1.0.0 → 1.0.1)  
+- `feat!:` or `BREAKING CHANGE:` → Major version bump (e.g., 1.0.0 → 2.0.0)
+- Add `[skip release]` to commit message to prevent automatic release
+
+#### Manual Releases
+For custom releases or specific version numbers:
 
 1. Go to Actions → "Create Release" workflow
 2. Click "Run workflow"
