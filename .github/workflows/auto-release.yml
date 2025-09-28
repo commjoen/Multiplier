@@ -164,8 +164,8 @@ jobs:
         context: .
         push: true
         tags: |
-          ghcr.io/${{ github.repository }}:${{ steps.version.outputs.new_version }}
-          ghcr.io/${{ github.repository }}:latest
+          ghcr.io/${{ github.repository_owner }}/multiplier:${{ steps.version.outputs.new_version }}
+          ghcr.io/${{ github.repository_owner }}/multiplier:latest
         labels: |
           org.opencontainers.image.title=Multiplication Practice
           org.opencontainers.image.description=A mobile-first multiplication practice app
