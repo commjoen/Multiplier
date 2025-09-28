@@ -716,9 +716,15 @@ h2 {
         font-size: 1rem;
     }
     
+    /* Maximize exercises area when keyboard is not present */
     .exercises-container {
-        max-height: calc(60vh - 120px);
+        max-height: calc(75vh - 60px);
         margin-bottom: 0;
+    }
+    
+    /* Constrain exercises area when keyboard is present */
+    .exercises-container.has-keyboard {
+        max-height: calc(60vh - 120px);
     }
 }
 
