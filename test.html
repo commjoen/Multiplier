@@ -183,18 +183,24 @@
         // Test keyboard input handling
         runTest('Keyboard input functionality', () => {
             const tempApp = {
+                selectedInput: null, // Add selectedInput property for keyboard handling
                 exercisesContainer: {
                     querySelectorAll: (selector) => {
                         // Mock inputs array
                         const mockInput = { 
                             value: '',
                             focus: () => {},
-                            classList: { contains: (cls) => cls === 'exercise-input' },
+                            classList: { 
+                                contains: (cls) => cls === 'exercise-input',
+                                add: () => {},    // Add classList.add method
+                                remove: () => {}  // Add classList.remove method
+                            },
                             dispatchEvent: () => {}
                         };
                         return [mockInput];
                     }
                 },
+                selectInputForKeyboard: MultiplicationApp.prototype.selectInputForKeyboard, // Add selectInputForKeyboard method
                 handleKeyboardInput: MultiplicationApp.prototype.handleKeyboardInput
             };
             
@@ -228,7 +234,7 @@
 
         // Test that new methods exist
         runTest('New keyboard methods exist', () => {
-            const methods = ['addNumericalKeyboard', 'handleKeyboardInput'];
+            const methods = ['addNumericalKeyboard', 'handleKeyboardInput', 'selectInputForKeyboard'];
             for (let method of methods) {
                 assert(typeof MultiplicationApp.prototype[method] === 'function', `${method} should exist`);
             }
