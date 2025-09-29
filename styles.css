@@ -248,12 +248,13 @@ h2 {
     padding: 0.5rem;
     display: grid;
     grid-template-columns: 1fr;
-    gap: 0.5rem;
+    gap: 1rem; /* Increased base gap for better tile spacing */
 }
 
 /* Grid mode (default) - tiles layout */
 .exercises-container.grid-mode {
     grid-template-columns: 1fr;
+    gap: 1rem; /* Increased gap for better spacing between tiles */
 }
 
 /* Line mode - list layout */
@@ -656,8 +657,8 @@ h2 {
     
     .exercises-container.grid-mode {
         max-height: 55vh;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 0.75rem;
+        grid-template-columns: repeat(3, 1fr); /* Start with 3 columns on tablets */
+        gap: 1rem; /* Better spacing between tiles */
     }
     
     .exercise-item {
@@ -698,19 +699,29 @@ h2 {
     }
 }
 
-/* Desktop layouts - only use 3 columns when there's enough space */
+/* Desktop layouts - better utilize horizontal space */
 @media (min-width: 1024px) {
     .exercises-container.grid-mode {
         max-height: 65vh;
-        /* Use 2 columns for medium desktop screens to prevent content wrapping */
-        grid-template-columns: repeat(2, 1fr);
+        /* Use 4 columns for desktop screens to better utilize space */
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.25rem; /* More space between tiles on larger screens */
     }
 }
 
-/* Only use 3 columns on very wide screens where content definitely fits on one line */
+/* Utilize full width on very wide screens */
 @media (min-width: 1200px) {
     .exercises-container.grid-mode {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(5, 1fr); /* 5 columns for wide screens */
+        gap: 1.5rem; /* Even more space between tiles */
+    }
+}
+
+/* Ultra-wide screens - maximize column usage */
+@media (min-width: 1600px) {
+    .exercises-container.grid-mode {
+        grid-template-columns: repeat(6, 1fr); /* 6 columns for ultra-wide screens */
+        gap: 1.75rem; /* Maximum spacing for best visual separation */
     }
 }
 
