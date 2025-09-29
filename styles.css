@@ -322,6 +322,7 @@ h2 {
     font-weight: 600;
     color: #2c3e50;
     flex: 1;
+    white-space: nowrap;
 }
 
 .exercise-input {
