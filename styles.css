@@ -322,6 +322,7 @@ h2 {
     font-weight: 600;
     color: #2c3e50;
     flex: 1;
+    white-space: nowrap;
 }
 
 .exercise-input {
@@ -436,10 +437,26 @@ h2 {
 .footer {
     display: flex;
     gap: 0.5rem;
+    margin-top: auto; /* Push footer to bottom when no keyboard */
 }
 
 .footer button {
     flex: 1;
+}
+
+/* Container adjustments for keyboard layout */
+.container {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 2rem);
+}
+
+.container.has-keyboard {
+    min-height: auto; /* Reset when keyboard is present */
+}
+
+.container.has-keyboard .footer {
+    margin-top: 1rem; /* Normal spacing when keyboard is present */
 }
 
 /* Results Screen */
@@ -716,9 +733,15 @@ h2 {
         font-size: 1rem;
     }
     
+    /* Maximize exercises area when keyboard is not present */
     .exercises-container {
-        max-height: calc(60vh - 120px);
+        max-height: calc(75vh - 60px);
         margin-bottom: 0;
+    }
+    
+    /* Constrain exercises area when keyboard is present */
+    .exercises-container.has-keyboard {
+        max-height: calc(60vh - 120px);
     }
 }
 

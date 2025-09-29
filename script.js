@@ -351,8 +351,22 @@ class MultiplicationApp {
         
         // Add numerical keyboard if enabled
         const shouldShowKeyboard = this.showKeyboardInput ? this.showKeyboardInput.checked : this.getKeyboardSetting();
+        
+        // Remove any existing keyboard
+        const existingKeyboard = document.querySelector('#exercise-screen .numerical-keyboard');
+        if (existingKeyboard) {
+            existingKeyboard.remove();
+        }
+        
+        // Add container class for styling
+        const container = document.querySelector('#exercise-screen .container');
         if (shouldShowKeyboard) {
+            this.exercisesContainer.classList.add('has-keyboard');
+            container.classList.add('has-keyboard');
             this.addNumericalKeyboard();
+        } else {
+            this.exercisesContainer.classList.remove('has-keyboard');
+            container.classList.remove('has-keyboard');
         }
         
         // Add input event listeners
@@ -396,7 +410,9 @@ class MultiplicationApp {
             </div>
         `;
         
-        this.exercisesContainer.appendChild(keyboardContainer);
+        // Add keyboard after the footer instead of in exercises container
+        const footer = document.querySelector('#exercise-screen .footer');
+        footer.parentNode.insertBefore(keyboardContainer, footer.nextSibling);
         
         // Update keyboard button text with translations
         this.updateLanguage();
