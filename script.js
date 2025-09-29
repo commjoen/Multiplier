@@ -392,6 +392,20 @@ class MultiplicationApp {
             input.addEventListener('focus', (e) => {
                 this.selectInputForKeyboard(e.target);
             });
+            
+            // Add blur handler to remove visual selection when focus is lost completely
+            input.addEventListener('blur', (e) => {
+                // Only remove selection if focus is moving to something that's not a keyboard button
+                setTimeout(() => {
+                    const focusedElement = document.activeElement;
+                    if (!focusedElement || !focusedElement.classList.contains('keyboard-btn')) {
+                        if (this.selectedInput === e.target) {
+                            this.selectedInput = null;
+                            e.target.classList.remove('keyboard-selected');
+                        }
+                    }
+                }, 10);
+            });
         });
         
         // Auto-select first empty input for keyboard use
@@ -453,29 +467,81 @@ class MultiplicationApp {
         this.updateLanguage();
         
         // Add event listeners to keyboard buttons
-        keyboardContainer.addEventListener('click', (e) => {
+        keyboardContainer.addEventListener('mousedown', (e) => {
+            // Prevent all keyboard buttons from getting focus
             if (e.target.classList.contains('keyboard-btn')) {
-                // Prevent keyboard buttons from stealing focus
                 e.preventDefault();
-                this.handleKeyboardInput(e.target);
             }
         });
         
-        // Prevent keyboard buttons from being focusable via tab or click
-        keyboardContainer.addEventListener('mousedown', (e) => {
+        keyboardContainer.addEventListener('click', (e) => {
             if (e.target.classList.contains('keyboard-btn')) {
-                e.preventDefault(); // Prevent focus
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // Find the target input: focused input, or first empty input, or first input
+                let targetInput = document.activeElement;
+                if (!targetInput || !targetInput.classList.contains('exercise-input')) {
+                    const inputs = Array.from(this.exercisesContainer.querySelectorAll('.exercise-input'));
+                    targetInput = inputs.find(input => input.value === '') || inputs[0];
+                }
+                
+                if (!targetInput || !targetInput.classList.contains('exercise-input')) {
+                    return;
+                }
+                
+                // Handle different button types
+                if (e.target.classList.contains('number-btn')) {
+                    const number = e.target.dataset.number;
+                    targetInput.value = (targetInput.value || '') + number;
+                    
+                    // Trigger input event
+                    const inputEvent = new Event('input', { bubbles: true });
+                    targetInput.dispatchEvent(inputEvent);
+                    
+                } else if (e.target.dataset.action === 'backspace') {
+                    if (targetInput.value.length > 0) {
+                        targetInput.value = targetInput.value.slice(0, -1);
+                        
+                        // Trigger input event
+                        const inputEvent = new Event('input', { bubbles: true });
+                        targetInput.dispatchEvent(inputEvent);
+                    }
+                    
+                } else if (e.target.dataset.action === 'enter') {
+                    // Move to next input if current answer is correct
+                    const index = parseInt(targetInput.dataset.index);
+                    if (this.exercises[index] && this.exercises[index].isCorrect === true) {
+                        this.focusNextInput(targetInput);
+                        return; // Let focusNextInput handle the focus
+                    }
+                }
+                
+                // Always refocus the target input after keyboard interaction
+                setTimeout(() => {
+                    targetInput.focus();
+                }, 1);
             }
+        });
+        
+        // Make keyboard buttons non-focusable
+        keyboardContainer.querySelectorAll('.keyboard-btn').forEach(btn => {
+            btn.setAttribute('tabindex', '-1');
         });
     }
     
     handleKeyboardInput(button) {
-        // For number buttons, use selected input instead of requiring focus
+        // For number buttons, try to work with any focused input first, then fall back to selected input
         if (button.classList.contains('number-btn')) {
-            // Number buttons work with selected input or first empty input
-            let targetInput = this.selectedInput;
+            let targetInput = document.activeElement;
+            
+            // If no input is focused or the focused element is not an exercise input, use selectedInput
             if (!targetInput || !targetInput.classList.contains('exercise-input')) {
-                // If no input is selected, find first empty input
+                targetInput = this.selectedInput;
+            }
+            
+            // If still no target, find the first empty input
+            if (!targetInput || !targetInput.classList.contains('exercise-input')) {
                 const inputs = Array.from(this.exercisesContainer.querySelectorAll('.exercise-input'));
                 targetInput = inputs.find(input => input.value === '') || inputs[0];
                 if (targetInput) {
@@ -496,15 +562,22 @@ class MultiplicationApp {
             
             // Keep focus on the input field, not the button
             targetInput.focus();
+            // Also select this input for future keyboard use
+            this.selectInputForKeyboard(targetInput);
             return;
         }
         
-        // For backspace, use selected input instead of requiring focus
+        // For backspace, use focused input or selected input
         if (button.dataset.action === 'backspace') {
-            // Backspace works with selected input
-            let targetInput = this.selectedInput;
+            let targetInput = document.activeElement;
+            
+            // If no input is focused or the focused element is not an exercise input, use selectedInput  
             if (!targetInput || !targetInput.classList.contains('exercise-input')) {
-                // If no input is selected, find first non-empty input
+                targetInput = this.selectedInput;
+            }
+            
+            // If still no target, find first non-empty input
+            if (!targetInput || !targetInput.classList.contains('exercise-input')) {
                 const inputs = Array.from(this.exercisesContainer.querySelectorAll('.exercise-input'));
                 targetInput = inputs.find(input => input.value !== '') || inputs[0];
                 if (targetInput) {
@@ -526,12 +599,21 @@ class MultiplicationApp {
             
             // Keep focus on the input field, not the button
             targetInput.focus();
+            // Also select this input for future keyboard use
+            this.selectInputForKeyboard(targetInput);
             return;
         }
         
-        // For enter button, use selected input or find appropriate target
+        // For enter button, use focused input or selected input
         if (button.dataset.action === 'enter') {
-            let targetInput = this.selectedInput;
+            let targetInput = document.activeElement;
+            
+            // If no input is focused or the focused element is not an exercise input, use selectedInput
+            if (!targetInput || !targetInput.classList.contains('exercise-input')) {
+                targetInput = this.selectedInput;
+            }
+            
+            // If still no target, find first empty input
             if (!targetInput || !targetInput.classList.contains('exercise-input')) {
                 const inputs = Array.from(this.exercisesContainer.querySelectorAll('.exercise-input'));
                 targetInput = inputs.find(input => input.value === '') || inputs[0];
@@ -546,6 +628,8 @@ class MultiplicationApp {
             
             // Keep focus on the input field
             targetInput.focus();
+            // Also select this input for future keyboard use
+            this.selectInputForKeyboard(targetInput);
             
             // Only move to next input if the current answer is correct
             const index = parseInt(targetInput.dataset.index);
