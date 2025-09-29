@@ -741,6 +741,45 @@ h2 {
         grid-template-columns: repeat(3, 1fr); /* Max 3 columns for optimal fit */
         gap: 1.5rem;
     }
+    
+    /* Desktop keyboard layout - side by side with exercises */
+    .container.has-keyboard {
+        display: grid;
+        grid-template-columns: 1fr 320px; /* Main content and keyboard sidebar */
+        grid-template-rows: auto 1fr auto; /* Header, content, footer */
+        grid-template-areas: 
+            "header header"
+            "exercises keyboard"
+            "footer footer";
+        gap: 1.5rem;
+        max-height: calc(100vh - 2rem);
+        overflow: hidden;
+    }
+    
+    .container.has-keyboard .header {
+        grid-area: header;
+    }
+    
+    .container.has-keyboard .exercises-container {
+        grid-area: exercises;
+        max-height: calc(100vh - 200px); /* Full height minus header/footer space */
+        overflow-y: auto;
+    }
+    
+    .container.has-keyboard .numerical-keyboard {
+        grid-area: keyboard;
+        margin: 0;
+        height: fit-content;
+        max-height: calc(100vh - 200px);
+        overflow-y: auto;
+        position: sticky;
+        top: 0;
+    }
+    
+    .container.has-keyboard .footer {
+        grid-area: footer;
+        margin-top: 0;
+    }
 }
 
 
