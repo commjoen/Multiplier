@@ -733,15 +733,53 @@ h2 {
         font-size: 1rem;
     }
     
+    /* Make header sticky on mobile when no keyboard */
+    .header {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        margin-bottom: 0.5rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    /* Make footer sticky on mobile when no keyboard */
+    .footer {
+        position: sticky;
+        bottom: 0;
+        background-color: #ffffff;
+        padding: 1rem;
+        margin: 0 -1.5rem -1.5rem -1.5rem;
+        box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
+        z-index: 100;
+    }
+    
     /* Maximize exercises area when keyboard is not present */
     .exercises-container {
-        max-height: calc(75vh - 60px);
+        max-height: calc(75vh - 120px); /* Account for sticky header and footer */
         margin-bottom: 0;
+        flex: 1;
     }
     
     /* Constrain exercises area when keyboard is present */
     .exercises-container.has-keyboard {
-        max-height: calc(60vh - 120px);
+        max-height: calc(60vh - 140px); /* Account for sticky header, footer, and keyboard */
+    }
+    
+    /* Reset sticky positioning when keyboard is present */
+    .container.has-keyboard .header {
+        position: relative;
+        top: auto;
+        box-shadow: none;
+        margin-bottom: 1.5rem;
+    }
+    
+    .container.has-keyboard .footer {
+        position: relative;
+        bottom: auto;
+        background-color: transparent;
+        padding: 0;
+        margin: 1rem 0 0 0;
+        box-shadow: none;
     }
 }
 
