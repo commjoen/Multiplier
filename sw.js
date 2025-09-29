@@ -1,4 +1,4 @@
-const CACHE_NAME = 'multiplication-practice-v3';
+const CACHE_NAME = 'multiplication-practice-v4';
 const TRUSTED_ORIGIN = 'https://www.example.com'; // <-- Set this to your app's origin
 const urlsToCache = [
   './',
@@ -31,17 +31,41 @@ self.addEventListener('install', event => {
 
 // Fetch event - serve from cache when offline
 self.addEventListener('fetch', event => {
-  event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        // Return cached version or fetch from network
-        if (response) {
-          return response;
+  // Use network-first strategy for package.json to ensure version info is always fresh
+  if (event.request.url.endsWith('package.json')) {
+    event.respondWith(
+      fetch(event.request)
+        .then(response => {
+          // If network request succeeds, return it and update cache
+          if (response && response.ok) {
+            const responseClone = response.clone();
+            caches.open(CACHE_NAME).then(cache => {
+              cache.put(event.request, responseClone);
+            });
+            return response;
+          }
+          // If network fails, fall back to cache
+          return caches.match(event.request);
+        })
+        .catch(() => {
+          // If network fails, fall back to cache
+          return caches.match(event.request);
+        })
+    );
+  } else {
+    // Use cache-first strategy for all other resources
+    event.respondWith(
+      caches.match(event.request)
+        .then(response => {
+          // Return cached version or fetch from network
+          if (response) {
+            return response;
+          }
+          return fetch(event.request);
         }
-        return fetch(event.request);
-      }
-    )
-  );
+      )
+    );
+  }
 });
 
 // Activate event - clean up old caches
