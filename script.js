@@ -516,8 +516,44 @@ class MultiplicationApp {
     focusNextInput(currentInput) {
         const inputs = Array.from(this.exercisesContainer.querySelectorAll('.exercise-input'));
         const currentIndex = inputs.indexOf(currentInput);
-        const nextInput = inputs[currentIndex + 1];
         
+        // Calculate number of columns based on screen width to match CSS grid
+        let columns = 1; // default mobile
+        const screenWidth = window.innerWidth;
+        
+        if (screenWidth >= 1600) {
+            columns = 6; // ultra-wide screens
+        } else if (screenWidth >= 1200) {
+            columns = 5; // wide screens  
+        } else if (screenWidth >= 1024) {
+            columns = 4; // desktop
+        } else if (screenWidth >= 768) {
+            columns = 3; // tablet
+        }
+        
+        const totalInputs = inputs.length;
+        let nextIndex;
+        
+        // Column-by-column navigation: go down to next row in same column
+        const nextRowIndex = currentIndex + columns;
+        
+        if (nextRowIndex < totalInputs) {
+            // Move to next row in same column
+            nextIndex = nextRowIndex;
+        } else {
+            // At bottom of column, move to top of next column
+            const currentCol = currentIndex % columns;
+            const nextCol = (currentCol + 1) % columns;
+            nextIndex = nextCol;
+            
+            // If wrapping around to first column, start from beginning
+            if (nextCol === 0) {
+                nextIndex = 0;
+            }
+        }
+        
+        // Focus the next input
+        const nextInput = inputs[nextIndex];
         if (nextInput) {
             nextInput.focus();
         }
