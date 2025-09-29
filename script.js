@@ -517,45 +517,42 @@ class MultiplicationApp {
         const inputs = Array.from(this.exercisesContainer.querySelectorAll('.exercise-input'));
         const currentIndex = inputs.indexOf(currentInput);
         
-        // Calculate number of columns based on screen width
+        // Calculate number of columns based on screen width to match CSS grid
         let columns = 1; // default mobile
         const screenWidth = window.innerWidth;
         
         if (screenWidth >= 1600) {
             columns = 6; // ultra-wide screens
         } else if (screenWidth >= 1200) {
-            columns = 5; // wide screens
+            columns = 5; // wide screens  
         } else if (screenWidth >= 1024) {
             columns = 4; // desktop
         } else if (screenWidth >= 768) {
             columns = 3; // tablet
         }
         
-        // Calculate next input index for column-by-column navigation
         const totalInputs = inputs.length;
-        const currentRow = Math.floor(currentIndex / columns);
-        const currentCol = currentIndex % columns;
-        const totalRows = Math.ceil(totalInputs / columns);
-        
         let nextIndex;
         
-        // Try to go to the next row in the same column
+        // Column-by-column navigation: go down to next row in same column
         const nextRowIndex = currentIndex + columns;
         
-        // If the next row exists and has an input in this column, go there
         if (nextRowIndex < totalInputs) {
+            // Move to next row in same column
             nextIndex = nextRowIndex;
         } else {
-            // If we're at the bottom of the column, go to the top of the next column
+            // At bottom of column, move to top of next column
+            const currentCol = currentIndex % columns;
             const nextCol = (currentCol + 1) % columns;
             nextIndex = nextCol;
             
-            // If we've reached the end of available columns, start from beginning
-            if (nextCol === 0 && currentCol === columns - 1) {
+            // If wrapping around to first column, start from beginning
+            if (nextCol === 0) {
                 nextIndex = 0;
             }
         }
         
+        // Focus the next input
         const nextInput = inputs[nextIndex];
         if (nextInput) {
             nextInput.focus();
