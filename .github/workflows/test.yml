@@ -19,15 +19,8 @@ jobs:
       with:
         node-version: '18'
 
-    - name: Install Playwright
-      run: |
-        npm install playwright
-        npx playwright install chromium
+    - name: Install Node Dependencies
+      run: npm install --production
 
-    - name: Start HTTP Server
-      run: |
-        python3 -m http.server 8080 &
-        sleep 3
-      
-    - name: Run Tests with Playwright
+    - name: Run Tests
       run: node test-runner.js
