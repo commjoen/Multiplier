@@ -30,13 +30,30 @@ body {
 }
 
 .container {
-    max-width: 600px;
+    max-width: 100vw;
+    width: 100%;
     margin: 0 auto;
     background: white;
     border-radius: 12px;
-    padding: 1.5rem;
+    padding: 1rem;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     min-height: calc(100vh - 2rem);
+    overflow-x: hidden; /* Prevent horizontal scroll */
+}
+
+/* Responsive container sizing */
+@media (min-width: 768px) {
+    .container {
+        max-width: 95vw;
+        padding: 1.5rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .container {
+        max-width: 90vw;
+        padding: 2rem;
+    }
 }
 
 /* Typography */
@@ -244,17 +261,19 @@ h2 {
 .exercises-container {
     max-height: 65vh;
     overflow-y: auto;
+    overflow-x: hidden; /* Prevent horizontal scroll */
     margin-bottom: 1.5rem;
     padding: 0.5rem;
     display: grid;
     grid-template-columns: 1fr;
     gap: 1rem; /* Increased base gap for better tile spacing */
+    width: 100%; /* Ensure full width usage */
 }
 
-/* Grid mode (default) - tiles layout */
+/* Grid mode (default) - tiles layout with max 3 columns */
 .exercises-container.grid-mode {
     grid-template-columns: 1fr;
-    gap: 1rem; /* Increased gap for better spacing between tiles */
+    gap: 1rem;
 }
 
 /* Line mode - list layout */
@@ -657,8 +676,8 @@ h2 {
     
     .exercises-container.grid-mode {
         max-height: 55vh;
-        grid-template-columns: repeat(3, 1fr); /* Start with 3 columns on tablets */
-        gap: 1rem; /* Better spacing between tiles */
+        grid-template-columns: repeat(2, 1fr); /* 2 columns for tablets */
+        gap: 1.25rem;
     }
     
     .exercise-item {
@@ -699,31 +718,16 @@ h2 {
     }
 }
 
-/* Desktop layouts - better utilize horizontal space */
+/* Desktop layouts - maximum 3 columns to prevent horizontal overflow */
 @media (min-width: 1024px) {
     .exercises-container.grid-mode {
         max-height: 65vh;
-        /* Use 4 columns for desktop screens to better utilize space */
-        grid-template-columns: repeat(4, 1fr);
-        gap: 1.25rem; /* More space between tiles on larger screens */
+        grid-template-columns: repeat(3, 1fr); /* Max 3 columns for optimal fit */
+        gap: 1.5rem;
     }
 }
 
-/* Utilize full width on very wide screens */
-@media (min-width: 1200px) {
-    .exercises-container.grid-mode {
-        grid-template-columns: repeat(5, 1fr); /* 5 columns for wide screens */
-        gap: 1.5rem; /* Even more space between tiles */
-    }
-}
 
-/* Ultra-wide screens - maximize column usage */
-@media (min-width: 1600px) {
-    .exercises-container.grid-mode {
-        grid-template-columns: repeat(6, 1fr); /* 6 columns for ultra-wide screens */
-        gap: 1.75rem; /* Maximum spacing for best visual separation */
-    }
-}
 
 /* Mobile-specific keyboard adjustments */
 @media (max-width: 767px) {

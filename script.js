@@ -517,18 +517,14 @@ class MultiplicationApp {
         const inputs = Array.from(this.exercisesContainer.querySelectorAll('.exercise-input'));
         const currentIndex = inputs.indexOf(currentInput);
         
-        // Calculate number of columns based on screen width to match CSS grid
+        // Calculate number of columns based on screen width to match CSS grid (max 3 columns)
         let columns = 1; // default mobile
         const screenWidth = window.innerWidth;
         
-        if (screenWidth >= 1600) {
-            columns = 6; // ultra-wide screens
-        } else if (screenWidth >= 1200) {
-            columns = 5; // wide screens  
-        } else if (screenWidth >= 1024) {
-            columns = 4; // desktop
+        if (screenWidth >= 1024) {
+            columns = 3; // desktop - max 3 columns
         } else if (screenWidth >= 768) {
-            columns = 3; // tablet
+            columns = 2; // tablet - 2 columns
         }
         
         const totalInputs = inputs.length;
