@@ -436,10 +436,26 @@ h2 {
 .footer {
     display: flex;
     gap: 0.5rem;
+    margin-top: auto; /* Push footer to bottom when no keyboard */
 }
 
 .footer button {
     flex: 1;
+}
+
+/* Container adjustments for keyboard layout */
+.container {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 2rem);
+}
+
+.container.has-keyboard {
+    min-height: auto; /* Reset when keyboard is present */
+}
+
+.container.has-keyboard .footer {
+    margin-top: 1rem; /* Normal spacing when keyboard is present */
 }
 
 /* Results Screen */
