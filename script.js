@@ -428,38 +428,54 @@ class MultiplicationApp {
     handleKeyboardInput(button) {
         const activeInput = document.activeElement;
         
-        // Use the currently focused input, or find the first empty input if none focused
-        let targetInput = activeInput;
-        if (!activeInput || !activeInput.classList.contains('exercise-input')) {
-            const inputs = Array.from(this.exercisesContainer.querySelectorAll('.exercise-input'));
-            targetInput = inputs.find(input => input.value === '') || inputs[0];
-            if (targetInput) {
-                targetInput.focus();
-            }
-        }
-        
-        if (!targetInput || !targetInput.classList.contains('exercise-input')) {
-            return;
-        }
-        
+        // For number buttons, only work with currently focused input - don't auto-focus
         if (button.classList.contains('number-btn')) {
+            // Number buttons require an input to be already focused
+            if (!activeInput || !activeInput.classList.contains('exercise-input')) {
+                return; // Do nothing if no input is focused
+            }
+            
             const number = button.dataset.number;
-            targetInput.value = (targetInput.value || '') + number;
+            activeInput.value = (activeInput.value || '') + number;
             
             // Trigger input event to update exercise state
             const inputEvent = new Event('input', { bubbles: true });
-            targetInput.dispatchEvent(inputEvent);
+            activeInput.dispatchEvent(inputEvent);
+            return;
+        }
+        
+        // For backspace, only work with currently focused input - don't auto-focus
+        if (button.dataset.action === 'backspace') {
+            // Backspace requires an input to be already focused
+            if (!activeInput || !activeInput.classList.contains('exercise-input')) {
+                return; // Do nothing if no input is focused
+            }
             
-        } else if (button.dataset.action === 'backspace') {
-            if (targetInput.value.length > 0) {
-                targetInput.value = targetInput.value.slice(0, -1);
+            if (activeInput.value.length > 0) {
+                activeInput.value = activeInput.value.slice(0, -1);
                 
                 // Trigger input event to update exercise state
                 const inputEvent = new Event('input', { bubbles: true });
-                targetInput.dispatchEvent(inputEvent);
+                activeInput.dispatchEvent(inputEvent);
+            }
+            return;
+        }
+        
+        // For enter button, use the currently focused input or find appropriate target
+        if (button.dataset.action === 'enter') {
+            let targetInput = activeInput;
+            if (!activeInput || !activeInput.classList.contains('exercise-input')) {
+                const inputs = Array.from(this.exercisesContainer.querySelectorAll('.exercise-input'));
+                targetInput = inputs.find(input => input.value === '') || inputs[0];
+                if (targetInput) {
+                    targetInput.focus();
+                }
             }
             
-        } else if (button.dataset.action === 'enter') {
+            if (!targetInput || !targetInput.classList.contains('exercise-input')) {
+                return;
+            }
+            
             // Only move to next input if the current answer is correct
             const index = parseInt(targetInput.dataset.index);
             if (this.exercises[index] && this.exercises[index].isCorrect === true) {
