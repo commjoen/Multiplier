@@ -360,6 +360,17 @@ h2 {
     border-color: #3498db;
 }
 
+.exercise-input.keyboard-selected {
+    border-color: #e74c3c;
+    box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.2);
+    background-color: #fff5f5;
+}
+
+.exercise-input.keyboard-selected:focus {
+    border-color: #c0392b;
+    box-shadow: 0 0 0 2px rgba(192, 57, 43, 0.3);
+}
+
 .exercise-status {
     width: 24px;
     height: 24px;
@@ -416,6 +427,11 @@ h2 {
     transition: all 0.2s ease;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
+    /* Prevent keyboard buttons from stealing focus via tab navigation */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .keyboard-btn:hover {
