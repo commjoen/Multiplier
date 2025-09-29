@@ -9,7 +9,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "playwright": "^1.55.0"
+    "playwright": "^1.55.1"
   },
   "scripts": {
     "test": "node test-runner.js",
