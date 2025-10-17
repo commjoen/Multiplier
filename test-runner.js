@@ -1,5 +1,4 @@
 // Alternative test runner that doesn't require Playwright browsers
-const http = require('http');
 const fs = require('fs');
 
 async function runTests() {
