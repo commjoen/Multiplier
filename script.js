@@ -284,6 +284,78 @@ class MultiplicationApp {
                     isCorrect: null,
                     index: i
                 };
+            } else if (operationType === 'fractionSimplify') {
+                // Fraction simplification: Given a/b = ?/d, find the missing numerator
+                const baseNum = this.getRandomNumber(this.minMultiplier, this.maxMultiplier);
+                const baseDen = this.getRandomNumber(this.minMultiplier, this.maxMultiplier);
+                
+                // Multiply both to create a non-simplified fraction
+                const multiplier = this.getRandomNumber(2, 4);
+                const startNum = baseNum * multiplier;
+                const startDen = baseDen * multiplier;
+                
+                // Target denominator (the simplified one)
+                const targetDen = baseDen;
+                
+                exercise = {
+                    operation: 'fractionSimplify',
+                    startNum: startNum,
+                    startDen: startDen,
+                    targetDen: targetDen,
+                    answer: baseNum, // The missing numerator
+                    userAnswer: null,
+                    isCorrect: null,
+                    index: i
+                };
+            } else if (operationType === 'fractionAddSub') {
+                // Fraction addition/subtraction
+                const num1 = this.getRandomNumber(this.minMultiplier, this.maxMultiplier);
+                const den1 = this.getRandomNumber(this.minMultiplier, this.maxMultiplier);
+                const num2 = this.getRandomNumber(this.minMultiplier, this.maxMultiplier);
+                const den2 = this.getRandomNumber(this.minMultiplier, this.maxMultiplier);
+                
+                // Randomly choose add or subtract
+                const isAddition = Math.random() < 0.5;
+                const result = isAddition 
+                    ? this.addFractions(num1, den1, num2, den2)
+                    : this.subtractFractions(num1, den1, num2, den2);
+                
+                exercise = {
+                    operation: 'fractionAddSub',
+                    num1: num1,
+                    den1: den1,
+                    num2: num2,
+                    den2: den2,
+                    isAddition: isAddition,
+                    answerNum: result.numerator,
+                    answerDen: result.denominator,
+                    answer: `${result.numerator}/${result.denominator}`,
+                    userAnswer: null,
+                    isCorrect: null,
+                    index: i
+                };
+            } else if (operationType === 'fractionMultiply') {
+                // Fraction multiplication
+                const num1 = this.getRandomNumber(this.minMultiplier, this.maxMultiplier);
+                const den1 = this.getRandomNumber(this.minMultiplier, this.maxMultiplier);
+                const num2 = this.getRandomNumber(this.minMultiplier, this.maxMultiplier);
+                const den2 = this.getRandomNumber(this.minMultiplier, this.maxMultiplier);
+                
+                const result = this.multiplyFractions(num1, den1, num2, den2);
+                
+                exercise = {
+                    operation: 'fractionMultiply',
+                    num1: num1,
+                    den1: den1,
+                    num2: num2,
+                    den2: den2,
+                    answerNum: result.numerator,
+                    answerDen: result.denominator,
+                    answer: `${result.numerator}/${result.denominator}`,
+                    userAnswer: null,
+                    isCorrect: null,
+                    index: i
+                };
             } else {
                 // Multiplication
                 const num1 = this.getRandomNumber(this.minMultiplier, this.maxMultiplier);
@@ -306,6 +378,57 @@ class MultiplicationApp {
     
     getRandomNumber(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+    
+    // Fraction helper methods
+    gcd(a, b) {
+        // Greatest Common Divisor using Euclidean algorithm
+        a = Math.abs(a);
+        b = Math.abs(b);
+        while (b !== 0) {
+            const temp = b;
+            b = a % b;
+            a = temp;
+        }
+        return a;
+    }
+    
+    simplifyFraction(numerator, denominator) {
+        // Simplify a fraction to its lowest terms
+        const divisor = this.gcd(numerator, denominator);
+        return {
+            numerator: numerator / divisor,
+            denominator: denominator / divisor
+        };
+    }
+    
+    addFractions(num1, den1, num2, den2) {
+        // Add two fractions: num1/den1 + num2/den2
+        const numerator = num1 * den2 + num2 * den1;
+        const denominator = den1 * den2;
+        return this.simplifyFraction(numerator, denominator);
+    }
+    
+    subtractFractions(num1, den1, num2, den2) {
+        // Subtract two fractions: num1/den1 - num2/den2
+        const numerator = num1 * den2 - num2 * den1;
+        const denominator = den1 * den2;
+        return this.simplifyFraction(numerator, denominator);
+    }
+    
+    multiplyFractions(num1, den1, num2, den2) {
+        // Multiply two fractions: (num1/den1) * (num2/den2)
+        const numerator = num1 * num2;
+        const denominator = den1 * den2;
+        return this.simplifyFraction(numerator, denominator);
+    }
+    
+    formatFraction(numerator, denominator) {
+        // Format fraction for display
+        if (denominator === 1) {
+            return `${numerator}`;
+        }
+        return `${numerator}/${denominator}`;
     }
     
     startExercise() {
@@ -333,11 +456,46 @@ class MultiplicationApp {
         this.exercises.forEach((exercise, index) => {
             const exerciseDiv = document.createElement('div');
             exerciseDiv.className = 'exercise-item';
-            const symbol = exercise.operation === 'division' ? '÷' : '×';
+            
+            let questionHtml = '';
+            let inputHtml = '';
+            
+            if (exercise.operation === 'fractionSimplify') {
+                // Simplify: startNum/startDen = ?/targetDen
+                questionHtml = `<span class="exercise-question">
+                    <span class="fraction"><sup>${exercise.startNum}</sup>/<sub>${exercise.startDen}</sub></span> = 
+                    <span class="fraction"><sup>?</sup>/<sub>${exercise.targetDen}</sub></span>
+                </span>`;
+                inputHtml = `<input type="number" class="exercise-input" data-index="${index}" 
+                       placeholder="?" inputmode="numeric" ${exercise.userAnswer !== null ? `value="${exercise.userAnswer}"` : ''}>`;
+            } else if (exercise.operation === 'fractionAddSub') {
+                // Add/Subtract: num1/den1 ± num2/den2 = ?/?
+                const symbol = exercise.isAddition ? '+' : '-';
+                questionHtml = `<span class="exercise-question">
+                    <span class="fraction"><sup>${exercise.num1}</sup>/<sub>${exercise.den1}</sub></span> ${symbol} 
+                    <span class="fraction"><sup>${exercise.num2}</sup>/<sub>${exercise.den2}</sub></span> = ?
+                </span>`;
+                inputHtml = `<input type="text" class="exercise-input fraction-input" data-index="${index}" 
+                       placeholder="?/?" ${exercise.userAnswer !== null ? `value="${exercise.userAnswer}"` : ''}>`;
+            } else if (exercise.operation === 'fractionMultiply') {
+                // Multiply: num1/den1 × num2/den2 = ?/?
+                questionHtml = `<span class="exercise-question">
+                    <span class="fraction"><sup>${exercise.num1}</sup>/<sub>${exercise.den1}</sub></span> × 
+                    <span class="fraction"><sup>${exercise.num2}</sup>/<sub>${exercise.den2}</sub></span> = ?
+                </span>`;
+                inputHtml = `<input type="text" class="exercise-input fraction-input" data-index="${index}" 
+                       placeholder="?/?" ${exercise.userAnswer !== null ? `value="${exercise.userAnswer}"` : ''}>`;
+            } else {
+                // Standard multiplication or division
+                const symbol = exercise.operation === 'division' ? '÷' : '×';
+                questionHtml = `<span class="exercise-question">${exercise.num1} ${symbol} ${exercise.num2} =</span>`;
+                inputHtml = `<input type="number" class="exercise-input" data-index="${index}" 
+                       placeholder="?" inputmode="numeric" ${exercise.userAnswer !== null ? `value="${exercise.userAnswer}"` : ''}>`;
+            }
+            
             exerciseDiv.innerHTML = `
-                <span class="exercise-question">${exercise.num1} ${symbol} ${exercise.num2} =</span>
-                <input type="number" class="exercise-input" data-index="${index}" 
-                       placeholder="?" inputmode="numeric" ${exercise.userAnswer !== null ? `value="${exercise.userAnswer}"` : ''}>
+                ${questionHtml}
+                ${inputHtml}
                 <span class="exercise-status ${this.getStatusClass(exercise)}">
                     ${this.getStatusSymbol(exercise)}
                 </span>
@@ -455,6 +613,9 @@ class MultiplicationApp {
             <div class="keyboard-row">
                 <button class="keyboard-btn action-btn" data-action="backspace" data-i18n="backspace">⌫</button>
                 <button class="keyboard-btn number-btn" data-number="0">0</button>
+                <button class="keyboard-btn number-btn" data-number="/">/</button>
+            </div>
+            <div class="keyboard-row">
                 <button class="keyboard-btn action-btn" data-action="enter" data-i18n="enter">Enter</button>
             </div>
         `;
@@ -642,11 +803,12 @@ class MultiplicationApp {
     handleAnswerInput(e) {
         const index = parseInt(e.target.dataset.index);
         const inputValue = e.target.value.trim();
+        const exercise = this.exercises[index];
         
         if (inputValue === '') {
             // Handle empty input (cleared by backspace)
-            this.exercises[index].userAnswer = null;
-            this.exercises[index].isCorrect = null;
+            exercise.userAnswer = null;
+            exercise.isCorrect = null;
             
             // Reset visual feedback
             const exerciseItem = e.target.closest('.exercise-item');
@@ -658,29 +820,59 @@ class MultiplicationApp {
             
             this.updateProgress();
         } else {
-            const userAnswer = parseInt(inputValue);
+            let isCorrect = false;
             
-            if (!isNaN(userAnswer)) {
-                this.exercises[index].userAnswer = userAnswer;
-                this.exercises[index].isCorrect = userAnswer === this.exercises[index].answer;
-                
-                // Update the visual feedback
-                const exerciseItem = e.target.closest('.exercise-item');
-                const statusElement = exerciseItem.querySelector('.exercise-status');
-                
-                exerciseItem.classList.remove('correct', 'incorrect');
-                if (this.exercises[index].isCorrect) {
-                    exerciseItem.classList.add('correct');
-                    statusElement.className = 'exercise-status correct';
-                    statusElement.textContent = '✓';
-                } else {
-                    exerciseItem.classList.add('incorrect');
-                    statusElement.className = 'exercise-status incorrect';
-                    statusElement.textContent = '✗';
+            // Handle different operation types
+            if (exercise.operation === 'fractionSimplify') {
+                // For simplify, just check the numerator
+                const userAnswer = parseInt(inputValue);
+                if (!isNaN(userAnswer)) {
+                    exercise.userAnswer = userAnswer;
+                    isCorrect = userAnswer === exercise.answer;
                 }
-                
-                this.updateProgress();
+            } else if (exercise.operation === 'fractionAddSub' || exercise.operation === 'fractionMultiply') {
+                // For fraction operations, parse input like "3/4"
+                const fractionMatch = inputValue.match(/^(\d+)\/(\d+)$/);
+                if (fractionMatch) {
+                    const userNum = parseInt(fractionMatch[1]);
+                    const userDen = parseInt(fractionMatch[2]);
+                    
+                    // Simplify user's answer
+                    const simplified = this.simplifyFraction(userNum, userDen);
+                    
+                    exercise.userAnswer = `${userNum}/${userDen}`;
+                    
+                    // Check if simplified version matches the correct answer
+                    isCorrect = simplified.numerator === exercise.answerNum && 
+                               simplified.denominator === exercise.answerDen;
+                }
+            } else {
+                // Standard numeric answer (multiplication, division)
+                const userAnswer = parseInt(inputValue);
+                if (!isNaN(userAnswer)) {
+                    exercise.userAnswer = userAnswer;
+                    isCorrect = userAnswer === exercise.answer;
+                }
             }
+            
+            exercise.isCorrect = isCorrect;
+            
+            // Update the visual feedback
+            const exerciseItem = e.target.closest('.exercise-item');
+            const statusElement = exerciseItem.querySelector('.exercise-status');
+            
+            exerciseItem.classList.remove('correct', 'incorrect');
+            if (exercise.isCorrect) {
+                exerciseItem.classList.add('correct');
+                statusElement.className = 'exercise-status correct';
+                statusElement.textContent = '✓';
+            } else {
+                exerciseItem.classList.add('incorrect');
+                statusElement.className = 'exercise-status incorrect';
+                statusElement.textContent = '✗';
+            }
+            
+            this.updateProgress();
         }
     }
     
@@ -841,10 +1033,29 @@ class MultiplicationApp {
         this.exercises.forEach(exercise => {
             const resultDiv = document.createElement('div');
             resultDiv.className = `result-item ${exercise.isCorrect ? 'correct' : 'incorrect'}`;
-            const symbol = exercise.operation === 'division' ? '÷' : '×';
+            
+            let questionText = '';
+            let answerText = '';
+            
+            if (exercise.operation === 'fractionSimplify') {
+                questionText = `${exercise.startNum}/${exercise.startDen} = ${exercise.answer}/${exercise.targetDen}`;
+                answerText = `${this.t('yourAnswer')} ${exercise.userAnswer || this.t('noAnswer')}`;
+            } else if (exercise.operation === 'fractionAddSub') {
+                const symbol = exercise.isAddition ? '+' : '-';
+                questionText = `${exercise.num1}/${exercise.den1} ${symbol} ${exercise.num2}/${exercise.den2} = ${exercise.answer}`;
+                answerText = `${this.t('yourAnswer')} ${exercise.userAnswer || this.t('noAnswer')}`;
+            } else if (exercise.operation === 'fractionMultiply') {
+                questionText = `${exercise.num1}/${exercise.den1} × ${exercise.num2}/${exercise.den2} = ${exercise.answer}`;
+                answerText = `${this.t('yourAnswer')} ${exercise.userAnswer || this.t('noAnswer')}`;
+            } else {
+                const symbol = exercise.operation === 'division' ? '÷' : '×';
+                questionText = `${exercise.num1} ${symbol} ${exercise.num2} = ${exercise.answer}`;
+                answerText = `${this.t('yourAnswer')} ${exercise.userAnswer || this.t('noAnswer')}`;
+            }
+            
             resultDiv.innerHTML = `
-                <span class="result-question">${exercise.num1} ${symbol} ${exercise.num2} = ${exercise.answer}</span>
-                <span class="result-answer">${this.t('yourAnswer')} ${exercise.userAnswer || this.t('noAnswer')}</span>
+                <span class="result-question">${questionText}</span>
+                <span class="result-answer">${answerText}</span>
             `;
             this.resultsDetails.appendChild(resultDiv);
         });

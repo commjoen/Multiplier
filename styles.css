@@ -974,3 +974,43 @@ h2 {
         padding: 3px 6px;
     }
 }
+
+/* Fraction styling */
+.fraction {
+    display: inline-block;
+    vertical-align: middle;
+    text-align: center;
+    font-size: 1em;
+}
+
+.fraction sup {
+    display: block;
+    font-size: 0.8em;
+    line-height: 1;
+    border-bottom: 1px solid currentColor;
+    padding-bottom: 2px;
+    margin-bottom: 2px;
+}
+
+.fraction sub {
+    display: block;
+    font-size: 0.8em;
+    line-height: 1;
+    padding-top: 2px;
+}
+
+.exercise-input.fraction-input {
+    text-align: center;
+}
+
+/* Responsive fraction styling */
+@media (max-width: 768px) {
+    .fraction {
+        font-size: 0.9em;
+    }
+    
+    .fraction sup,
+    .fraction sub {
+        font-size: 0.75em;
+    }
+}
