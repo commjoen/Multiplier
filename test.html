@@ -389,6 +389,164 @@
             assert(hasMultiplication || hasDivision, 'Should have at least one operation type');
         });
 
+        // Test fraction helper methods
+        runTest('Fraction GCD calculation', () => {
+            const tempApp = {
+                gcd: MultiplicationApp.prototype.gcd
+            };
+            
+            assert(tempApp.gcd(12, 8) === 4, 'GCD of 12 and 8 should be 4');
+            assert(tempApp.gcd(15, 25) === 5, 'GCD of 15 and 25 should be 5');
+            assert(tempApp.gcd(7, 13) === 1, 'GCD of 7 and 13 should be 1');
+            assert(tempApp.gcd(100, 50) === 50, 'GCD of 100 and 50 should be 50');
+        });
+
+        runTest('Fraction simplification', () => {
+            const tempApp = {
+                gcd: MultiplicationApp.prototype.gcd,
+                simplifyFraction: MultiplicationApp.prototype.simplifyFraction
+            };
+            
+            const result1 = tempApp.simplifyFraction(4, 8);
+            assert(result1.numerator === 1 && result1.denominator === 2, '4/8 should simplify to 1/2');
+            
+            const result2 = tempApp.simplifyFraction(6, 9);
+            assert(result2.numerator === 2 && result2.denominator === 3, '6/9 should simplify to 2/3');
+            
+            const result3 = tempApp.simplifyFraction(10, 5);
+            assert(result3.numerator === 2 && result3.denominator === 1, '10/5 should simplify to 2/1');
+        });
+
+        runTest('Fraction addition', () => {
+            const tempApp = {
+                gcd: MultiplicationApp.prototype.gcd,
+                simplifyFraction: MultiplicationApp.prototype.simplifyFraction,
+                addFractions: MultiplicationApp.prototype.addFractions
+            };
+            
+            const result1 = tempApp.addFractions(1, 4, 1, 4);
+            assert(result1.numerator === 1 && result1.denominator === 2, '1/4 + 1/4 should equal 1/2');
+            
+            const result2 = tempApp.addFractions(1, 3, 1, 6);
+            assert(result2.numerator === 1 && result2.denominator === 2, '1/3 + 1/6 should equal 1/2');
+            
+            const result3 = tempApp.addFractions(2, 5, 3, 10);
+            assert(result3.numerator === 7 && result3.denominator === 10, '2/5 + 3/10 should equal 7/10');
+            
+            const result4 = tempApp.addFractions(1, 2, 1, 3);
+            assert(result4.numerator === 5 && result4.denominator === 6, '1/2 + 1/3 should equal 5/6');
+        });
+
+        runTest('Fraction subtraction', () => {
+            const tempApp = {
+                gcd: MultiplicationApp.prototype.gcd,
+                simplifyFraction: MultiplicationApp.prototype.simplifyFraction,
+                subtractFractions: MultiplicationApp.prototype.subtractFractions
+            };
+            
+            const result1 = tempApp.subtractFractions(3, 4, 1, 4);
+            assert(result1.numerator === 1 && result1.denominator === 2, '3/4 - 1/4 should equal 1/2');
+            
+            const result2 = tempApp.subtractFractions(5, 6, 1, 3);
+            assert(result2.numerator === 1 && result2.denominator === 2, '5/6 - 1/3 should equal 1/2');
+            
+            const result3 = tempApp.subtractFractions(7, 8, 3, 8);
+            assert(result3.numerator === 1 && result3.denominator === 2, '7/8 - 3/8 should equal 1/2');
+            
+            const result4 = tempApp.subtractFractions(5, 6, 2, 3);
+            assert(result4.numerator === 1 && result4.denominator === 6, '5/6 - 2/3 should equal 1/6');
+        });
+
+        runTest('Fraction multiplication', () => {
+            const tempApp = {
+                gcd: MultiplicationApp.prototype.gcd,
+                simplifyFraction: MultiplicationApp.prototype.simplifyFraction,
+                multiplyFractions: MultiplicationApp.prototype.multiplyFractions
+            };
+            
+            const result1 = tempApp.multiplyFractions(2, 3, 3, 4);
+            assert(result1.numerator === 1 && result1.denominator === 2, '2/3 × 3/4 should equal 1/2');
+            
+            const result2 = tempApp.multiplyFractions(5, 6, 6, 5);
+            assert(result2.numerator === 1 && result2.denominator === 1, '5/6 × 6/5 should equal 1/1');
+            
+            const result3 = tempApp.multiplyFractions(3, 8, 4, 9);
+            assert(result3.numerator === 1 && result3.denominator === 6, '3/8 × 4/9 should equal 1/6');
+            
+            const result4 = tempApp.multiplyFractions(7, 10, 5, 14);
+            assert(result4.numerator === 1 && result4.denominator === 4, '7/10 × 5/14 should equal 1/4');
+        });
+
+        runTest('Fraction exercise generation', () => {
+            // Test fraction simplify
+            const tempApp1 = {
+                exercises: [],
+                minMultiplier: 2,
+                maxMultiplier: 5,
+                totalExercises: 5,
+                operationType: 'fractionSimplify',
+                minMultiplierInput: { value: '2' },
+                maxMultiplierInput: { value: '5' },
+                totalExercisesInput: { value: '5' },
+                operationTypeInput: { value: 'fractionSimplify' },
+                getRandomNumber: MultiplicationApp.prototype.getRandomNumber,
+                gcd: MultiplicationApp.prototype.gcd,
+                simplifyFraction: MultiplicationApp.prototype.simplifyFraction,
+                generateExercises: MultiplicationApp.prototype.generateExercises
+            };
+            
+            tempApp1.generateExercises();
+            assert(tempApp1.exercises.length === 5, 'Should generate 5 fraction simplify exercises');
+            assert(tempApp1.exercises[0].operation === 'fractionSimplify', 'Exercise should be fractionSimplify type');
+            assert(typeof tempApp1.exercises[0].startNum === 'number', 'Should have startNum');
+            assert(typeof tempApp1.exercises[0].answer === 'number', 'Should have answer');
+            
+            // Test fraction add/sub
+            const tempApp2 = {
+                exercises: [],
+                minMultiplier: 1,
+                maxMultiplier: 5,
+                totalExercises: 5,
+                operationType: 'fractionAddSub',
+                minMultiplierInput: { value: '1' },
+                maxMultiplierInput: { value: '5' },
+                totalExercisesInput: { value: '5' },
+                operationTypeInput: { value: 'fractionAddSub' },
+                getRandomNumber: MultiplicationApp.prototype.getRandomNumber,
+                gcd: MultiplicationApp.prototype.gcd,
+                simplifyFraction: MultiplicationApp.prototype.simplifyFraction,
+                addFractions: MultiplicationApp.prototype.addFractions,
+                subtractFractions: MultiplicationApp.prototype.subtractFractions,
+                generateExercises: MultiplicationApp.prototype.generateExercises
+            };
+            
+            tempApp2.generateExercises();
+            assert(tempApp2.exercises.length === 5, 'Should generate 5 fraction add/sub exercises');
+            assert(tempApp2.exercises[0].operation === 'fractionAddSub', 'Exercise should be fractionAddSub type');
+            
+            // Test fraction multiply
+            const tempApp3 = {
+                exercises: [],
+                minMultiplier: 1,
+                maxMultiplier: 5,
+                totalExercises: 5,
+                operationType: 'fractionMultiply',
+                minMultiplierInput: { value: '1' },
+                maxMultiplierInput: { value: '5' },
+                totalExercisesInput: { value: '5' },
+                operationTypeInput: { value: 'fractionMultiply' },
+                getRandomNumber: MultiplicationApp.prototype.getRandomNumber,
+                gcd: MultiplicationApp.prototype.gcd,
+                simplifyFraction: MultiplicationApp.prototype.simplifyFraction,
+                multiplyFractions: MultiplicationApp.prototype.multiplyFractions,
+                generateExercises: MultiplicationApp.prototype.generateExercises
+            };
+            
+            tempApp3.generateExercises();
+            assert(tempApp3.exercises.length === 5, 'Should generate 5 fraction multiply exercises');
+            assert(tempApp3.exercises[0].operation === 'fractionMultiply', 'Exercise should be fractionMultiply type');
+        });
+
         // Test version loading functionality
         runTest('Version loading functionality', () => {
             fetch('package.json')
