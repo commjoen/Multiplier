@@ -352,41 +352,118 @@
             }
         });
 
+        // Test addition exercise generation
+        runTest('Addition exercise generation', () => {
+            const tempApp = {
+                exercises: [],
+                minMultiplier: 2,
+                maxMultiplier: 5,
+                totalExercises: 10,
+                operationType: 'addition',
+                minMultiplierInput: { value: '2' },
+                maxMultiplierInput: { value: '5' },
+                totalExercisesInput: { value: '10' },
+                operationTypeInput: { value: 'addition' },
+                getRandomNumber: MultiplicationApp.prototype.getRandomNumber,
+                generateExercises: MultiplicationApp.prototype.generateExercises
+            };
+            
+            tempApp.generateExercises();
+            assert(tempApp.exercises.length === 10, 'Should generate 10 addition exercises');
+            
+            for (let exercise of tempApp.exercises) {
+                assert(exercise.operation === 'addition', 'All exercises should be addition');
+                assert(typeof exercise.num1 === 'number', 'num1 should be number');
+                assert(typeof exercise.num2 === 'number', 'num2 should be number');
+                assert(typeof exercise.answer === 'number', 'answer should be number');
+                assert(exercise.answer === exercise.num1 + exercise.num2, 'Addition should be correct (answer = num1 + num2)');
+                assert(exercise.num1 >= 2 && exercise.num1 <= 5, 'num1 should be in range');
+                assert(exercise.num2 >= 2 && exercise.num2 <= 5, 'num2 should be in range');
+            }
+        });
+
+        // Test subtraction exercise generation
+        runTest('Subtraction exercise generation', () => {
+            const tempApp = {
+                exercises: [],
+                minMultiplier: 2,
+                maxMultiplier: 5,
+                totalExercises: 10,
+                operationType: 'subtraction',
+                minMultiplierInput: { value: '2' },
+                maxMultiplierInput: { value: '5' },
+                totalExercisesInput: { value: '10' },
+                operationTypeInput: { value: 'subtraction' },
+                getRandomNumber: MultiplicationApp.prototype.getRandomNumber,
+                generateExercises: MultiplicationApp.prototype.generateExercises
+            };
+            
+            tempApp.generateExercises();
+            assert(tempApp.exercises.length === 10, 'Should generate 10 subtraction exercises');
+            
+            for (let exercise of tempApp.exercises) {
+                assert(exercise.operation === 'subtraction', 'All exercises should be subtraction');
+                assert(typeof exercise.num1 === 'number', 'num1 should be number');
+                assert(typeof exercise.num2 === 'number', 'num2 should be number');
+                assert(typeof exercise.answer === 'number', 'answer should be number');
+                assert(exercise.answer === exercise.num1 - exercise.num2, 'Subtraction should be correct (answer = num1 - num2)');
+                assert(exercise.answer >= 0, 'Result should be non-negative');
+                assert(exercise.num1 >= 2 && exercise.num1 <= 5, 'num1 should be in range');
+                assert(exercise.num2 >= 2 && exercise.num2 <= exercise.num1, 'num2 should be in range and <= num1');
+            }
+        });
+
         // Test mixed exercise generation
         runTest('Mixed exercise generation', () => {
             const tempApp = {
                 exercises: [],
                 minMultiplier: 1,
                 maxMultiplier: 3,
-                totalExercises: 20,
+                totalExercises: 40,
                 operationType: 'mixed',
                 minMultiplierInput: { value: '1' },
                 maxMultiplierInput: { value: '3' },
-                totalExercisesInput: { value: '20' },
+                totalExercisesInput: { value: '40' },
                 operationTypeInput: { value: 'mixed' },
                 getRandomNumber: MultiplicationApp.prototype.getRandomNumber,
                 generateExercises: MultiplicationApp.prototype.generateExercises
             };
             
             tempApp.generateExercises();
-            assert(tempApp.exercises.length === 20, 'Should generate 20 mixed exercises');
+            assert(tempApp.exercises.length === 40, 'Should generate 40 mixed exercises');
             
             let hasMultiplication = false;
             let hasDivision = false;
+            let hasAddition = false;
+            let hasSubtraction = false;
             
             for (let exercise of tempApp.exercises) {
-                assert(exercise.operation === 'multiplication' || exercise.operation === 'division', 'Exercise should be multiplication or division');
+                assert(
+                    exercise.operation === 'multiplication' || 
+                    exercise.operation === 'division' || 
+                    exercise.operation === 'addition' || 
+                    exercise.operation === 'subtraction', 
+                    'Exercise should be one of the four basic operations'
+                );
+                
                 if (exercise.operation === 'multiplication') {
                     hasMultiplication = true;
                     assert(exercise.answer === exercise.num1 * exercise.num2, 'Multiplication should be correct');
-                } else {
+                } else if (exercise.operation === 'division') {
                     hasDivision = true;
                     assert(exercise.num1 === exercise.num2 * exercise.answer, 'Division should be correct');
+                } else if (exercise.operation === 'addition') {
+                    hasAddition = true;
+                    assert(exercise.answer === exercise.num1 + exercise.num2, 'Addition should be correct');
+                } else if (exercise.operation === 'subtraction') {
+                    hasSubtraction = true;
+                    assert(exercise.answer === exercise.num1 - exercise.num2, 'Subtraction should be correct');
+                    assert(exercise.answer >= 0, 'Subtraction result should be non-negative');
                 }
             }
             
-            // In a set of 20 exercises, we should have both types (statistically very likely)
-            assert(hasMultiplication || hasDivision, 'Should have at least one operation type');
+            // In a set of 40 exercises, we should have all operation types (statistically very likely)
+            assert(hasMultiplication || hasDivision || hasAddition || hasSubtraction, 'Should have at least one operation type');
         });
 
         // Test fraction helper methods
