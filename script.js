@@ -784,14 +784,13 @@ class MultiplicationApp {
     }
     
     renderCijferenExercise(exercise, index) {
-        // Convert numbers to digit arrays - use proper alignment
-        const num1Str = String(exercise.num1).padStart(3, '0');
-        const num2Str = String(exercise.num2).padStart(3, '0');
+        // Determine the maximum number of digits needed based on the answer
+        const answerLength = String(exercise.answer).length;
+        const maxDigits = Math.max(3, answerLength); // At least 3 digits (HTE), more if answer is larger
         
-        // Create digit display - show empty for leading zeros
-        const renderDigit = (digitChar) => {
-            return digitChar === '0' ? '&nbsp;' : digitChar;
-        };
+        // Convert numbers to digit arrays - use proper alignment
+        const num1Str = String(exercise.num1).padStart(maxDigits, '0');
+        const num2Str = String(exercise.num2).padStart(maxDigits, '0');
         
         // Determine which digits to show (hide leading zeros)
         const num1Digits = [];
@@ -799,54 +798,68 @@ class MultiplicationApp {
         let num1StartShow = false;
         let num2StartShow = false;
         
-        for (let i = 0; i < 3; i++) {
-            // For num1
-            if (num1Str[i] !== '0' || i === 2) num1StartShow = true;
+        for (let i = 0; i < maxDigits; i++) {
+            // For num1 - show digit if it's not a leading zero or if it's the last digit
+            if (num1Str[i] !== '0' || i === maxDigits - 1) num1StartShow = true;
             num1Digits.push(num1StartShow ? num1Str[i] : '&nbsp;');
             
             // For num2
-            if (num2Str[i] !== '0' || i === 2) num2StartShow = true;
+            if (num2Str[i] !== '0' || i === maxDigits - 1) num2StartShow = true;
             num2Digits.push(num2StartShow ? num2Str[i] : '&nbsp;');
+        }
+        
+        // Create label based on number of digits (Th H T E for 4 digits, H T E for 3 digits)
+        let label = '';
+        if (maxDigits === 4) {
+            label = 'Th H T E';
+        } else if (maxDigits === 3) {
+            label = 'H T E';
+        } else {
+            // For 2 digits or less (shouldn't happen normally, but handle it)
+            label = 'T E'.substring(4 - maxDigits * 2);
+        }
+        
+        // Build the question HTML with dynamic number of digit columns
+        let num1DigitsHtml = '';
+        let num2DigitsHtml = '';
+        for (let i = 0; i < maxDigits; i++) {
+            num1DigitsHtml += `<div class="cijferen-digit">${num1Digits[i]}</div>`;
+            num2DigitsHtml += `<div class="cijferen-digit">${num2Digits[i]}</div>`;
         }
         
         const questionHtml = `
             <div class="cijferen-container">
                 <div class="cijferen-row">
-                    <span class="cijferen-label">H T E</span>
+                    <span class="cijferen-label">${label}</span>
                     <div class="cijferen-digits">
-                        <div class="cijferen-digit">${num1Digits[0]}</div>
-                        <div class="cijferen-digit">${num1Digits[1]}</div>
-                        <div class="cijferen-digit">${num1Digits[2]}</div>
+                        ${num1DigitsHtml}
                     </div>
                 </div>
                 <div class="cijferen-row">
                     <span class="cijferen-operator">${exercise.operator}</span>
                     <div class="cijferen-digits">
-                        <div class="cijferen-digit">${num2Digits[0]}</div>
-                        <div class="cijferen-digit">${num2Digits[1]}</div>
-                        <div class="cijferen-digit">${num2Digits[2]}</div>
+                        ${num2DigitsHtml}
                     </div>
                 </div>
                 <div class="cijferen-separator"></div>
             </div>
         `;
         
+        // Build input HTML with dynamic number of digit columns
+        let inputDigitsHtml = '';
+        for (let i = 0; i < maxDigits; i++) {
+            inputDigitsHtml += `
+                <div class="cijferen-digit cijferen-answer-digit">
+                    <input type="text" class="cijferen-input" data-index="${index}" data-position="${i}" 
+                           maxlength="1" inputmode="numeric" value="${exercise.answerDigits[i] || ''}">
+                </div>`;
+        }
+        
         const inputHtml = `
             <div class="cijferen-answer-row">
                 <span class="cijferen-spacer"></span>
                 <div class="cijferen-digits">
-                    <div class="cijferen-digit cijferen-answer-digit">
-                        <input type="text" class="cijferen-input" data-index="${index}" data-position="0" 
-                               maxlength="1" inputmode="numeric" value="${exercise.answerDigits[0] || ''}">
-                    </div>
-                    <div class="cijferen-digit cijferen-answer-digit">
-                        <input type="text" class="cijferen-input" data-index="${index}" data-position="1" 
-                               maxlength="1" inputmode="numeric" value="${exercise.answerDigits[1] || ''}">
-                    </div>
-                    <div class="cijferen-digit cijferen-answer-digit">
-                        <input type="text" class="cijferen-input" data-index="${index}" data-position="2" 
-                               maxlength="1" inputmode="numeric" value="${exercise.answerDigits[2] || ''}">
-                    </div>
+                    ${inputDigitsHtml}
                 </div>
             </div>
         `;
@@ -1101,14 +1114,23 @@ class MultiplicationApp {
             }
             exercise.answerDigits[position] = inputValue;
             
-            // Check if all three digits are filled
-            const digit0 = exercise.answerDigits[0] || '';
-            const digit1 = exercise.answerDigits[1] || '';
-            const digit2 = exercise.answerDigits[2] || '';
+            // Determine how many digit positions exist for this exercise
+            const answerLength = String(exercise.answer).length;
+            const maxDigits = Math.max(3, answerLength);
             
-            if (digit0 || digit1 || digit2) {
+            // Collect all digits
+            let allDigits = [];
+            let hasAnyDigit = false;
+            for (let i = 0; i < maxDigits; i++) {
+                const digit = exercise.answerDigits[i] || '';
+                allDigits.push(digit);
+                if (digit) hasAnyDigit = true;
+            }
+            
+            if (hasAnyDigit) {
                 // Combine digits to form the complete answer
-                const userAnswer = parseInt((digit0 || '0') + (digit1 || '0') + (digit2 || '0'));
+                const userAnswerStr = allDigits.map(d => d || '0').join('');
+                const userAnswer = parseInt(userAnswerStr);
                 exercise.userAnswer = userAnswer;
                 exercise.isCorrect = userAnswer === exercise.answer;
                 
@@ -1172,7 +1194,7 @@ class MultiplicationApp {
             }
             
             // Auto-move to next digit input within same exercise
-            if (inputValue && inputValue.length === 1 && position < 2) {
+            if (inputValue && inputValue.length === 1 && position < maxDigits - 1) {
                 const cijferenDigits = e.target.closest('.cijferen-digits');
                 if (cijferenDigits) {
                     const nextInput = cijferenDigits.querySelectorAll('.cijferen-input')[position + 1];
