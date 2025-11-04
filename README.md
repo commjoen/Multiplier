@@ -14,7 +14,7 @@ Try the multiplication practice app directly in your browser - no installation r
 - **Progressive Web App (PWA)**: Installable app with offline support
 - **Configurable Exercise Count**: Set total number of exercises (5-50), defaults to 20
 - **Configurable Range**: Set minimum and maximum numbers for multiplication (1-12)
-- **Countdown Timer**: Adjustable timer (1-30 minutes) with visual warnings
+- **Countdown Timer**: Adjustable timer (0-30 minutes, 0 = disabled) with visual warnings
 - **Mobile-Optimized Input**: Numerical keyboard on mobile devices for easier input
 - **Responsive Grid Layout**: Shows more exercises on larger screens (1 column on mobile, 2 on tablet, 3 on desktop)
 - **Real-Time Feedback**: Instant visual feedback for correct/incorrect answers
@@ -31,7 +31,7 @@ Try the multiplication practice app directly in your browser - no installation r
 ### Regular Web Usage
 1. **Settings Screen**: 
    - Set the minimum and maximum numbers for multiplication
-   - Choose the timer duration (in minutes)
+   - Choose the timer duration (0-30 minutes, set to 0 to disable timer)
    - Set the total number of exercises (5-50)
    - Select your preferred language
    - Click "Ready - Start Practice!" to begin
@@ -39,7 +39,7 @@ Try the multiplication practice app directly in your browser - no installation r
 2. **Exercise Screen**:
    - Answer multiplication problems by typing in the input fields
    - Press Enter to move to the next question
-   - Watch the timer countdown in the top-left
+   - Watch the timer countdown in the top-left (or ∞ if timer is disabled)
    - See your progress (answered/total) in the top-right
    - Correct answers show green background with checkmark
    - Incorrect answers show red background with X mark

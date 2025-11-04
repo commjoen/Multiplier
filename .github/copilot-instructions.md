@@ -43,7 +43,7 @@ ALWAYS manually validate changes by running through complete user scenarios:
 ### Testing Scenarios:
 - **Multi-language**: Test all three languages (English, Nederlands, Deutsch)
 - **Mobile responsive**: Resize browser to mobile width (< 768px) and verify layout
-- **Timer functionality**: Start exercise and verify timer counts down correctly
+- **Timer functionality**: Start exercise and verify timer counts down correctly. Test with timer set to 0 to verify timer is disabled (shows ∞ symbol)
 - **Answer validation**: Test correct answers (green background), incorrect answers (would show red), and no answers
 - **Local storage**: Close browser, reopen, verify settings are preserved
 
