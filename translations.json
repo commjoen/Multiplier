@@ -38,7 +38,13 @@
     "sourceCode": "Source Code",
     "version": "Version",
     "starOnGitHub": "Star on GitHub",
-    "installApp": "Install App"
+    "installApp": "Install App",
+    "cijferen": "Cijferen (Column Arithmetic)",
+    "cijferenSubmodes": "Cijferen Operations:",
+    "cijferenPlus": "Addition (+)",
+    "cijferenMinus": "Subtraction (−)",
+    "cijferenMultiply": "Multiplication (×)",
+    "cijferenDivision": "Division (÷)"
   },
   "nl": {
     "title": "Rekenen Oefening",
@@ -79,7 +85,13 @@
     "sourceCode": "Broncode",
     "version": "Versie",
     "starOnGitHub": "Ster op GitHub",
-    "installApp": "App Installeren"
+    "installApp": "App Installeren",
+    "cijferen": "Cijferen (Kolomrekenen)",
+    "cijferenSubmodes": "Cijferen Bewerkingen:",
+    "cijferenPlus": "Optellen (+)",
+    "cijferenMinus": "Aftrekken (−)",
+    "cijferenMultiply": "Vermenigvuldigen (×)",
+    "cijferenDivision": "Delen (÷)"
   },
   "de": {
     "title": "Mathematik Übung",
@@ -120,6 +132,12 @@
     "sourceCode": "Quellcode",
     "version": "Version",
     "starOnGitHub": "Auf GitHub bewerten",
-    "installApp": "App installieren"
+    "installApp": "App installieren",
+    "cijferen": "Cijferen (Spaltenrechnen)",
+    "cijferenSubmodes": "Cijferen Operationen:",
+    "cijferenPlus": "Addition (+)",
+    "cijferenMinus": "Subtraktion (−)",
+    "cijferenMultiply": "Multiplikation (×)",
+    "cijferenDivision": "Division (÷)"
   }
 }
