@@ -833,6 +833,7 @@ class MultiplicationApp {
         
         const inputHtml = `
             <div class="cijferen-answer-row">
+                <span class="cijferen-spacer"></span>
                 <div class="cijferen-digits">
                     <div class="cijferen-digit cijferen-answer-digit">
                         <input type="text" class="cijferen-input" data-index="${index}" data-position="0" 
