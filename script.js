@@ -131,6 +131,18 @@ class MultiplicationApp {
         // Input validation
         if (this.minMultiplierInput) this.minMultiplierInput.addEventListener('input', () => this.validateRanges());
         if (this.maxMultiplierInput) this.maxMultiplierInput.addEventListener('input', () => this.validateRanges());
+        
+        // Cijferen submodes toggle
+        if (this.operationTypeInput) {
+            this.operationTypeInput.addEventListener('change', (e) => this.toggleCijferenSubmodes(e.target.value));
+        }
+    }
+    
+    toggleCijferenSubmodes(operationType) {
+        const cijferenSubmodesDiv = document.getElementById('cijferen-submodes');
+        if (cijferenSubmodesDiv) {
+            cijferenSubmodesDiv.style.display = operationType === 'cijferen' ? 'block' : 'none';
+        }
     }
     
     loadSettings() {
@@ -146,6 +158,20 @@ class MultiplicationApp {
             if (this.showKeyboardInput) this.showKeyboardInput.checked = settings.showKeyboard !== false; // default to true
             this.currentLanguage = settings.language || 'en';
             if (this.languageSelect) this.languageSelect.value = this.currentLanguage;
+            
+            // Load cijferen submodes
+            if (settings.cijferenSubmodes) {
+                const checkboxes = ['cijferen-plus', 'cijferen-minus', 'cijferen-multiply', 'cijferen-division'];
+                checkboxes.forEach(id => {
+                    const checkbox = document.getElementById(id);
+                    if (checkbox) {
+                        checkbox.checked = settings.cijferenSubmodes[checkbox.value] || false;
+                    }
+                });
+            }
+            
+            // Toggle cijferen submodes visibility
+            this.toggleCijferenSubmodes(settings.operationType || 'multiplication');
         }
     }
     
@@ -160,6 +186,17 @@ class MultiplicationApp {
             showKeyboard: this.showKeyboardInput ? this.showKeyboardInput.checked : true,
             language: this.currentLanguage
         };
+        
+        // Save cijferen submodes
+        if (this.operationTypeInput && this.operationTypeInput.value === 'cijferen') {
+            settings.cijferenSubmodes = {
+                plus: document.getElementById('cijferen-plus')?.checked || false,
+                minus: document.getElementById('cijferen-minus')?.checked || false,
+                multiply: document.getElementById('cijferen-multiply')?.checked || false,
+                division: document.getElementById('cijferen-division')?.checked || false
+            };
+        }
+        
         localStorage.setItem('multiplicationSettings', JSON.stringify(settings));
     }
     
@@ -263,12 +300,26 @@ class MultiplicationApp {
             if (this.operationType === 'mixed') {
                 // Randomly choose between multiplication and division
                 operationType = Math.random() < 0.5 ? 'multiplication' : 'division';
+            } else if (this.operationType === 'cijferen') {
+                // Get selected cijferen submodes
+                const selectedSubmodes = this.getSelectedCijferenSubmodes();
+                if (selectedSubmodes.length === 0) {
+                    // Default to plus if no submodes selected
+                    operationType = 'cijferenPlus';
+                } else {
+                    // Randomly select one of the selected submodes
+                    const randomIndex = Math.floor(Math.random() * selectedSubmodes.length);
+                    operationType = selectedSubmodes[randomIndex];
+                }
             } else {
                 operationType = this.operationType;
             }
             
             let exercise;
-            if (operationType === 'division') {
+            if (operationType === 'cijferenPlus' || operationType === 'cijferenMinus' || 
+                operationType === 'cijferenMultiply' || operationType === 'cijferenDivision') {
+                exercise = this.generateCijferenExercise(operationType, i);
+            } else if (operationType === 'division') {
                 // For division, we generate multiplication first then present as division
                 // This ensures we always have whole number answers
                 const num1 = this.getRandomNumber(this.minMultiplier, this.maxMultiplier);
@@ -380,6 +431,62 @@ class MultiplicationApp {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
     
+    // Cijferen helper methods
+    getSelectedCijferenSubmodes() {
+        const selectedSubmodes = [];
+        if (document.getElementById('cijferen-plus')?.checked) selectedSubmodes.push('cijferenPlus');
+        if (document.getElementById('cijferen-minus')?.checked) selectedSubmodes.push('cijferenMinus');
+        if (document.getElementById('cijferen-multiply')?.checked) selectedSubmodes.push('cijferenMultiply');
+        if (document.getElementById('cijferen-division')?.checked) selectedSubmodes.push('cijferenDivision');
+        return selectedSubmodes;
+    }
+    
+    generateCijferenExercise(operationType, index) {
+        // Generate multi-digit numbers for column arithmetic
+        // We'll generate 2-digit or 3-digit numbers based on the min/max range
+        const maxDigits = this.maxMultiplier >= 100 ? 3 : this.maxMultiplier >= 10 ? 2 : 1;
+        
+        let num1, num2, answer, operator;
+        
+        if (operationType === 'cijferenPlus') {
+            // Addition: num1 + num2 = answer
+            num1 = this.getRandomNumber(this.minMultiplier, this.maxMultiplier * 10);
+            num2 = this.getRandomNumber(this.minMultiplier, this.maxMultiplier * 10);
+            answer = num1 + num2;
+            operator = '+';
+        } else if (operationType === 'cijferenMinus') {
+            // Subtraction: num1 - num2 = answer (ensure positive result)
+            num1 = this.getRandomNumber(this.minMultiplier * 10, this.maxMultiplier * 10);
+            num2 = this.getRandomNumber(this.minMultiplier, num1);
+            answer = num1 - num2;
+            operator = '−';
+        } else if (operationType === 'cijferenMultiply') {
+            // Multiplication: num1 × num2 = answer
+            num1 = this.getRandomNumber(this.minMultiplier, this.maxMultiplier);
+            num2 = this.getRandomNumber(this.minMultiplier, this.maxMultiplier);
+            answer = num1 * num2;
+            operator = '×';
+        } else if (operationType === 'cijferenDivision') {
+            // Division: num1 ÷ num2 = answer (ensure whole number result)
+            num2 = this.getRandomNumber(this.minMultiplier, this.maxMultiplier);
+            answer = this.getRandomNumber(this.minMultiplier, this.maxMultiplier);
+            num1 = num2 * answer;
+            operator = '÷';
+        }
+        
+        return {
+            operation: operationType,
+            num1: num1,
+            num2: num2,
+            answer: answer,
+            operator: operator,
+            userAnswer: null,
+            isCorrect: null,
+            index: index,
+            answerDigits: {} // Will store user input for each digit position
+        };
+    }
+    
     // Fraction helper methods
     gcd(a, b) {
         // Greatest Common Divisor using Euclidean algorithm
@@ -460,7 +567,13 @@ class MultiplicationApp {
             let questionHtml = '';
             let inputHtml = '';
             
-            if (exercise.operation === 'fractionSimplify') {
+            if (exercise.operation && exercise.operation.startsWith('cijferen')) {
+                // Cijferen mode: column arithmetic
+                exerciseDiv.classList.add('cijferen-mode');
+                const cijferenHtml = this.renderCijferenExercise(exercise, index);
+                questionHtml = cijferenHtml.question;
+                inputHtml = cijferenHtml.input;
+            } else if (exercise.operation === 'fractionSimplify') {
                 // Simplify: startNum/startDen = ?/targetDen
                 questionHtml = `<span class="exercise-question">
                     <span class="fraction"><sup>${exercise.startNum}</sup>/<sub>${exercise.startDen}</sub></span> = 
@@ -528,8 +641,8 @@ class MultiplicationApp {
             container.classList.remove('has-keyboard');
         }
         
-        // Add input event listeners
-        this.exercisesContainer.querySelectorAll('.exercise-input').forEach(input => {
+        // Add input event listeners for both regular and cijferen inputs
+        this.exercisesContainer.querySelectorAll('.exercise-input, .cijferen-input').forEach(input => {
             input.addEventListener('input', (e) => this.handleAnswerInput(e));
             input.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') {
@@ -568,12 +681,62 @@ class MultiplicationApp {
         
         // Auto-select first empty input for keyboard use
         if (shouldShowKeyboard) {
-            const inputs = Array.from(this.exercisesContainer.querySelectorAll('.exercise-input'));
+            const inputs = Array.from(this.exercisesContainer.querySelectorAll('.exercise-input, .cijferen-input'));
             const firstEmptyInput = inputs.find(input => input.value === '') || inputs[0];
             if (firstEmptyInput) {
                 this.selectInputForKeyboard(firstEmptyInput);
             }
         }
+    }
+    
+    renderCijferenExercise(exercise, index) {
+        // Convert numbers to digit arrays (pad to 3 digits)
+        const num1Str = String(exercise.num1).padStart(3, ' ');
+        const num2Str = String(exercise.num2).padStart(3, ' ');
+        const answerStr = String(exercise.answer).padStart(3, ' ');
+        
+        const questionHtml = `
+            <div class="cijferen-container">
+                <div class="cijferen-row">
+                    <span class="cijferen-label">H T E</span>
+                    <div class="cijferen-digits">
+                        <div class="cijferen-digit">${num1Str[0]}</div>
+                        <div class="cijferen-digit">${num1Str[1]}</div>
+                        <div class="cijferen-digit">${num1Str[2]}</div>
+                    </div>
+                </div>
+                <div class="cijferen-row">
+                    <span class="cijferen-operator">${exercise.operator}</span>
+                    <div class="cijferen-digits">
+                        <div class="cijferen-digit">${num2Str[0]}</div>
+                        <div class="cijferen-digit">${num2Str[1]}</div>
+                        <div class="cijferen-digit">${num2Str[2]}</div>
+                    </div>
+                </div>
+                <div class="cijferen-separator"></div>
+            </div>
+        `;
+        
+        const inputHtml = `
+            <div class="cijferen-answer-row">
+                <div class="cijferen-digits">
+                    <div class="cijferen-digit cijferen-answer-digit">
+                        <input type="text" class="cijferen-input" data-index="${index}" data-position="0" 
+                               maxlength="1" inputmode="numeric" value="${exercise.answerDigits[0] || ''}">
+                    </div>
+                    <div class="cijferen-digit cijferen-answer-digit">
+                        <input type="text" class="cijferen-input" data-index="${index}" data-position="1" 
+                               maxlength="1" inputmode="numeric" value="${exercise.answerDigits[1] || ''}">
+                    </div>
+                    <div class="cijferen-digit cijferen-answer-digit">
+                        <input type="text" class="cijferen-input" data-index="${index}" data-position="2" 
+                               maxlength="1" inputmode="numeric" value="${exercise.answerDigits[2] || ''}">
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        return { question: questionHtml, input: inputHtml };
     }
     
     selectInputForKeyboard(input) {
@@ -802,8 +965,92 @@ class MultiplicationApp {
     
     handleAnswerInput(e) {
         const index = parseInt(e.target.dataset.index);
-        const inputValue = e.target.value.trim();
         const exercise = this.exercises[index];
+        
+        // Handle cijferen inputs differently
+        if (e.target.classList.contains('cijferen-input')) {
+            const position = parseInt(e.target.dataset.position);
+            const inputValue = e.target.value.trim();
+            
+            // Store the digit in the exercise
+            if (!exercise.answerDigits) {
+                exercise.answerDigits = {};
+            }
+            exercise.answerDigits[position] = inputValue;
+            
+            // Check if all three digits are filled
+            const digit0 = exercise.answerDigits[0] || '';
+            const digit1 = exercise.answerDigits[1] || '';
+            const digit2 = exercise.answerDigits[2] || '';
+            
+            if (digit0 || digit1 || digit2) {
+                // Combine digits to form the complete answer
+                const userAnswer = parseInt((digit0 || '0') + (digit1 || '0') + (digit2 || '0'));
+                exercise.userAnswer = userAnswer;
+                exercise.isCorrect = userAnswer === exercise.answer;
+                
+                // Update the visual feedback
+                const exerciseItem = e.target.closest('.exercise-item');
+                const statusElement = exerciseItem.querySelector('.exercise-status');
+                
+                exerciseItem.classList.remove('correct', 'incorrect');
+                if (exercise.isCorrect) {
+                    exerciseItem.classList.add('correct');
+                    statusElement.className = 'exercise-status correct';
+                    statusElement.textContent = '✓';
+                } else {
+                    exerciseItem.classList.add('incorrect');
+                    statusElement.className = 'exercise-status incorrect';
+                    statusElement.textContent = '✗';
+                }
+                
+                this.updateProgress();
+                
+                // Auto-focus next input if correct
+                if (exercise.isCorrect && inputValue) {
+                    // Find next cijferen input in a different exercise
+                    const allInputs = Array.from(this.exercisesContainer.querySelectorAll('.cijferen-input'));
+                    const currentInputIndex = allInputs.indexOf(e.target);
+                    
+                    // Jump to first input of next exercise (skip remaining digits of current exercise)
+                    for (let i = currentInputIndex + 1; i < allInputs.length; i++) {
+                        const nextInput = allInputs[i];
+                        const nextIndex = parseInt(nextInput.dataset.index);
+                        if (nextIndex !== index) {
+                            nextInput.focus();
+                            break;
+                        }
+                    }
+                }
+            } else {
+                // All digits are empty, reset state
+                exercise.userAnswer = null;
+                exercise.isCorrect = null;
+                
+                // Reset visual feedback
+                const exerciseItem = e.target.closest('.exercise-item');
+                const statusElement = exerciseItem.querySelector('.exercise-status');
+                
+                exerciseItem.classList.remove('correct', 'incorrect');
+                statusElement.className = 'exercise-status pending';
+                statusElement.textContent = '?';
+                
+                this.updateProgress();
+            }
+            
+            // Auto-move to next digit input within same exercise
+            if (inputValue && inputValue.length === 1 && position < 2) {
+                const nextInput = e.target.closest('.cijferen-digits').querySelectorAll('.cijferen-input')[position + 1];
+                if (nextInput) {
+                    nextInput.focus();
+                }
+            }
+            
+            return;
+        }
+        
+        // Original handleAnswerInput logic for non-cijferen inputs
+        const inputValue = e.target.value.trim();
         
         if (inputValue === '') {
             // Handle empty input (cleared by backspace)
@@ -1037,7 +1284,11 @@ class MultiplicationApp {
             let questionText = '';
             let answerText = '';
             
-            if (exercise.operation === 'fractionSimplify') {
+            if (exercise.operation && exercise.operation.startsWith('cijferen')) {
+                // Cijferen exercises
+                questionText = `${exercise.num1} ${exercise.operator} ${exercise.num2} = ${exercise.answer}`;
+                answerText = `${this.t('yourAnswer')} ${exercise.userAnswer !== null ? exercise.userAnswer : this.t('noAnswer')}`;
+            } else if (exercise.operation === 'fractionSimplify') {
                 questionText = `${exercise.startNum}/${exercise.startDen} = ${exercise.answer}/${exercise.targetDen}`;
                 answerText = `${this.t('yourAnswer')} ${exercise.userAnswer || this.t('noAnswer')}`;
             } else if (exercise.operation === 'fractionAddSub') {
