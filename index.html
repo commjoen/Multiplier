@@ -105,6 +105,14 @@
                     </div>
                 </div>
                 
+                <div class="settings-group" id="cijferen-overcount-mode" style="display: none;">
+                    <label for="cijferen-overcount" data-i18n="cijferenOvercountMode">Overcount Mode:</label>
+                    <select id="cijferen-overcount">
+                        <option value="with" data-i18n="cijferenWithOvercount">With Overcount (carries allowed)</option>
+                        <option value="without" data-i18n="cijferenWithoutOvercount">Without Overcount (max 9 per column)</option>
+                    </select>
+                </div>
+                
                 <div class="settings-group">
                     <label for="display-mode" data-i18n="displayMode">Display Mode:</label>
                     <select id="display-mode">
@@ -212,6 +220,6 @@
         </div>
     </footer>
 
-    <script src="script.js?v=5"></script>
+    <script src="script.js?v=6"></script>
 </body>
 </html>

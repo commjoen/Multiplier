@@ -44,7 +44,10 @@
     "cijferenPlus": "Addition (+)",
     "cijferenMinus": "Subtraction (−)",
     "cijferenMultiply": "Multiplication (×)",
-    "cijferenDivision": "Division (÷)"
+    "cijferenDivision": "Division (÷)",
+    "cijferenOvercountMode": "Overcount Mode:",
+    "cijferenWithOvercount": "With Overcount (carries allowed)",
+    "cijferenWithoutOvercount": "Without Overcount (max 9 per column)"
   },
   "nl": {
     "title": "Rekenen Oefening",
@@ -91,7 +94,10 @@
     "cijferenPlus": "Optellen (+)",
     "cijferenMinus": "Aftrekken (−)",
     "cijferenMultiply": "Vermenigvuldigen (×)",
-    "cijferenDivision": "Delen (÷)"
+    "cijferenDivision": "Delen (÷)",
+    "cijferenOvercountMode": "Overdrachtmodus:",
+    "cijferenWithOvercount": "Met Overdracht (overschrijden toegestaan)",
+    "cijferenWithoutOvercount": "Zonder Overdracht (max 9 per kolom)"
   },
   "de": {
     "title": "Mathematik Übung",
@@ -138,6 +144,9 @@
     "cijferenPlus": "Addition (+)",
     "cijferenMinus": "Subtraktion (−)",
     "cijferenMultiply": "Multiplikation (×)",
-    "cijferenDivision": "Division (÷)"
+    "cijferenDivision": "Division (÷)",
+    "cijferenOvercountMode": "Übertragsmodus:",
+    "cijferenWithOvercount": "Mit Übertrag (Überträge erlaubt)",
+    "cijferenWithoutOvercount": "Ohne Übertrag (max 9 pro Spalte)"
   }
 }

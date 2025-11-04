@@ -140,8 +140,12 @@ class MultiplicationApp {
     
     toggleCijferenSubmodes(operationType) {
         const cijferenSubmodesDiv = document.getElementById('cijferen-submodes');
+        const cijferenOvercountDiv = document.getElementById('cijferen-overcount-mode');
         if (cijferenSubmodesDiv) {
             cijferenSubmodesDiv.style.display = operationType === 'cijferen' ? 'block' : 'none';
+        }
+        if (cijferenOvercountDiv) {
+            cijferenOvercountDiv.style.display = operationType === 'cijferen' ? 'block' : 'none';
         }
     }
     
@@ -170,6 +174,12 @@ class MultiplicationApp {
                 });
             }
             
+            // Load cijferen overcount mode
+            const cijferenOvercountSelect = document.getElementById('cijferen-overcount');
+            if (cijferenOvercountSelect && settings.cijferenOvercount) {
+                cijferenOvercountSelect.value = settings.cijferenOvercount;
+            }
+            
             // Toggle cijferen submodes visibility
             this.toggleCijferenSubmodes(settings.operationType || 'multiplication');
         }
@@ -195,6 +205,12 @@ class MultiplicationApp {
                 multiply: document.getElementById('cijferen-multiply')?.checked || false,
                 division: document.getElementById('cijferen-division')?.checked || false
             };
+            
+            // Save cijferen overcount mode
+            const cijferenOvercountSelect = document.getElementById('cijferen-overcount');
+            if (cijferenOvercountSelect) {
+                settings.cijferenOvercount = cijferenOvercountSelect.value;
+            }
         }
         
         localStorage.setItem('multiplicationSettings', JSON.stringify(settings));
@@ -443,22 +459,39 @@ class MultiplicationApp {
     
     generateCijferenExercise(operationType, index) {
         // Generate multi-digit numbers for column arithmetic
-        // We'll generate 2-digit or 3-digit numbers based on the min/max range
-        
+        // Get overcount mode setting
+        const cijferenOvercountSelect = document.getElementById('cijferen-overcount');
+        const overcountMode = cijferenOvercountSelect ? cijferenOvercountSelect.value : 'with';
         
         let num1, num2, answer, operator;
         
         if (operationType === 'cijferenPlus') {
             // Addition: num1 + num2 = answer
-            num1 = this.getRandomNumber(this.minMultiplier, this.maxMultiplier * 10);
-            num2 = this.getRandomNumber(this.minMultiplier, this.maxMultiplier * 10);
-            answer = num1 + num2;
+            if (overcountMode === 'without') {
+                // Generate numbers where each digit column sum is <= 9 (no carrying)
+                num1 = this.generateNumberWithoutCarry('plus');
+                num2 = this.generateNumberWithoutCarry('plus', num1);
+                answer = num1 + num2;
+            } else {
+                // Normal addition with possible carries
+                num1 = this.getRandomNumber(this.minMultiplier, this.maxMultiplier * 10);
+                num2 = this.getRandomNumber(this.minMultiplier, this.maxMultiplier * 10);
+                answer = num1 + num2;
+            }
             operator = '+';
         } else if (operationType === 'cijferenMinus') {
             // Subtraction: num1 - num2 = answer (ensure positive result)
-            num1 = this.getRandomNumber(this.minMultiplier * 10, this.maxMultiplier * 10);
-            num2 = this.getRandomNumber(this.minMultiplier, num1);
-            answer = num1 - num2;
+            if (overcountMode === 'without') {
+                // Generate numbers where each digit column allows subtraction without borrowing
+                num1 = this.generateNumberWithoutBorrow('minus');
+                num2 = this.generateNumberWithoutBorrow('minus', num1);
+                answer = num1 - num2;
+            } else {
+                // Normal subtraction with possible borrowing
+                num1 = this.getRandomNumber(this.minMultiplier * 10, this.maxMultiplier * 10);
+                num2 = this.getRandomNumber(this.minMultiplier, num1);
+                answer = num1 - num2;
+            }
             operator = '−';
         } else if (operationType === 'cijferenMultiply') {
             // Multiplication: num1 × num2 = answer
@@ -485,6 +518,47 @@ class MultiplicationApp {
             index: index,
             answerDigits: {} // Will store user input for each digit position
         };
+    }
+    
+    generateNumberWithoutCarry(operation, existingNum = null) {
+        // Generate a 2-digit number for addition where digits can be added without carrying
+        // If existingNum is provided, ensure each digit sum is <= 9
+        if (existingNum !== null) {
+            const existingStr = String(existingNum).padStart(2, '0');
+            const digit1 = parseInt(existingStr[0]);
+            const digit0 = parseInt(existingStr[1]);
+            
+            // Generate complementary digits that won't cause carry
+            const newDigit1 = this.getRandomNumber(0, Math.min(9 - digit1, this.maxMultiplier));
+            const newDigit0 = this.getRandomNumber(0, Math.min(9 - digit0, 9));
+            
+            return newDigit1 * 10 + newDigit0;
+        } else {
+            // Generate a random 2-digit number
+            const tens = this.getRandomNumber(this.minMultiplier, Math.min(this.maxMultiplier, 9));
+            const ones = this.getRandomNumber(0, 9);
+            return tens * 10 + ones;
+        }
+    }
+    
+    generateNumberWithoutBorrow(operation, existingNum = null) {
+        // Generate a 2-digit number for subtraction where digits can be subtracted without borrowing
+        if (existingNum !== null) {
+            const existingStr = String(existingNum).padStart(2, '0');
+            const digit1 = parseInt(existingStr[0]);
+            const digit0 = parseInt(existingStr[1]);
+            
+            // Generate numbers where each digit of num2 <= corresponding digit of num1
+            const newDigit1 = this.getRandomNumber(this.minMultiplier, digit1);
+            const newDigit0 = this.getRandomNumber(0, digit0);
+            
+            return newDigit1 * 10 + newDigit0;
+        } else {
+            // Generate a random 2-digit number (will be num1)
+            const tens = this.getRandomNumber(this.minMultiplier * 2, Math.min(this.maxMultiplier * 2, 9));
+            const ones = this.getRandomNumber(1, 9);
+            return tens * 10 + ones;
+        }
     }
     
     // Fraction helper methods
@@ -690,27 +764,47 @@ class MultiplicationApp {
     }
     
     renderCijferenExercise(exercise, index) {
-        // Convert numbers to digit arrays (pad to 3 digits)
-        const num1Str = String(exercise.num1).padStart(3, ' ');
-        const num2Str = String(exercise.num2).padStart(3, ' ');
-        const answerStr = String(exercise.answer).padStart(3, ' ');
+        // Convert numbers to digit arrays - use proper alignment
+        const num1Str = String(exercise.num1).padStart(3, '0');
+        const num2Str = String(exercise.num2).padStart(3, '0');
+        
+        // Create digit display - show empty for leading zeros
+        const renderDigit = (digitChar) => {
+            return digitChar === '0' ? '&nbsp;' : digitChar;
+        };
+        
+        // Determine which digits to show (hide leading zeros)
+        const num1Digits = [];
+        const num2Digits = [];
+        let num1StartShow = false;
+        let num2StartShow = false;
+        
+        for (let i = 0; i < 3; i++) {
+            // For num1
+            if (num1Str[i] !== '0' || i === 2) num1StartShow = true;
+            num1Digits.push(num1StartShow ? num1Str[i] : '&nbsp;');
+            
+            // For num2
+            if (num2Str[i] !== '0' || i === 2) num2StartShow = true;
+            num2Digits.push(num2StartShow ? num2Str[i] : '&nbsp;');
+        }
         
         const questionHtml = `
             <div class="cijferen-container">
                 <div class="cijferen-row">
                     <span class="cijferen-label">H T E</span>
                     <div class="cijferen-digits">
-                        <div class="cijferen-digit">${num1Str[0]}</div>
-                        <div class="cijferen-digit">${num1Str[1]}</div>
-                        <div class="cijferen-digit">${num1Str[2]}</div>
+                        <div class="cijferen-digit">${num1Digits[0]}</div>
+                        <div class="cijferen-digit">${num1Digits[1]}</div>
+                        <div class="cijferen-digit">${num1Digits[2]}</div>
                     </div>
                 </div>
                 <div class="cijferen-row">
                     <span class="cijferen-operator">${exercise.operator}</span>
                     <div class="cijferen-digits">
-                        <div class="cijferen-digit">${num2Str[0]}</div>
-                        <div class="cijferen-digit">${num2Str[1]}</div>
-                        <div class="cijferen-digit">${num2Str[2]}</div>
+                        <div class="cijferen-digit">${num2Digits[0]}</div>
+                        <div class="cijferen-digit">${num2Digits[1]}</div>
+                        <div class="cijferen-digit">${num2Digits[2]}</div>
                     </div>
                 </div>
                 <div class="cijferen-separator"></div>
