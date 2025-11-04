@@ -805,12 +805,13 @@ class MultiplicationApp {
                 
                 // Find the target input: focused input, or first empty input, or first input
                 let targetInput = document.activeElement;
-                if (!targetInput || !targetInput.classList.contains('exercise-input')) {
-                    const inputs = Array.from(this.exercisesContainer.querySelectorAll('.exercise-input'));
+                if (!targetInput || !targetInput.classList || 
+                    (!targetInput.classList.contains('exercise-input') && !targetInput.classList.contains('cijferen-input'))) {
+                    const inputs = Array.from(this.exercisesContainer.querySelectorAll('.exercise-input, .cijferen-input'));
                     targetInput = inputs.find(input => input.value === '') || inputs[0];
                 }
                 
-                if (!targetInput || !targetInput.classList.contains('exercise-input')) {
+                if (!targetInput || !targetInput.classList) {
                     return;
                 }
                 
@@ -856,17 +857,19 @@ class MultiplicationApp {
     
     handleKeyboardInput(button) {
         // For number buttons, try to work with any focused input first, then fall back to selected input
-        if (button.classList.contains('number-btn')) {
+        if (button.classList && button.classList.contains('number-btn')) {
             let targetInput = document.activeElement;
             
             // If no input is focused or the focused element is not an exercise input, use selectedInput
-            if (!targetInput || !targetInput.classList.contains('exercise-input')) {
+            if (!targetInput || !targetInput.classList || 
+                (!targetInput.classList.contains('exercise-input') && !targetInput.classList.contains('cijferen-input'))) {
                 targetInput = this.selectedInput;
             }
             
             // If still no target, find the first empty input
-            if (!targetInput || !targetInput.classList.contains('exercise-input')) {
-                const inputs = Array.from(this.exercisesContainer.querySelectorAll('.exercise-input'));
+            if (!targetInput || !targetInput.classList || 
+                (!targetInput.classList.contains('exercise-input') && !targetInput.classList.contains('cijferen-input'))) {
+                const inputs = Array.from(this.exercisesContainer.querySelectorAll('.exercise-input, .cijferen-input'));
                 targetInput = inputs.find(input => input.value === '') || inputs[0];
                 if (targetInput) {
                     this.selectInputForKeyboard(targetInput);
@@ -892,17 +895,19 @@ class MultiplicationApp {
         }
         
         // For backspace, use focused input or selected input
-        if (button.dataset.action === 'backspace') {
+        if (button.dataset && button.dataset.action === 'backspace') {
             let targetInput = document.activeElement;
             
             // If no input is focused or the focused element is not an exercise input, use selectedInput  
-            if (!targetInput || !targetInput.classList.contains('exercise-input')) {
+            if (!targetInput || !targetInput.classList || 
+                (!targetInput.classList.contains('exercise-input') && !targetInput.classList.contains('cijferen-input'))) {
                 targetInput = this.selectedInput;
             }
             
             // If still no target, find first non-empty input
-            if (!targetInput || !targetInput.classList.contains('exercise-input')) {
-                const inputs = Array.from(this.exercisesContainer.querySelectorAll('.exercise-input'));
+            if (!targetInput || !targetInput.classList || 
+                (!targetInput.classList.contains('exercise-input') && !targetInput.classList.contains('cijferen-input'))) {
+                const inputs = Array.from(this.exercisesContainer.querySelectorAll('.exercise-input, .cijferen-input'));
                 targetInput = inputs.find(input => input.value !== '') || inputs[0];
                 if (targetInput) {
                     this.selectInputForKeyboard(targetInput);
@@ -929,24 +934,27 @@ class MultiplicationApp {
         }
         
         // For enter button, use focused input or selected input
-        if (button.dataset.action === 'enter') {
+        if (button.dataset && button.dataset.action === 'enter') {
             let targetInput = document.activeElement;
             
             // If no input is focused or the focused element is not an exercise input, use selectedInput
-            if (!targetInput || !targetInput.classList.contains('exercise-input')) {
+            if (!targetInput || !targetInput.classList || 
+                (!targetInput.classList.contains('exercise-input') && !targetInput.classList.contains('cijferen-input'))) {
                 targetInput = this.selectedInput;
             }
             
             // If still no target, find first empty input
-            if (!targetInput || !targetInput.classList.contains('exercise-input')) {
-                const inputs = Array.from(this.exercisesContainer.querySelectorAll('.exercise-input'));
+            if (!targetInput || !targetInput.classList || 
+                (!targetInput.classList.contains('exercise-input') && !targetInput.classList.contains('cijferen-input'))) {
+                const inputs = Array.from(this.exercisesContainer.querySelectorAll('.exercise-input, .cijferen-input'));
                 targetInput = inputs.find(input => input.value === '') || inputs[0];
                 if (targetInput) {
                     this.selectInputForKeyboard(targetInput);
                 }
             }
             
-            if (!targetInput || !targetInput.classList.contains('exercise-input')) {
+            if (!targetInput || !targetInput.classList || 
+                (!targetInput.classList.contains('exercise-input') && !targetInput.classList.contains('cijferen-input'))) {
                 return;
             }
             
@@ -968,7 +976,7 @@ class MultiplicationApp {
         const exercise = this.exercises[index];
         
         // Handle cijferen inputs differently
-        if (e.target.classList.contains('cijferen-input')) {
+        if (e.target.classList && e.target.classList.contains('cijferen-input')) {
             const position = parseInt(e.target.dataset.position);
             const inputValue = e.target.value.trim();
             
@@ -991,17 +999,23 @@ class MultiplicationApp {
                 
                 // Update the visual feedback
                 const exerciseItem = e.target.closest('.exercise-item');
-                const statusElement = exerciseItem.querySelector('.exercise-status');
-                
-                exerciseItem.classList.remove('correct', 'incorrect');
-                if (exercise.isCorrect) {
-                    exerciseItem.classList.add('correct');
-                    statusElement.className = 'exercise-status correct';
-                    statusElement.textContent = '✓';
-                } else {
-                    exerciseItem.classList.add('incorrect');
-                    statusElement.className = 'exercise-status incorrect';
-                    statusElement.textContent = '✗';
+                if (exerciseItem) {
+                    const statusElement = exerciseItem.querySelector('.exercise-status');
+                    
+                    exerciseItem.classList.remove('correct', 'incorrect');
+                    if (exercise.isCorrect) {
+                        exerciseItem.classList.add('correct');
+                        if (statusElement) {
+                            statusElement.className = 'exercise-status correct';
+                            statusElement.textContent = '✓';
+                        }
+                    } else {
+                        exerciseItem.classList.add('incorrect');
+                        if (statusElement) {
+                            statusElement.className = 'exercise-status incorrect';
+                            statusElement.textContent = '✗';
+                        }
+                    }
                 }
                 
                 this.updateProgress();
@@ -1029,20 +1043,27 @@ class MultiplicationApp {
                 
                 // Reset visual feedback
                 const exerciseItem = e.target.closest('.exercise-item');
-                const statusElement = exerciseItem.querySelector('.exercise-status');
-                
-                exerciseItem.classList.remove('correct', 'incorrect');
-                statusElement.className = 'exercise-status pending';
-                statusElement.textContent = '?';
+                if (exerciseItem) {
+                    const statusElement = exerciseItem.querySelector('.exercise-status');
+                    
+                    exerciseItem.classList.remove('correct', 'incorrect');
+                    if (statusElement) {
+                        statusElement.className = 'exercise-status pending';
+                        statusElement.textContent = '?';
+                    }
+                }
                 
                 this.updateProgress();
             }
             
             // Auto-move to next digit input within same exercise
             if (inputValue && inputValue.length === 1 && position < 2) {
-                const nextInput = e.target.closest('.cijferen-digits').querySelectorAll('.cijferen-input')[position + 1];
-                if (nextInput) {
-                    nextInput.focus();
+                const cijferenDigits = e.target.closest('.cijferen-digits');
+                if (cijferenDigits) {
+                    const nextInput = cijferenDigits.querySelectorAll('.cijferen-input')[position + 1];
+                    if (nextInput) {
+                        nextInput.focus();
+                    }
                 }
             }
             
@@ -1059,11 +1080,15 @@ class MultiplicationApp {
             
             // Reset visual feedback
             const exerciseItem = e.target.closest('.exercise-item');
-            const statusElement = exerciseItem.querySelector('.exercise-status');
-            
-            exerciseItem.classList.remove('correct', 'incorrect');
-            statusElement.className = 'exercise-status pending';
-            statusElement.textContent = '?';
+            if (exerciseItem) {
+                const statusElement = exerciseItem.querySelector('.exercise-status');
+                
+                exerciseItem.classList.remove('correct', 'incorrect');
+                if (statusElement) {
+                    statusElement.className = 'exercise-status pending';
+                    statusElement.textContent = '?';
+                }
+            }
             
             this.updateProgress();
         } else {
@@ -1106,17 +1131,23 @@ class MultiplicationApp {
             
             // Update the visual feedback
             const exerciseItem = e.target.closest('.exercise-item');
-            const statusElement = exerciseItem.querySelector('.exercise-status');
-            
-            exerciseItem.classList.remove('correct', 'incorrect');
-            if (exercise.isCorrect) {
-                exerciseItem.classList.add('correct');
-                statusElement.className = 'exercise-status correct';
-                statusElement.textContent = '✓';
-            } else {
-                exerciseItem.classList.add('incorrect');
-                statusElement.className = 'exercise-status incorrect';
-                statusElement.textContent = '✗';
+            if (exerciseItem) {
+                const statusElement = exerciseItem.querySelector('.exercise-status');
+                
+                exerciseItem.classList.remove('correct', 'incorrect');
+                if (exercise.isCorrect) {
+                    exerciseItem.classList.add('correct');
+                    if (statusElement) {
+                        statusElement.className = 'exercise-status correct';
+                        statusElement.textContent = '✓';
+                    }
+                } else {
+                    exerciseItem.classList.add('incorrect');
+                    if (statusElement) {
+                        statusElement.className = 'exercise-status incorrect';
+                        statusElement.textContent = '✗';
+                    }
+                }
             }
             
             this.updateProgress();
@@ -1124,7 +1155,9 @@ class MultiplicationApp {
     }
     
     focusNextInput(currentInput) {
-        const inputs = Array.from(this.exercisesContainer.querySelectorAll('.exercise-input'));
+        if (!this.exercisesContainer) return;
+        
+        const inputs = Array.from(this.exercisesContainer.querySelectorAll('.exercise-input, .cijferen-input'));
         const currentIndex = inputs.indexOf(currentInput);
         
         // Calculate number of columns based on screen width to match CSS grid (max 3 columns)
