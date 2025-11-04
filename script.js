@@ -444,7 +444,7 @@ class MultiplicationApp {
     generateCijferenExercise(operationType, index) {
         // Generate multi-digit numbers for column arithmetic
         // We'll generate 2-digit or 3-digit numbers based on the min/max range
-        const maxDigits = this.maxMultiplier >= 100 ? 3 : this.maxMultiplier >= 10 ? 2 : 1;
+        
         
         let num1, num2, answer, operator;
         
