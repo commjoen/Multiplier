@@ -469,8 +469,8 @@ class MultiplicationApp {
             // Addition: num1 + num2 = answer
             if (overcountMode === 'without') {
                 // Generate numbers where each digit column sum is <= 9 (no carrying)
-                num1 = this.generateNumberWithoutCarry('plus');
-                num2 = this.generateNumberWithoutCarry('plus', num1);
+                num1 = this.generateNumberWithoutCarry();
+                num2 = this.generateNumberWithoutCarry(num1);
                 answer = num1 + num2;
             } else {
                 // Normal addition with possible carries
@@ -483,8 +483,8 @@ class MultiplicationApp {
             // Subtraction: num1 - num2 = answer (ensure positive result)
             if (overcountMode === 'without') {
                 // Generate numbers where each digit column allows subtraction without borrowing
-                num1 = this.generateNumberWithoutBorrow('minus');
-                num2 = this.generateNumberWithoutBorrow('minus', num1);
+                num1 = this.generateNumberWithoutBorrow();
+                num2 = this.generateNumberWithoutBorrow(num1);
                 answer = num1 - num2;
             } else {
                 // Normal subtraction with possible borrowing
@@ -520,7 +520,7 @@ class MultiplicationApp {
         };
     }
     
-    generateNumberWithoutCarry(operation, existingNum = null) {
+    generateNumberWithoutCarry(existingNum = null) {
         // Generate a 2-digit number for addition where digits can be added without carrying
         // If existingNum is provided, ensure each digit sum is <= 9
         if (existingNum !== null) {
@@ -529,7 +529,16 @@ class MultiplicationApp {
             const digit0 = parseInt(existingStr[1]);
             
             // Generate complementary digits that won't cause carry
-            const newDigit1 = this.getRandomNumber(0, Math.min(9 - digit1, this.maxMultiplier));
+            const maxDigit1 = Math.min(9 - digit1, this.maxMultiplier);
+            const minDigit1 = Math.max(0, this.minMultiplier);
+            
+            // Ensure we have a valid range
+            if (maxDigit1 < minDigit1) {
+                // If we can't meet the constraint, just return a small number
+                return this.minMultiplier;
+            }
+            
+            const newDigit1 = this.getRandomNumber(minDigit1, maxDigit1);
             const newDigit0 = this.getRandomNumber(0, Math.min(9 - digit0, 9));
             
             return newDigit1 * 10 + newDigit0;
@@ -541,7 +550,7 @@ class MultiplicationApp {
         }
     }
     
-    generateNumberWithoutBorrow(operation, existingNum = null) {
+    generateNumberWithoutBorrow(existingNum = null) {
         // Generate a 2-digit number for subtraction where digits can be subtracted without borrowing
         if (existingNum !== null) {
             const existingStr = String(existingNum).padStart(2, '0');
@@ -549,13 +558,24 @@ class MultiplicationApp {
             const digit0 = parseInt(existingStr[1]);
             
             // Generate numbers where each digit of num2 <= corresponding digit of num1
-            const newDigit1 = this.getRandomNumber(this.minMultiplier, digit1);
+            // Ensure minMultiplier doesn't exceed digit1
+            const maxDigit1 = digit1;
+            const minDigit1 = Math.min(this.minMultiplier, digit1);
+            
+            const newDigit1 = this.getRandomNumber(minDigit1, maxDigit1);
             const newDigit0 = this.getRandomNumber(0, digit0);
             
             return newDigit1 * 10 + newDigit0;
         } else {
             // Generate a random 2-digit number (will be num1)
-            const tens = this.getRandomNumber(this.minMultiplier * 2, Math.min(this.maxMultiplier * 2, 9));
+            // Ensure we have enough room for subtraction
+            const maxTens = Math.min(this.maxMultiplier * 2, 9);
+            const minTens = Math.max(this.minMultiplier * 2, this.minMultiplier);
+            
+            // If range is invalid, use a safe default
+            const tens = minTens <= maxTens 
+                ? this.getRandomNumber(minTens, maxTens)
+                : this.getRandomNumber(Math.max(2, this.minMultiplier), 9);
             const ones = this.getRandomNumber(1, 9);
             return tens * 10 + ones;
         }
