@@ -314,8 +314,9 @@ class MultiplicationApp {
             let operationType;
             
             if (this.operationType === 'mixed') {
-                // Randomly choose between multiplication and division
-                operationType = Math.random() < 0.5 ? 'multiplication' : 'division';
+                // Randomly choose between multiplication, division, addition, and subtraction
+                const operations = ['multiplication', 'division', 'addition', 'subtraction'];
+                operationType = operations[Math.floor(Math.random() * operations.length)];
             } else if (this.operationType === 'cijferen') {
                 // Get selected cijferen submodes
                 const selectedSubmodes = this.getSelectedCijferenSubmodes();
@@ -347,6 +348,34 @@ class MultiplicationApp {
                     num2: num2,     // divisor
                     answer: num1,   // quotient
                     operation: 'division',
+                    userAnswer: null,
+                    isCorrect: null,
+                    index: i
+                };
+            } else if (operationType === 'addition') {
+                // Addition: num1 + num2 = answer
+                const num1 = this.getRandomNumber(this.minMultiplier, this.maxMultiplier);
+                const num2 = this.getRandomNumber(this.minMultiplier, this.maxMultiplier);
+                
+                exercise = {
+                    num1: num1,
+                    num2: num2,
+                    answer: num1 + num2,
+                    operation: 'addition',
+                    userAnswer: null,
+                    isCorrect: null,
+                    index: i
+                };
+            } else if (operationType === 'subtraction') {
+                // Subtraction: num1 - num2 = answer (ensure positive result)
+                const num1 = this.getRandomNumber(this.minMultiplier, this.maxMultiplier);
+                const num2 = this.getRandomNumber(this.minMultiplier, num1); // num2 <= num1
+                
+                exercise = {
+                    num1: num1,
+                    num2: num2,
+                    answer: num1 - num2,
+                    operation: 'subtraction',
                     userAnswer: null,
                     isCorrect: null,
                     index: i
@@ -693,8 +722,19 @@ class MultiplicationApp {
                 inputHtml = `<input type="text" class="exercise-input fraction-input" data-index="${index}" 
                        placeholder="?/?" ${exercise.userAnswer !== null ? `value="${exercise.userAnswer}"` : ''}>`;
             } else {
-                // Standard multiplication or division
-                const symbol = exercise.operation === 'division' ? '÷' : '×';
+                // Standard operations: multiplication, division, addition, subtraction
+                let symbol;
+                if (exercise.operation === 'division') {
+                    symbol = '÷';
+                } else if (exercise.operation === 'multiplication') {
+                    symbol = '×';
+                } else if (exercise.operation === 'addition') {
+                    symbol = '+';
+                } else if (exercise.operation === 'subtraction') {
+                    symbol = '−';
+                } else {
+                    symbol = '×'; // default to multiplication
+                }
                 questionHtml = `<span class="exercise-question">${exercise.num1} ${symbol} ${exercise.num2} =</span>`;
                 inputHtml = `<input type="number" class="exercise-input" data-index="${index}" 
                        placeholder="?" inputmode="numeric" ${exercise.userAnswer !== null ? `value="${exercise.userAnswer}"` : ''}>`;
@@ -1462,7 +1502,18 @@ class MultiplicationApp {
                 questionText = `${exercise.num1}/${exercise.den1} × ${exercise.num2}/${exercise.den2} = ${exercise.answer}`;
                 answerText = `${this.t('yourAnswer')} ${exercise.userAnswer || this.t('noAnswer')}`;
             } else {
-                const symbol = exercise.operation === 'division' ? '÷' : '×';
+                let symbol;
+                if (exercise.operation === 'division') {
+                    symbol = '÷';
+                } else if (exercise.operation === 'multiplication') {
+                    symbol = '×';
+                } else if (exercise.operation === 'addition') {
+                    symbol = '+';
+                } else if (exercise.operation === 'subtraction') {
+                    symbol = '−';
+                } else {
+                    symbol = '×'; // default
+                }
                 questionText = `${exercise.num1} ${symbol} ${exercise.num2} = ${exercise.answer}`;
                 answerText = `${this.t('yourAnswer')} ${exercise.userAnswer || this.t('noAnswer')}`;
             }
