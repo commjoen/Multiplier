@@ -539,7 +539,7 @@ class MultiplicationApp {
             }
             
             const newDigit1 = this.getRandomNumber(minDigit1, maxDigit1);
-            const newDigit0 = this.getRandomNumber(0, Math.min(9 - digit0, 9));
+            const newDigit0 = this.getRandomNumber(0, 9 - digit0);
             
             return newDigit1 * 10 + newDigit0;
         } else {
@@ -563,14 +563,14 @@ class MultiplicationApp {
             const minDigit1 = Math.min(this.minMultiplier, digit1);
             
             const newDigit1 = this.getRandomNumber(minDigit1, maxDigit1);
-            const newDigit0 = this.getRandomNumber(0, digit0);
+            const newDigit0 = digit0 > 0 ? this.getRandomNumber(0, digit0) : 0;
             
             return newDigit1 * 10 + newDigit0;
         } else {
             // Generate a random 2-digit number (will be num1)
             // Ensure we have enough room for subtraction
             const maxTens = Math.min(this.maxMultiplier * 2, 9);
-            const minTens = Math.max(this.minMultiplier * 2, this.minMultiplier);
+            const minTens = this.minMultiplier * 2;
             
             // If range is invalid, use a safe default
             const tens = minTens <= maxTens 
