@@ -809,7 +809,7 @@ class MultiplicationApp {
         }
         
         // Create label based on number of digits
-        const labels = ['', 'E', 'T E', 'H T E', 'Th H T E'];
+        const labels = ['', 'E', 'T E', 'H T E', 'Th H T E', 'TTh Th H T E'];
         const label = labels[maxDigits] || 'H T E';
         
         // Build the question HTML with dynamic number of digit columns
