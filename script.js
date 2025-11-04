@@ -808,16 +808,9 @@ class MultiplicationApp {
             num2Digits.push(num2StartShow ? num2Str[i] : '&nbsp;');
         }
         
-        // Create label based on number of digits (Th H T E for 4 digits, H T E for 3 digits)
-        let label = '';
-        if (maxDigits === 4) {
-            label = 'Th H T E';
-        } else if (maxDigits === 3) {
-            label = 'H T E';
-        } else {
-            // For 2 digits or less (shouldn't happen normally, but handle it)
-            label = 'T E'.substring(4 - maxDigits * 2);
-        }
+        // Create label based on number of digits
+        const labels = ['', 'E', 'T E', 'H T E', 'Th H T E'];
+        const label = labels[maxDigits] || 'H T E';
         
         // Build the question HTML with dynamic number of digit columns
         let num1DigitsHtml = '';
