@@ -1390,6 +1390,12 @@ class MultiplicationApp {
     }
     
     startTimer() {
+        // If timer is set to 0, disable it
+        if (this.timeLimit === 0) {
+            this.timerDisplay.textContent = '∞';
+            return;
+        }
+        
         this.updateTimerDisplay();
         
         this.timer = setInterval(() => {
