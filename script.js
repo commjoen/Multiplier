@@ -835,7 +835,6 @@ class MultiplicationApp {
             <div class="cijferen-answer-row">
                 <span class="cijferen-spacer"></span>
                 <div class="cijferen-digits">
-                    <span class="cijferen-operator"> </span>
                     <div class="cijferen-digit cijferen-answer-digit">
                         <input type="text" class="cijferen-input" data-index="${index}" data-position="0" 
                                maxlength="1" inputmode="numeric" value="${exercise.answerDigits[0] || ''}">
