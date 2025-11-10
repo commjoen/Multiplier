@@ -699,8 +699,8 @@ class MultiplicationApp {
             } else if (exercise.operation === 'fractionSimplify') {
                 // Simplify: startNum/startDen = ?/targetDen
                 questionHtml = `<span class="exercise-question">
-                    <span class="fraction"><sup>${exercise.startNum}</sup>/<sub>${exercise.startDen}</sub></span> = 
-                    <span class="fraction"><sup>?</sup>/<sub>${exercise.targetDen}</sub></span>
+                    <span class="fraction"><sup>${exercise.startNum}</sup><sub>${exercise.startDen}</sub></span> = 
+                    <span class="fraction"><sup>?</sup><sub>${exercise.targetDen}</sub></span>
                 </span>`;
                 inputHtml = `<input type="number" class="exercise-input" data-index="${index}" 
                        placeholder="?" inputmode="numeric" ${exercise.userAnswer !== null ? `value="${exercise.userAnswer}"` : ''}>`;
@@ -708,16 +708,16 @@ class MultiplicationApp {
                 // Add/Subtract: num1/den1 ± num2/den2 = ?/?
                 const symbol = exercise.isAddition ? '+' : '-';
                 questionHtml = `<span class="exercise-question">
-                    <span class="fraction"><sup>${exercise.num1}</sup>/<sub>${exercise.den1}</sub></span> ${symbol} 
-                    <span class="fraction"><sup>${exercise.num2}</sup>/<sub>${exercise.den2}</sub></span> = ?
+                    <span class="fraction"><sup>${exercise.num1}</sup><sub>${exercise.den1}</sub></span> ${symbol} 
+                    <span class="fraction"><sup>${exercise.num2}</sup><sub>${exercise.den2}</sub></span> = ?
                 </span>`;
                 inputHtml = `<input type="text" class="exercise-input fraction-input" data-index="${index}" 
                        placeholder="?/?" ${exercise.userAnswer !== null ? `value="${exercise.userAnswer}"` : ''}>`;
             } else if (exercise.operation === 'fractionMultiply') {
                 // Multiply: num1/den1 × num2/den2 = ?/?
                 questionHtml = `<span class="exercise-question">
-                    <span class="fraction"><sup>${exercise.num1}</sup>/<sub>${exercise.den1}</sub></span> × 
-                    <span class="fraction"><sup>${exercise.num2}</sup>/<sub>${exercise.den2}</sub></span> = ?
+                    <span class="fraction"><sup>${exercise.num1}</sup><sub>${exercise.den1}</sub></span> × 
+                    <span class="fraction"><sup>${exercise.num2}</sup><sub>${exercise.den2}</sub></span> = ?
                 </span>`;
                 inputHtml = `<input type="text" class="exercise-input fraction-input" data-index="${index}" 
                        placeholder="?/?" ${exercise.userAnswer !== null ? `value="${exercise.userAnswer}"` : ''}>`;
@@ -1498,14 +1498,14 @@ class MultiplicationApp {
                 questionText = `${exercise.num1} ${exercise.operator} ${exercise.num2} = ${exercise.answer}`;
                 answerText = `${this.t('yourAnswer')} ${exercise.userAnswer !== null ? exercise.userAnswer : this.t('noAnswer')}`;
             } else if (exercise.operation === 'fractionSimplify') {
-                questionText = `${exercise.startNum}/${exercise.startDen} = ${exercise.answer}/${exercise.targetDen}`;
+                questionText = `<span class="fraction"><sup>${exercise.startNum}</sup><sub>${exercise.startDen}</sub></span> = <span class="fraction"><sup>${exercise.answer}</sup><sub>${exercise.targetDen}</sub></span>`;
                 answerText = `${this.t('yourAnswer')} ${exercise.userAnswer || this.t('noAnswer')}`;
             } else if (exercise.operation === 'fractionAddSub') {
                 const symbol = exercise.isAddition ? '+' : '-';
-                questionText = `${exercise.num1}/${exercise.den1} ${symbol} ${exercise.num2}/${exercise.den2} = ${exercise.answer}`;
+                questionText = `<span class="fraction"><sup>${exercise.num1}</sup><sub>${exercise.den1}</sub></span> ${symbol} <span class="fraction"><sup>${exercise.num2}</sup><sub>${exercise.den2}</sub></span> = ${exercise.answer}`;
                 answerText = `${this.t('yourAnswer')} ${exercise.userAnswer || this.t('noAnswer')}`;
             } else if (exercise.operation === 'fractionMultiply') {
-                questionText = `${exercise.num1}/${exercise.den1} × ${exercise.num2}/${exercise.den2} = ${exercise.answer}`;
+                questionText = `<span class="fraction"><sup>${exercise.num1}</sup><sub>${exercise.den1}</sub></span> × <span class="fraction"><sup>${exercise.num2}</sup><sub>${exercise.den2}</sub></span> = ${exercise.answer}`;
                 answerText = `${this.t('yourAnswer')} ${exercise.userAnswer || this.t('noAnswer')}`;
             } else {
                 let symbol;
