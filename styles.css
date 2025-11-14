@@ -498,6 +498,97 @@ h2 {
     margin-top: 0.5rem;
 }
 
+/* Visual Fraction Styles */
+.visual-fraction-container {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    flex: 1;
+}
+
+.visual-fraction-bar {
+    display: flex;
+    border: 2px solid #34495e;
+    border-radius: 6px;
+    overflow: hidden;
+    min-height: 40px;
+    flex: 1;
+    max-width: 100%;
+}
+
+.fraction-segment {
+    flex: 1;
+    min-width: 10px;
+    border-right: 1px solid #34495e;
+    background-color: #ecf0f1;
+    transition: background-color 0.3s ease;
+}
+
+.fraction-segment:last-child {
+    border-right: none;
+}
+
+.fraction-segment.colored {
+    background-color: #3498db;
+}
+
+.visual-fraction-equals {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.visual-fraction-inputs {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.visual-fraction-numerator,
+.visual-fraction-denominator {
+    width: 60px !important;
+    padding: 0.5rem;
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+}
+
+.visual-fraction-line {
+    width: 60px;
+    height: 2px;
+    background-color: #2c3e50;
+}
+
+.visual-fraction-numerator:focus,
+.visual-fraction-denominator:focus {
+    border-color: #3498db;
+    background-color: #f0f8ff;
+}
+
+/* Responsive adjustments for visual fractions */
+@media (max-width: 480px) {
+    .visual-fraction-bar {
+        min-height: 35px;
+    }
+    
+    .fraction-segment {
+        min-width: 8px;
+    }
+    
+    .visual-fraction-numerator,
+    .visual-fraction-denominator {
+        width: 50px !important;
+    }
+    
+    .visual-fraction-line {
+        width: 50px;
+    }
+}
+
 .exercise-status {
     width: 24px;
     height: 24px;

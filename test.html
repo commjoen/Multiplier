@@ -639,6 +639,59 @@
                 });
         });
 
+        // Test visual fraction exercise generation
+        runTest('Visual fraction exercise generation', () => {
+            const tempApp = {
+                exercises: [],
+                minMultiplier: 1,
+                maxMultiplier: 10,
+                totalExercises: 10,
+                operationType: 'fractionVisual',
+                minMultiplierInput: { value: '1' },
+                maxMultiplierInput: { value: '10' },
+                totalExercisesInput: { value: '10' },
+                operationTypeInput: { value: 'fractionVisual' },
+                getRandomNumber: MultiplicationApp.prototype.getRandomNumber,
+                gcd: MultiplicationApp.prototype.gcd,
+                simplifyFraction: MultiplicationApp.prototype.simplifyFraction,
+                generateExercises: MultiplicationApp.prototype.generateExercises
+            };
+            
+            tempApp.generateExercises();
+            assert(tempApp.exercises.length === 10, 'Should generate 10 visual fraction exercises');
+            
+            for (let exercise of tempApp.exercises) {
+                assert(exercise.operation === 'fractionVisual', 'All exercises should be fractionVisual type');
+                assert(typeof exercise.numerator === 'number', 'Should have numerator');
+                assert(typeof exercise.denominator === 'number', 'Should have denominator');
+                assert(exercise.numerator >= 1, 'Numerator should be at least 1');
+                assert(exercise.numerator <= exercise.denominator, 'Numerator should not exceed denominator');
+                assert(exercise.denominator >= 2 && exercise.denominator <= 20, 'Denominator should be between 2 and 20');
+                assert(exercise.answer === `${exercise.numerator}/${exercise.denominator}`, 'Answer should be formatted correctly');
+            }
+        });
+
+        // Test renderVisualFractionBar method
+        runTest('Visual fraction bar rendering', () => {
+            const tempApp = {
+                renderVisualFractionBar: MultiplicationApp.prototype.renderVisualFractionBar
+            };
+            
+            // Test rendering a simple fraction
+            const html = tempApp.renderVisualFractionBar(3, 5);
+            assert(typeof html === 'string', 'Should return HTML string');
+            assert(html.includes('fraction-segment'), 'Should contain fraction segments');
+            assert(html.includes('colored'), 'Should contain colored segments');
+            
+            // Count segments - should have 5 total segments
+            const segmentCount = (html.match(/fraction-segment/g) || []).length;
+            assert(segmentCount === 5, 'Should have 5 segments for denominator of 5');
+            
+            // Count colored segments - should have 3 colored
+            const coloredCount = (html.match(/colored/g) || []).length;
+            assert(coloredCount === 3, 'Should have 3 colored segments for numerator of 3');
+        });
+
         // Show summary
         setTimeout(() => {
             const resultsDiv = document.getElementById('test-results');
