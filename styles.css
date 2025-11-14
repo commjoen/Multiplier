@@ -513,13 +513,12 @@ h2 {
     border-radius: 6px;
     overflow: hidden;
     min-height: 40px;
-    flex: 1;
+    width: 300px;
     max-width: 100%;
 }
 
 .fraction-segment {
-    flex: 1;
-    min-width: 10px;
+    flex: 1 1 0;
     border-right: 1px solid #34495e;
     background-color: #ecf0f1;
     transition: background-color 0.3s ease;
@@ -573,10 +572,7 @@ h2 {
 @media (max-width: 480px) {
     .visual-fraction-bar {
         min-height: 35px;
-    }
-    
-    .fraction-segment {
-        min-width: 8px;
+        width: 240px;
     }
     
     .visual-fraction-numerator,
