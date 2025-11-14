@@ -666,7 +666,7 @@
                 assert(typeof exercise.denominator === 'number', 'Should have denominator');
                 assert(exercise.numerator >= 1, 'Numerator should be at least 1');
                 assert(exercise.numerator <= exercise.denominator, 'Numerator should not exceed denominator');
-                assert(exercise.denominator >= 2 && exercise.denominator <= 20, 'Denominator should be between 2 and 20');
+                assert(exercise.denominator >= 2 && exercise.denominator <= tempApp.maxMultiplier, 'Denominator should be between 2 and maxMultiplier');
                 assert(exercise.answer === `${exercise.numerator}/${exercise.denominator}`, 'Answer should be formatted correctly');
             }
         });
