@@ -452,6 +452,23 @@ class MultiplicationApp {
                     isCorrect: null,
                     index: i
                 };
+            } else if (operationType === 'fractionVisual') {
+                // Visual fraction: show a bar divided into parts with some colored
+                // Generate a fraction where denominator is between 2 and 20
+                const denominator = this.getRandomNumber(2, Math.min(20, this.maxMultiplier * 2));
+                const numerator = this.getRandomNumber(1, denominator);
+                
+                exercise = {
+                    operation: 'fractionVisual',
+                    numerator: numerator,
+                    denominator: denominator,
+                    answer: `${numerator}/${denominator}`,
+                    userAnswerNum: null,
+                    userAnswerDen: null,
+                    userAnswer: null,
+                    isCorrect: null,
+                    index: i
+                };
             } else {
                 // Multiplication
                 const num1 = this.getRandomNumber(this.minMultiplier, this.maxMultiplier);
@@ -721,6 +738,21 @@ class MultiplicationApp {
                 </span>`;
                 inputHtml = `<input type="text" class="exercise-input fraction-input" data-index="${index}" 
                        placeholder="?/?" ${exercise.userAnswer !== null ? `value="${exercise.userAnswer}"` : ''}>`;
+            } else if (exercise.operation === 'fractionVisual') {
+                // Visual fraction: draw a bar and ask for fraction
+                questionHtml = `<div class="visual-fraction-container">
+                    <div class="visual-fraction-bar" data-numerator="${exercise.numerator}" data-denominator="${exercise.denominator}">
+                        ${this.renderVisualFractionBar(exercise.numerator, exercise.denominator)}
+                    </div>
+                    <div class="visual-fraction-equals">=</div>
+                </div>`;
+                inputHtml = `<div class="visual-fraction-inputs">
+                    <input type="number" class="exercise-input visual-fraction-numerator" data-index="${index}" data-part="numerator"
+                           placeholder="?" inputmode="numeric" ${exercise.userAnswerNum !== null ? `value="${exercise.userAnswerNum}"` : ''}>
+                    <div class="visual-fraction-line"></div>
+                    <input type="number" class="exercise-input visual-fraction-denominator" data-index="${index}" data-part="denominator"
+                           placeholder="?" inputmode="numeric" ${exercise.userAnswerDen !== null ? `value="${exercise.userAnswerDen}"` : ''}>
+                </div>`;
             } else {
                 // Standard operations: multiplication, division, addition, subtraction
                 let symbol;
@@ -898,6 +930,15 @@ class MultiplicationApp {
         `;
         
         return { question: questionHtml, input: inputHtml };
+    }
+    
+    renderVisualFractionBar(numerator, denominator) {
+        let html = '';
+        for (let i = 0; i < denominator; i++) {
+            const isColored = i < numerator;
+            html += `<div class="fraction-segment ${isColored ? 'colored' : ''}"></div>`;
+        }
+        return html;
     }
     
     selectInputForKeyboard(input) {
@@ -1135,6 +1176,95 @@ class MultiplicationApp {
     handleAnswerInput(e) {
         const index = parseInt(e.target.dataset.index);
         const exercise = this.exercises[index];
+        
+        // Handle visual fraction inputs
+        if (e.target.classList && (e.target.classList.contains('visual-fraction-numerator') || 
+                                     e.target.classList.contains('visual-fraction-denominator'))) {
+            const part = e.target.dataset.part; // 'numerator' or 'denominator'
+            const inputValue = e.target.value.trim();
+            
+            // Store the value
+            if (part === 'numerator') {
+                exercise.userAnswerNum = inputValue === '' ? null : parseInt(inputValue);
+            } else {
+                exercise.userAnswerDen = inputValue === '' ? null : parseInt(inputValue);
+            }
+            
+            // Check if both parts are filled
+            if (exercise.userAnswerNum !== null && exercise.userAnswerDen !== null) {
+                exercise.userAnswer = `${exercise.userAnswerNum}/${exercise.userAnswerDen}`;
+                
+                // Simplify both user answer and correct answer to compare
+                const userSimplified = this.simplifyFraction(exercise.userAnswerNum, exercise.userAnswerDen);
+                const correctSimplified = this.simplifyFraction(exercise.numerator, exercise.denominator);
+                
+                exercise.isCorrect = userSimplified.numerator === correctSimplified.numerator && 
+                                    userSimplified.denominator === correctSimplified.denominator;
+                
+                // Update visual feedback
+                const exerciseItem = e.target.closest('.exercise-item');
+                if (exerciseItem) {
+                    const statusElement = exerciseItem.querySelector('.exercise-status');
+                    
+                    exerciseItem.classList.remove('correct', 'incorrect');
+                    if (exercise.isCorrect) {
+                        exerciseItem.classList.add('correct');
+                        if (statusElement) {
+                            statusElement.className = 'exercise-status correct';
+                            statusElement.textContent = '✓';
+                        }
+                    } else {
+                        exerciseItem.classList.add('incorrect');
+                        if (statusElement) {
+                            statusElement.className = 'exercise-status incorrect';
+                            statusElement.textContent = '✗';
+                        }
+                    }
+                }
+                
+                this.updateProgress();
+                
+                // Auto-focus next exercise if correct
+                if (exercise.isCorrect && inputValue) {
+                    const allInputs = Array.from(this.exercisesContainer.querySelectorAll('.visual-fraction-numerator'));
+                    const currentExerciseIndex = allInputs.findIndex(input => parseInt(input.dataset.index) === index);
+                    if (currentExerciseIndex < allInputs.length - 1) {
+                        allInputs[currentExerciseIndex + 1].focus();
+                    }
+                }
+            } else {
+                // Not both parts filled yet
+                exercise.userAnswer = null;
+                exercise.isCorrect = null;
+                
+                // Reset visual feedback
+                const exerciseItem = e.target.closest('.exercise-item');
+                if (exerciseItem) {
+                    const statusElement = exerciseItem.querySelector('.exercise-status');
+                    
+                    exerciseItem.classList.remove('correct', 'incorrect');
+                    if (statusElement) {
+                        statusElement.className = 'exercise-status pending';
+                        statusElement.textContent = '?';
+                    }
+                }
+                
+                this.updateProgress();
+            }
+            
+            // Auto-move from numerator to denominator
+            if (part === 'numerator' && inputValue && inputValue.length > 0) {
+                const exerciseItem = e.target.closest('.exercise-item');
+                if (exerciseItem) {
+                    const denominatorInput = exerciseItem.querySelector('.visual-fraction-denominator');
+                    if (denominatorInput) {
+                        denominatorInput.focus();
+                    }
+                }
+            }
+            
+            return;
+        }
         
         // Handle cijferen inputs differently
         if (e.target.classList && e.target.classList.contains('cijferen-input')) {
@@ -1506,6 +1636,9 @@ class MultiplicationApp {
                 answerText = `${this.t('yourAnswer')} ${exercise.userAnswer || this.t('noAnswer')}`;
             } else if (exercise.operation === 'fractionMultiply') {
                 questionText = `<span class="fraction"><sup>${exercise.num1}</sup><sub>${exercise.den1}</sub></span> × <span class="fraction"><sup>${exercise.num2}</sup><sub>${exercise.den2}</sub></span> = ${exercise.answer}`;
+                answerText = `${this.t('yourAnswer')} ${exercise.userAnswer || this.t('noAnswer')}`;
+            } else if (exercise.operation === 'fractionVisual') {
+                questionText = `Visual fraction: ${exercise.numerator}/${exercise.denominator}`;
                 answerText = `${this.t('yourAnswer')} ${exercise.userAnswer || this.t('noAnswer')}`;
             } else {
                 let symbol;
