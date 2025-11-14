@@ -454,8 +454,8 @@ class MultiplicationApp {
                 };
             } else if (operationType === 'fractionVisual') {
                 // Visual fraction: show a bar divided into parts with some colored
-                // Generate a fraction where denominator is between 2 and 20
-                const denominator = this.getRandomNumber(2, Math.min(20, this.maxMultiplier * 2));
+                // Generate a fraction where denominator is between 2 and maxMultiplier
+                const denominator = this.getRandomNumber(2, this.maxMultiplier);
                 const numerator = this.getRandomNumber(1, denominator);
                 
                 exercise = {
