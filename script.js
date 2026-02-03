@@ -510,10 +510,20 @@ class MultiplicationApp {
                 if (specificMultiplierMode && this.specificMultiplierInput) {
                     // Specific multiplier mode: generate sequential exercises
                     const specificMultiplier = parseInt(this.specificMultiplierInput.value);
+                    
+                    // Validate specific multiplier is a valid number
+                    if (isNaN(specificMultiplier) || specificMultiplier < 1 || specificMultiplier > 999) {
+                        // Fall back to default value of 6 if invalid
+                        console.warn('Invalid specific multiplier value, using default: 6');
+                        this.specificMultiplierInput.value = 6;
+                        num2 = 6;
+                    } else {
+                        num2 = specificMultiplier;
+                    }
+                    
                     // Calculate which number in the sequence (1-based)
                     const sequenceNumber = (i % (this.maxMultiplier - this.minMultiplier + 1)) + this.minMultiplier;
                     num1 = sequenceNumber;
-                    num2 = specificMultiplier;
                 } else {
                     // Random mode
                     num1 = this.getRandomNumber(this.minMultiplier, this.maxMultiplier);
