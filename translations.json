@@ -55,7 +55,9 @@
     "specificMultiplier": "Multiplier Number(s):",
     "specificMultiplierHelp": "Enter a single number or comma-separated list (e.g., 3,6,9)",
     "randomizeBase": "Randomize Base Position",
-    "randomizeBaseHelp": "Generate problems like 4×6 or 6×4 randomly"
+    "randomizeBaseHelp": "Generate problems like 4×6 or 6×4 randomly",
+    "randomizeOrder": "Randomize Order",
+    "randomizeOrderHelp": "Practice numbers in random order instead of sequential (1, 2, 3...)"
   },
   "nl": {
     "title": "Rekenen Oefening",
@@ -113,7 +115,9 @@
     "specificMultiplier": "Tafel Getal(len):",
     "specificMultiplierHelp": "Voer een enkel getal of door komma's gescheiden lijst in (bijv. 3,6,9)",
     "randomizeBase": "Willekeurige Basis Positie",
-    "randomizeBaseHelp": "Genereer opgaven zoals 4×6 of 6×4 willekeurig"
+    "randomizeBaseHelp": "Genereer opgaven zoals 4×6 of 6×4 willekeurig",
+    "randomizeOrder": "Willekeurige Volgorde",
+    "randomizeOrderHelp": "Oefen getallen in willekeurige volgorde in plaats van opeenvolgend (1, 2, 3...)"
   },
   "de": {
     "title": "Mathematik Übung",
@@ -171,6 +175,8 @@
     "specificMultiplier": "Multiplikator-Zahl(en):",
     "specificMultiplierHelp": "Geben Sie eine einzelne Zahl oder eine durch Kommas getrennte Liste ein (z.B. 3,6,9)",
     "randomizeBase": "Basis-Position randomisieren",
-    "randomizeBaseHelp": "Generiere Aufgaben wie 4×6 oder 6×4 zufällig"
+    "randomizeBaseHelp": "Generiere Aufgaben wie 4×6 oder 6×4 zufällig",
+    "randomizeOrder": "Reihenfolge randomisieren",
+    "randomizeOrderHelp": "Übe Zahlen in zufälliger Reihenfolge statt sequenziell (1, 2, 3...)"
   }
 }
