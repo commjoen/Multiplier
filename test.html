@@ -692,6 +692,109 @@
             assert(coloredCount === 3, 'Should have 3 colored segments for numerator of 3');
         });
 
+        // Test specific multiplier with comma-separated list
+        runTest('Specific multiplier comma-separated list', () => {
+            const tempApp = {
+                exercises: [],
+                minMultiplier: 1,
+                maxMultiplier: 10,
+                totalExercises: 20,
+                minMultiplierInput: { value: '1' },
+                maxMultiplierInput: { value: '10' },
+                totalExercisesInput: { value: '20' },
+                specificMultiplierModeInput: { checked: true },
+                specificMultiplierInput: { value: '3,6,9' },
+                randomizeBaseInput: { checked: false },
+                getRandomNumber: MultiplicationApp.prototype.getRandomNumber,
+                generateExercises: MultiplicationApp.prototype.generateExercises
+            };
+            
+            tempApp.generateExercises();
+            assert(tempApp.exercises.length === 20, 'Should generate 20 exercises');
+            
+            // Check that all exercises use one of the specified multipliers (3, 6, or 9)
+            const validMultipliers = [3, 6, 9];
+            for (let exercise of tempApp.exercises) {
+                const hasValidMultiplier = validMultipliers.includes(exercise.num2);
+                assert(hasValidMultiplier, `Exercise should use one of the specified multipliers (got ${exercise.num2})`);
+                assert(exercise.num1 >= 1 && exercise.num1 <= 10, 'num1 should be in range');
+                assert(exercise.answer === exercise.num1 * exercise.num2, 'Answer should be correct');
+            }
+        });
+
+        // Test specific multiplier with randomize base
+        runTest('Specific multiplier with randomize base', () => {
+            const tempApp = {
+                exercises: [],
+                minMultiplier: 1,
+                maxMultiplier: 10,
+                totalExercises: 30,
+                minMultiplierInput: { value: '1' },
+                maxMultiplierInput: { value: '10' },
+                totalExercisesInput: { value: '30' },
+                specificMultiplierModeInput: { checked: true },
+                specificMultiplierInput: { value: '6' },
+                randomizeBaseInput: { checked: true },
+                getRandomNumber: MultiplicationApp.prototype.getRandomNumber,
+                generateExercises: MultiplicationApp.prototype.generateExercises
+            };
+            
+            tempApp.generateExercises();
+            assert(tempApp.exercises.length === 30, 'Should generate 30 exercises');
+            
+            // Check that exercises have 6 as either num1 or num2, and the other is in range
+            let leftPosition = 0;
+            let rightPosition = 0;
+            
+            for (let exercise of tempApp.exercises) {
+                const has6inNum1 = exercise.num1 === 6;
+                const has6inNum2 = exercise.num2 === 6;
+                assert(has6inNum1 || has6inNum2, 'Exercise should have 6 as one of the operands');
+                
+                if (has6inNum1) {
+                    leftPosition++;
+                    assert(exercise.num2 >= 1 && exercise.num2 <= 10, 'Other number should be in range');
+                } else {
+                    rightPosition++;
+                    assert(exercise.num1 >= 1 && exercise.num1 <= 10, 'Other number should be in range');
+                }
+                
+                assert(exercise.answer === exercise.num1 * exercise.num2, 'Answer should be correct');
+            }
+            
+            // With randomization, we should see the multiplier in both positions
+            // Not asserting exact distribution since it's random, but both should appear
+            assert(leftPosition > 0, 'Should have some exercises with 6 on the left');
+            assert(rightPosition > 0, 'Should have some exercises with 6 on the right');
+        });
+
+        // Test specific multiplier with single value (backward compatibility)
+        runTest('Specific multiplier single value (backward compatibility)', () => {
+            const tempApp = {
+                exercises: [],
+                minMultiplier: 1,
+                maxMultiplier: 10,
+                totalExercises: 10,
+                minMultiplierInput: { value: '1' },
+                maxMultiplierInput: { value: '10' },
+                totalExercisesInput: { value: '10' },
+                specificMultiplierModeInput: { checked: true },
+                specificMultiplierInput: { value: '7' },
+                randomizeBaseInput: { checked: false },
+                getRandomNumber: MultiplicationApp.prototype.getRandomNumber,
+                generateExercises: MultiplicationApp.prototype.generateExercises
+            };
+            
+            tempApp.generateExercises();
+            assert(tempApp.exercises.length === 10, 'Should generate 10 exercises');
+            
+            for (let exercise of tempApp.exercises) {
+                assert(exercise.num2 === 7, 'All exercises should have 7 as num2');
+                assert(exercise.num1 >= 1 && exercise.num1 <= 10, 'num1 should be in range');
+                assert(exercise.answer === exercise.num1 * exercise.num2, 'Answer should be correct');
+            }
+        });
+
         // Show summary
         setTimeout(() => {
             const resultsDiv = document.getElementById('test-results');
