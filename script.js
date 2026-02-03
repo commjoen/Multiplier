@@ -81,6 +81,9 @@ class MultiplicationApp {
         this.operationTypeInput = document.getElementById('operation-type');
         this.displayModeInput = document.getElementById('display-mode');
         this.showKeyboardInput = document.getElementById('show-keyboard');
+        this.specificMultiplierModeInput = document.getElementById('specific-multiplier-mode');
+        this.specificMultiplierInput = document.getElementById('specific-multiplier');
+        this.specificMultiplierInputGroup = document.getElementById('specific-multiplier-input-group');
         this.startButton = document.getElementById('start-button');
         
         // Exercise elements
@@ -136,6 +139,11 @@ class MultiplicationApp {
         if (this.operationTypeInput) {
             this.operationTypeInput.addEventListener('change', (e) => this.toggleCijferenSubmodes(e.target.value));
         }
+        
+        // Specific multiplier mode toggle
+        if (this.specificMultiplierModeInput) {
+            this.specificMultiplierModeInput.addEventListener('change', (e) => this.toggleSpecificMultiplierInput(e.target.checked));
+        }
     }
     
     toggleCijferenSubmodes(operationType) {
@@ -146,6 +154,12 @@ class MultiplicationApp {
         }
         if (cijferenOvercountDiv) {
             cijferenOvercountDiv.style.display = operationType === 'cijferen' ? 'block' : 'none';
+        }
+    }
+    
+    toggleSpecificMultiplierInput(isChecked) {
+        if (this.specificMultiplierInputGroup) {
+            this.specificMultiplierInputGroup.style.display = isChecked ? 'block' : 'none';
         }
     }
     
@@ -180,8 +194,18 @@ class MultiplicationApp {
                 cijferenOvercountSelect.value = settings.cijferenOvercount;
             }
             
+            // Load specific multiplier mode
+            if (this.specificMultiplierModeInput) {
+                this.specificMultiplierModeInput.checked = settings.specificMultiplierMode || false;
+            }
+            if (this.specificMultiplierInput && settings.specificMultiplier) {
+                this.specificMultiplierInput.value = settings.specificMultiplier;
+            }
+            
             // Toggle cijferen submodes visibility
             this.toggleCijferenSubmodes(settings.operationType || 'multiplication');
+            // Toggle specific multiplier input visibility
+            this.toggleSpecificMultiplierInput(settings.specificMultiplierMode || false);
         }
     }
     
@@ -211,6 +235,14 @@ class MultiplicationApp {
             if (cijferenOvercountSelect) {
                 settings.cijferenOvercount = cijferenOvercountSelect.value;
             }
+        }
+        
+        // Save specific multiplier mode
+        if (this.specificMultiplierModeInput) {
+            settings.specificMultiplierMode = this.specificMultiplierModeInput.checked;
+        }
+        if (this.specificMultiplierInput) {
+            settings.specificMultiplier = parseInt(this.specificMultiplierInput.value);
         }
         
         localStorage.setItem('multiplicationSettings', JSON.stringify(settings));
@@ -471,8 +503,32 @@ class MultiplicationApp {
                 };
             } else {
                 // Multiplication
-                const num1 = this.getRandomNumber(this.minMultiplier, this.maxMultiplier);
-                const num2 = this.getRandomNumber(this.minMultiplier, this.maxMultiplier);
+                // Check if specific multiplier mode is enabled
+                const specificMultiplierMode = this.specificMultiplierModeInput ? this.specificMultiplierModeInput.checked : false;
+                
+                let num1, num2;
+                if (specificMultiplierMode && this.specificMultiplierInput) {
+                    // Specific multiplier mode: generate sequential exercises
+                    const specificMultiplier = parseInt(this.specificMultiplierInput.value);
+                    
+                    // Validate specific multiplier is a valid number
+                    if (isNaN(specificMultiplier) || specificMultiplier < 1 || specificMultiplier > 999) {
+                        // Fall back to default value of 6 if invalid
+                        console.warn('Invalid specific multiplier value, using default: 6');
+                        this.specificMultiplierInput.value = 6;
+                        num2 = 6;
+                    } else {
+                        num2 = specificMultiplier;
+                    }
+                    
+                    // Calculate which number in the sequence (1-based)
+                    const sequenceNumber = (i % (this.maxMultiplier - this.minMultiplier + 1)) + this.minMultiplier;
+                    num1 = sequenceNumber;
+                } else {
+                    // Random mode
+                    num1 = this.getRandomNumber(this.minMultiplier, this.maxMultiplier);
+                    num2 = this.getRandomNumber(this.minMultiplier, this.maxMultiplier);
+                }
                 
                 exercise = {
                     num1: num1,

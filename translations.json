@@ -50,7 +50,9 @@
     "cijferenDivision": "Division (÷)",
     "cijferenOvercountMode": "Overcount Mode:",
     "cijferenWithOvercount": "With Overcount (carries allowed)",
-    "cijferenWithoutOvercount": "Without Overcount (max 9 per column)"
+    "cijferenWithoutOvercount": "Without Overcount (max 9 per column)",
+    "specificMultiplierMode": "Practice Specific Multiplier (Tafel)",
+    "specificMultiplier": "Multiplier Number:"
   },
   "nl": {
     "title": "Rekenen Oefening",
@@ -103,7 +105,9 @@
     "cijferenDivision": "Delen (÷)",
     "cijferenOvercountMode": "Overdrachtmodus:",
     "cijferenWithOvercount": "Met Overdracht (overschrijden toegestaan)",
-    "cijferenWithoutOvercount": "Zonder Overdracht (max 9 per kolom)"
+    "cijferenWithoutOvercount": "Zonder Overdracht (max 9 per kolom)",
+    "specificMultiplierMode": "Oefen Specifieke Tafel",
+    "specificMultiplier": "Tafel Getal:"
   },
   "de": {
     "title": "Mathematik Übung",
@@ -156,6 +160,8 @@
     "cijferenDivision": "Division (÷)",
     "cijferenOvercountMode": "Übertragsmodus:",
     "cijferenWithOvercount": "Mit Übertrag (Überträge erlaubt)",
-    "cijferenWithoutOvercount": "Ohne Übertrag (max 9 pro Spalte)"
+    "cijferenWithoutOvercount": "Ohne Übertrag (max 9 pro Spalte)",
+    "specificMultiplierMode": "Spezifische Multiplikationstabelle üben",
+    "specificMultiplier": "Multiplikator-Zahl:"
   }
 }
