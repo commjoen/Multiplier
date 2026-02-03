@@ -250,7 +250,7 @@ class MultiplicationApp {
             settings.specificMultiplierMode = this.specificMultiplierModeInput.checked;
         }
         if (this.specificMultiplierInput) {
-            settings.specificMultiplier = this.specificMultiplierInput.value; // Save as string to preserve comma-separated values
+            settings.specificMultiplier = this.specificMultiplierInput.value.trim(); // Save as string to preserve comma-separated values
         }
         if (this.randomizeBaseInput) {
             settings.randomizeBase = this.randomizeBaseInput.checked;
