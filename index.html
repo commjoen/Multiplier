@@ -125,6 +125,18 @@
                 </div>
                 
                 <div class="settings-group">
+                    <label for="specific-multiplier-mode">
+                        <input type="checkbox" id="specific-multiplier-mode">
+                        <span data-i18n="specificMultiplierMode">Practice Specific Multiplier (Tafel)</span>
+                    </label>
+                </div>
+                
+                <div class="settings-group" id="specific-multiplier-input-group" style="display: none;">
+                    <label for="specific-multiplier" data-i18n="specificMultiplier">Multiplier Number:</label>
+                    <input type="number" id="specific-multiplier" min="1" max="999" value="6" inputmode="numeric">
+                </div>
+                
+                <div class="settings-group">
                     <label for="show-keyboard">
                         <input type="checkbox" id="show-keyboard" checked>
                         <span data-i18n="showKeyboard">Show On-Screen Keyboard</span>
