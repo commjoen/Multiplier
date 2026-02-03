@@ -132,8 +132,17 @@
                 </div>
                 
                 <div class="settings-group" id="specific-multiplier-input-group" style="display: none;">
-                    <label for="specific-multiplier" data-i18n="specificMultiplier">Multiplier Number:</label>
-                    <input type="number" id="specific-multiplier" min="1" max="999" value="6" inputmode="numeric">
+                    <label for="specific-multiplier" data-i18n="specificMultiplier">Multiplier Number(s):</label>
+                    <input type="text" id="specific-multiplier" value="6" placeholder="6 or 3,6,9" inputmode="text">
+                    <small data-i18n="specificMultiplierHelp">Enter a single number or comma-separated list (e.g., 3,6,9)</small>
+                </div>
+                
+                <div class="settings-group" id="randomize-base-group" style="display: none;">
+                    <label for="randomize-base">
+                        <input type="checkbox" id="randomize-base">
+                        <span data-i18n="randomizeBase">Randomize Base Position</span>
+                    </label>
+                    <small data-i18n="randomizeBaseHelp">Generate problems like 4×6 or 6×4 randomly</small>
                 </div>
                 
                 <div class="settings-group">

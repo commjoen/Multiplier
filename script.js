@@ -84,6 +84,8 @@ class MultiplicationApp {
         this.specificMultiplierModeInput = document.getElementById('specific-multiplier-mode');
         this.specificMultiplierInput = document.getElementById('specific-multiplier');
         this.specificMultiplierInputGroup = document.getElementById('specific-multiplier-input-group');
+        this.randomizeBaseInput = document.getElementById('randomize-base');
+        this.randomizeBaseGroup = document.getElementById('randomize-base-group');
         this.startButton = document.getElementById('start-button');
         
         // Exercise elements
@@ -161,6 +163,9 @@ class MultiplicationApp {
         if (this.specificMultiplierInputGroup) {
             this.specificMultiplierInputGroup.style.display = isChecked ? 'block' : 'none';
         }
+        if (this.randomizeBaseGroup) {
+            this.randomizeBaseGroup.style.display = isChecked ? 'block' : 'none';
+        }
     }
     
     loadSettings() {
@@ -200,6 +205,9 @@ class MultiplicationApp {
             }
             if (this.specificMultiplierInput && settings.specificMultiplier) {
                 this.specificMultiplierInput.value = settings.specificMultiplier;
+            }
+            if (this.randomizeBaseInput) {
+                this.randomizeBaseInput.checked = settings.randomizeBase || false;
             }
             
             // Toggle cijferen submodes visibility
@@ -242,7 +250,10 @@ class MultiplicationApp {
             settings.specificMultiplierMode = this.specificMultiplierModeInput.checked;
         }
         if (this.specificMultiplierInput) {
-            settings.specificMultiplier = parseInt(this.specificMultiplierInput.value);
+            settings.specificMultiplier = this.specificMultiplierInput.value; // Save as string to preserve comma-separated values
+        }
+        if (this.randomizeBaseInput) {
+            settings.randomizeBase = this.randomizeBaseInput.checked;
         }
         
         localStorage.setItem('multiplicationSettings', JSON.stringify(settings));
@@ -508,22 +519,46 @@ class MultiplicationApp {
                 
                 let num1, num2;
                 if (specificMultiplierMode && this.specificMultiplierInput) {
-                    // Specific multiplier mode: generate sequential exercises
-                    const specificMultiplier = parseInt(this.specificMultiplierInput.value);
+                    // Parse comma-separated multipliers or single value
+                    const multiplierInput = this.specificMultiplierInput.value.trim();
+                    let multipliers = [];
                     
-                    // Validate specific multiplier is a valid number
-                    if (isNaN(specificMultiplier) || specificMultiplier < 1 || specificMultiplier > 999) {
-                        // Fall back to default value of 6 if invalid
-                        console.warn('Invalid specific multiplier value, using default: 6');
-                        this.specificMultiplierInput.value = 6;
-                        num2 = 6;
+                    // Split by comma and parse all values
+                    if (multiplierInput.includes(',')) {
+                        multipliers = multiplierInput.split(',')
+                            .map(s => parseInt(s.trim()))
+                            .filter(n => !isNaN(n) && n >= 1 && n <= 999);
                     } else {
-                        num2 = specificMultiplier;
+                        const singleMultiplier = parseInt(multiplierInput);
+                        if (!isNaN(singleMultiplier) && singleMultiplier >= 1 && singleMultiplier <= 999) {
+                            multipliers = [singleMultiplier];
+                        }
                     }
+                    
+                    // Validate we have at least one valid multiplier
+                    if (multipliers.length === 0) {
+                        console.warn('No valid multipliers found, using default: 6');
+                        multipliers = [6];
+                    }
+                    
+                    // Select a random multiplier from the list
+                    const selectedMultiplier = multipliers[Math.floor(Math.random() * multipliers.length)];
                     
                     // Calculate which number in the sequence (1-based)
                     const sequenceNumber = (i % (this.maxMultiplier - this.minMultiplier + 1)) + this.minMultiplier;
-                    num1 = sequenceNumber;
+                    
+                    // Check if randomize base is enabled
+                    const randomizeBase = this.randomizeBaseInput ? this.randomizeBaseInput.checked : false;
+                    
+                    if (randomizeBase && Math.random() < 0.5) {
+                        // Swap position: multiplier on the left
+                        num1 = selectedMultiplier;
+                        num2 = sequenceNumber;
+                    } else {
+                        // Standard position: multiplier on the right
+                        num1 = sequenceNumber;
+                        num2 = selectedMultiplier;
+                    }
                 } else {
                     // Random mode
                     num1 = this.getRandomNumber(this.minMultiplier, this.maxMultiplier);

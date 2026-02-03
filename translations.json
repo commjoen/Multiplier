@@ -52,7 +52,10 @@
     "cijferenWithOvercount": "With Overcount (carries allowed)",
     "cijferenWithoutOvercount": "Without Overcount (max 9 per column)",
     "specificMultiplierMode": "Practice Specific Multiplier (Tafel)",
-    "specificMultiplier": "Multiplier Number:"
+    "specificMultiplier": "Multiplier Number(s):",
+    "specificMultiplierHelp": "Enter a single number or comma-separated list (e.g., 3,6,9)",
+    "randomizeBase": "Randomize Base Position",
+    "randomizeBaseHelp": "Generate problems like 4×6 or 6×4 randomly"
   },
   "nl": {
     "title": "Rekenen Oefening",
@@ -107,7 +110,10 @@
     "cijferenWithOvercount": "Met Overdracht (overschrijden toegestaan)",
     "cijferenWithoutOvercount": "Zonder Overdracht (max 9 per kolom)",
     "specificMultiplierMode": "Oefen Specifieke Tafel",
-    "specificMultiplier": "Tafel Getal:"
+    "specificMultiplier": "Tafel Getal(len):",
+    "specificMultiplierHelp": "Voer een enkel getal of door komma's gescheiden lijst in (bijv. 3,6,9)",
+    "randomizeBase": "Willekeurige Basis Positie",
+    "randomizeBaseHelp": "Genereer opgaven zoals 4×6 of 6×4 willekeurig"
   },
   "de": {
     "title": "Mathematik Übung",
@@ -162,6 +168,9 @@
     "cijferenWithOvercount": "Mit Übertrag (Überträge erlaubt)",
     "cijferenWithoutOvercount": "Ohne Übertrag (max 9 pro Spalte)",
     "specificMultiplierMode": "Spezifische Multiplikationstabelle üben",
-    "specificMultiplier": "Multiplikator-Zahl:"
+    "specificMultiplier": "Multiplikator-Zahl(en):",
+    "specificMultiplierHelp": "Geben Sie eine einzelne Zahl oder eine durch Kommas getrennte Liste ein (z.B. 3,6,9)",
+    "randomizeBase": "Basis-Position randomisieren",
+    "randomizeBaseHelp": "Generiere Aufgaben wie 4×6 oder 6×4 zufällig"
   }
 }
