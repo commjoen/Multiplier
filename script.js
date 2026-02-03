@@ -86,6 +86,8 @@ class MultiplicationApp {
         this.specificMultiplierInputGroup = document.getElementById('specific-multiplier-input-group');
         this.randomizeBaseInput = document.getElementById('randomize-base');
         this.randomizeBaseGroup = document.getElementById('randomize-base-group');
+        this.randomizeOrderInput = document.getElementById('randomize-order');
+        this.randomizeOrderGroup = document.getElementById('randomize-order-group');
         this.startButton = document.getElementById('start-button');
         
         // Exercise elements
@@ -166,6 +168,9 @@ class MultiplicationApp {
         if (this.randomizeBaseGroup) {
             this.randomizeBaseGroup.style.display = isChecked ? 'block' : 'none';
         }
+        if (this.randomizeOrderGroup) {
+            this.randomizeOrderGroup.style.display = isChecked ? 'block' : 'none';
+        }
     }
     
     loadSettings() {
@@ -208,6 +213,9 @@ class MultiplicationApp {
             }
             if (this.randomizeBaseInput) {
                 this.randomizeBaseInput.checked = settings.randomizeBase || false;
+            }
+            if (this.randomizeOrderInput) {
+                this.randomizeOrderInput.checked = settings.randomizeOrder || false;
             }
             
             // Toggle cijferen submodes visibility
@@ -254,6 +262,9 @@ class MultiplicationApp {
         }
         if (this.randomizeBaseInput) {
             settings.randomizeBase = this.randomizeBaseInput.checked;
+        }
+        if (this.randomizeOrderInput) {
+            settings.randomizeOrder = this.randomizeOrderInput.checked;
         }
         
         localStorage.setItem('multiplicationSettings', JSON.stringify(settings));
@@ -544,8 +555,18 @@ class MultiplicationApp {
                     // Select a random multiplier from the list
                     const selectedMultiplier = multipliers[Math.floor(Math.random() * multipliers.length)];
                     
-                    // Calculate which number in the sequence (1-based)
-                    const sequenceNumber = (i % (this.maxMultiplier - this.minMultiplier + 1)) + this.minMultiplier;
+                    // Check if randomize order is enabled
+                    const randomizeOrder = this.randomizeOrderInput ? this.randomizeOrderInput.checked : false;
+                    
+                    // Calculate which number to use
+                    let sequenceNumber;
+                    if (randomizeOrder) {
+                        // Use random number in the range
+                        sequenceNumber = this.getRandomNumber(this.minMultiplier, this.maxMultiplier);
+                    } else {
+                        // Use sequential number (repeating cycle)
+                        sequenceNumber = (i % (this.maxMultiplier - this.minMultiplier + 1)) + this.minMultiplier;
+                    }
                     
                     // Check if randomize base is enabled
                     const randomizeBase = this.randomizeBaseInput ? this.randomizeBaseInput.checked : false;
