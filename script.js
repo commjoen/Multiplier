@@ -1769,10 +1769,14 @@ class MultiplicationApp {
                 answerText = `${this.t('yourAnswer')} ${exercise.userAnswer || this.t('noAnswer')}`;
             }
             
-            resultDiv.innerHTML = `
-                <span class="result-question">${questionText}</span>
-                <span class="result-answer">${answerText}</span>
-            `;
+            const questionSpan = document.createElement('span');
+            questionSpan.className = 'result-question';
+            questionSpan.innerHTML = questionText;
+            const answerSpan = document.createElement('span');
+            answerSpan.className = 'result-answer';
+            answerSpan.textContent = answerText;
+            resultDiv.appendChild(questionSpan);
+            resultDiv.appendChild(answerSpan);
             this.resultsDetails.appendChild(resultDiv);
         });
         
@@ -1957,25 +1961,16 @@ class MultiplicationApp {
     
     showShareFailureMessage(text) {
         const message = document.createElement('div');
-        message.innerHTML = `
-            <div style="
-                position: fixed; 
-                top: 20px; 
-                left: 50%; 
-                transform: translateX(-50%); 
-                background: #e74c3c; 
-                color: white; 
-                padding: 12px 24px; 
-                border-radius: 8px; 
-                font-weight: bold; 
-                z-index: 1000;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-                max-width: 90%;
-                text-align: center;
-            ">
-                📋 Copy manually:<br><small>${text.substring(0, 100)}...</small>
-            </div>
-        `;
+        const inner = document.createElement('div');
+        inner.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#e74c3c;color:white;padding:12px 24px;border-radius:8px;font-weight:bold;z-index:1000;box-shadow:0 4px 12px rgba(0,0,0,0.15);max-width:90%;text-align:center;';
+        const label = document.createTextNode('📋 Copy manually:');
+        const br = document.createElement('br');
+        const small = document.createElement('small');
+        small.textContent = text.substring(0, 100) + '...';
+        inner.appendChild(label);
+        inner.appendChild(br);
+        inner.appendChild(small);
+        message.appendChild(inner);
         
         document.body.appendChild(message);
         setTimeout(() => {
