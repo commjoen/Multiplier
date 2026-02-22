@@ -1,5 +1,15 @@
 # Multiplication Practice SPA
 
+[![Deploy to GitHub Pages](https://github.com/commjoen/Multiplier/actions/workflows/deploy.yml/badge.svg)](https://github.com/commjoen/Multiplier/actions/workflows/deploy.yml)
+[![Run Tests](https://github.com/commjoen/Multiplier/actions/workflows/test.yml/badge.svg)](https://github.com/commjoen/Multiplier/actions/workflows/test.yml)
+[![Build and Push to GHCR](https://github.com/commjoen/Multiplier/actions/workflows/docker.yml/badge.svg)](https://github.com/commjoen/Multiplier/actions/workflows/docker.yml)
+[![CodeQL](https://github.com/commjoen/Multiplier/actions/workflows/codeql.yml/badge.svg)](https://github.com/commjoen/Multiplier/actions/workflows/codeql.yml)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/commjoen/Multiplier)](https://github.com/commjoen/Multiplier/releases/latest)
+[![GitHub stars](https://img.shields.io/github/stars/commjoen/Multiplier?style=social)](https://github.com/commjoen/Multiplier/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/commjoen/Multiplier?style=social)](https://github.com/commjoen/Multiplier/network/members)
+[![Docker Image](https://img.shields.io/badge/docker-ghcr.io%2Fcommjoen%2Fmultiplier-blue?logo=docker)](https://github.com/commjoen/Multiplier/pkgs/container/multiplier)
+[![License](https://img.shields.io/badge/license-Open%20Source-green)](./LICENSE)
+
 A mobile-first Single Page Application for practicing multiplication/division/plus/minus/column arithmetic/facture exercises, designed for deployment on GitHub Pages.
 
 ## 🎮 Play the Game
@@ -7,6 +17,8 @@ A mobile-first Single Page Application for practicing multiplication/division/pl
 **[► Play the game at https://commjoen.github.io/Multiplier/](https://commjoen.github.io/Multiplier/)**
 
 Try the math practice app directly in your browser - no installation required!
+
+> **Share this app:** [🔗 https://commjoen.github.io/Multiplier/](https://commjoen.github.io/Multiplier/)
 
 ## Features
 
