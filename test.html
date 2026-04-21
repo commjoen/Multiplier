@@ -246,6 +246,7 @@
                 minMultiplierInput: { value: '2' },
                 maxMultiplierInput: { value: '5' },
                 totalExercisesInput: { value: '10' },
+                safeParseStorageItem: MultiplicationApp.prototype.safeParseStorageItem,
                 loadHighscores: MultiplicationApp.prototype.loadHighscores,
                 saveHighscore: MultiplicationApp.prototype.saveHighscore,
                 getDifficultyKey: MultiplicationApp.prototype.getDifficultyKey,
@@ -280,6 +281,25 @@
             // Verify the best score is still saved
             const finalHighscore = tempApp.getHighscore();
             assert(finalHighscore.percentage === 90, 'Best score should be preserved');
+        });
+
+        runTest('Invalid localStorage JSON is handled safely', () => {
+            localStorage.setItem('multiplicationSettings', '{invalid-json');
+            localStorage.setItem('multiplicationHighscores', '{invalid-json');
+
+            const tempApp = {
+                safeParseStorageItem: MultiplicationApp.prototype.safeParseStorageItem,
+                getKeyboardSetting: MultiplicationApp.prototype.getKeyboardSetting,
+                loadHighscores: MultiplicationApp.prototype.loadHighscores
+            };
+
+            const keyboardSetting = tempApp.getKeyboardSetting();
+            assert(keyboardSetting === true, 'Invalid settings JSON should fallback to keyboard enabled');
+            assert(localStorage.getItem('multiplicationSettings') === null, 'Invalid settings should be removed from localStorage');
+
+            const highscores = tempApp.loadHighscores();
+            assert(typeof highscores === 'object' && !Array.isArray(highscores), 'Invalid highscores JSON should fallback to empty object');
+            assert(localStorage.getItem('multiplicationHighscores') === null, 'Invalid highscores should be removed from localStorage');
         });
 
 
@@ -321,7 +341,44 @@
                 assert(typeof MultiplicationApp.prototype[method] === 'function', `${method} should exist`);
             }
         });
-          
+
+        runTest('Social sharing uses noopener window features', () => {
+            const tempApp = {
+                translations: {
+                    en: {
+                        shareMessage: 'Score {score}% ({correct}/{total}) in {time}',
+                        shareHashtags: '#math #practice'
+                    }
+                },
+                currentLanguage: 'en',
+                shareData: { score: 80, correct: 8, total: 10, time: '1:00' },
+                t: MultiplicationApp.prototype.t,
+                getShareMessage: MultiplicationApp.prototype.getShareMessage,
+                getShareUrl: MultiplicationApp.prototype.getShareUrl,
+                getShareHashtags: MultiplicationApp.prototype.getShareHashtags,
+                shareOnTwitter: MultiplicationApp.prototype.shareOnTwitter,
+                shareOnFacebook: MultiplicationApp.prototype.shareOnFacebook
+            };
+
+            const originalWindowOpen = window.open;
+            const openCalls = [];
+            window.open = (...args) => {
+                openCalls.push(args);
+                return null;
+            };
+
+            try {
+                tempApp.shareOnTwitter();
+                tempApp.shareOnFacebook();
+
+                assert(openCalls.length === 2, 'Two share popups should be opened');
+                assert(openCalls[0][2].includes('noopener') && openCalls[0][2].includes('noreferrer'), 'Twitter popup should include security window features');
+                assert(openCalls[1][2].includes('noopener') && openCalls[1][2].includes('noreferrer'), 'Facebook popup should include security window features');
+            } finally {
+                window.open = originalWindowOpen;
+            }
+        });
+           
         // Test division exercise generation
         runTest('Division exercise generation', () => {
             const tempApp = {
