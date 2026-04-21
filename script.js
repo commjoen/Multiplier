@@ -1621,7 +1621,9 @@ class MultiplicationApp {
         if (nextInput) {
             nextInput.focus();
             // Also select this input for keyboard use
-            this.selectInputForKeyboard(nextInput);
+            if (typeof this.selectInputForKeyboard === 'function') {
+                this.selectInputForKeyboard(nextInput);
+            }
         }
     }
     
