@@ -172,11 +172,25 @@ class MultiplicationApp {
             this.randomizeOrderGroup.style.display = isChecked ? 'block' : 'none';
         }
     }
+
+    safeParseStorageItem(key, fallbackValue) {
+        const storedValue = localStorage.getItem(key);
+        if (!storedValue) {
+            return fallbackValue;
+        }
+
+        try {
+            return JSON.parse(storedValue);
+        } catch (error) {
+            console.warn(`Invalid JSON in localStorage for ${key}, resetting value.`, error);
+            localStorage.removeItem(key);
+            return fallbackValue;
+        }
+    }
     
     loadSettings() {
-        const savedSettings = localStorage.getItem('multiplicationSettings');
-        if (savedSettings) {
-            const settings = JSON.parse(savedSettings);
+        const settings = this.safeParseStorageItem('multiplicationSettings', null);
+        if (settings && typeof settings === 'object' && !Array.isArray(settings)) {
             if (this.minMultiplierInput) this.minMultiplierInput.value = settings.minMultiplier || 1;
             if (this.maxMultiplierInput) this.maxMultiplierInput.value = settings.maxMultiplier || 10;
             if (this.timerMinutesInput) this.timerMinutesInput.value = settings.timeLimit || 5;
@@ -271,18 +285,17 @@ class MultiplicationApp {
     }
     
     getKeyboardSetting() {
-        const savedSettings = localStorage.getItem('multiplicationSettings');
-        if (savedSettings) {
-            const settings = JSON.parse(savedSettings);
+        const settings = this.safeParseStorageItem('multiplicationSettings', null);
+        if (settings && typeof settings === 'object' && !Array.isArray(settings)) {
             return settings.showKeyboard !== false; // default to true if not explicitly false
         }
         return true; // default to true for new users
     }
     
     loadHighscores() {
-        const savedHighscores = localStorage.getItem('multiplicationHighscores');
-        if (savedHighscores) {
-            return JSON.parse(savedHighscores);
+        const highscores = this.safeParseStorageItem('multiplicationHighscores', {});
+        if (highscores && typeof highscores === 'object' && !Array.isArray(highscores)) {
+            return highscores;
         }
         return {};
     }
@@ -1854,7 +1867,7 @@ class MultiplicationApp {
         const twitterText = `${message}\n\n🌟 Try it yourself: ${url}`;
         const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(twitterText)}&hashtags=${encodeURIComponent(hashtags)}`;
         
-        window.open(twitterUrl, '_blank', 'width=600,height=400');
+        window.open(twitterUrl, '_blank', 'noopener,noreferrer,width=600,height=400');
     }
     
     shareOnFacebook() {
@@ -1863,7 +1876,7 @@ class MultiplicationApp {
         
         // Facebook sharing with quote parameter for better engagement
         const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(message + '\n\n🌟 Try this awesome multiplication practice app!')}`;
-        window.open(facebookUrl, '_blank', 'width=600,height=400');
+        window.open(facebookUrl, '_blank', 'noopener,noreferrer,width=600,height=400');
     }
     
     async shareGeneric() {
