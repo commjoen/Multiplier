@@ -1900,6 +1900,83 @@ class MultiplicationApp {
         }
     }
     
+    getGeometryFormula(exercise) {
+        const d = exercise.dimensions;
+        const key = `${exercise.shape}-${exercise.kind}`;
+        switch (key) {
+            case 'triangle-perimeter': return `${d.a} + ${d.b} + ${d.c}`;
+            case 'triangle-area': return `(${d.base} × ${d.height}) ÷ 2`;
+            case 'square-perimeter': return `4 × ${d.side}`;
+            case 'square-area': return `${d.side} × ${d.side}`;
+            case 'trapezoid-perimeter': return `${d.a} + ${d.b} + ${d.c} + ${d.d}`;
+            case 'trapezoid-area': return `((${d.a} + ${d.b}) × ${d.height}) ÷ 2`;
+            case 'parallelogram-perimeter': return `2 × (${d.base} + ${d.side})`;
+            case 'parallelogram-area': return `${d.base} × ${d.height}`;
+            case 'circle-perimeter': return `2 × π × ${d.radius}`;
+            case 'circle-area': return `π × ${d.radius} × ${d.radius}`;
+            default: return '';
+        }
+    }
+
+    formatUserAnswer(exercise) {
+        const answer = exercise.userAnswer;
+        return answer === null || answer === undefined || answer === '' ? this.t('noAnswer') : answer;
+    }
+
+    getReviewInfo(exercise) {
+        let questionText = '';
+        let answerText = '';
+
+        if (exercise.operation === 'geometry') {
+            const unit = exercise.kind === 'area' ? 'cm²' : 'cm';
+            const formula = this.getGeometryFormula(exercise);
+            const shapeName = this.t(exercise.shape);
+            const kindName = exercise.shape === 'circle' && exercise.kind === 'perimeter'
+                ? this.t('circumference')
+                : this.t(exercise.kind);
+            const approx = exercise.shape === 'circle' ? '≈' : '=';
+            questionText = `<strong>${shapeName}</strong> (${kindName})<br>${formula} ${approx} ${exercise.answer} ${unit}`;
+            const given = exercise.userAnswer !== null && exercise.userAnswer !== undefined
+                ? `${exercise.userAnswer} ${unit}`
+                : this.t('noAnswer');
+            answerText = `${this.t('yourAnswer')} ${given}`;
+        } else if (exercise.operation && exercise.operation.startsWith('cijferen')) {
+            // Cijferen exercises
+            questionText = `${exercise.num1} ${exercise.operator} ${exercise.num2} = ${exercise.answer}`;
+            answerText = `${this.t('yourAnswer')} ${exercise.userAnswer !== null ? exercise.userAnswer : this.t('noAnswer')}`;
+        } else if (exercise.operation === 'fractionSimplify') {
+            questionText = `<span class="fraction"><sup>${exercise.startNum}</sup><sub>${exercise.startDen}</sub></span> = <span class="fraction"><sup>${exercise.answer}</sup><sub>${exercise.targetDen}</sub></span>`;
+            answerText = `${this.t('yourAnswer')} ${this.formatUserAnswer(exercise)}`;
+        } else if (exercise.operation === 'fractionAddSub') {
+            const symbol = exercise.isAddition ? '+' : '-';
+            questionText = `<span class="fraction"><sup>${exercise.num1}</sup><sub>${exercise.den1}</sub></span> ${symbol} <span class="fraction"><sup>${exercise.num2}</sup><sub>${exercise.den2}</sub></span> = ${exercise.answer}`;
+            answerText = `${this.t('yourAnswer')} ${this.formatUserAnswer(exercise)}`;
+        } else if (exercise.operation === 'fractionMultiply') {
+            questionText = `<span class="fraction"><sup>${exercise.num1}</sup><sub>${exercise.den1}</sub></span> × <span class="fraction"><sup>${exercise.num2}</sup><sub>${exercise.den2}</sub></span> = ${exercise.answer}`;
+            answerText = `${this.t('yourAnswer')} ${this.formatUserAnswer(exercise)}`;
+        } else if (exercise.operation === 'fractionVisual') {
+            questionText = `Visual fraction: ${exercise.numerator}/${exercise.denominator}`;
+            answerText = `${this.t('yourAnswer')} ${this.formatUserAnswer(exercise)}`;
+        } else {
+            let symbol;
+            if (exercise.operation === 'division') {
+                symbol = '÷';
+            } else if (exercise.operation === 'multiplication') {
+                symbol = '×';
+            } else if (exercise.operation === 'addition') {
+                symbol = '+';
+            } else if (exercise.operation === 'subtraction') {
+                symbol = '−';
+            } else {
+                symbol = '×'; // default
+            }
+            questionText = `${exercise.num1} ${symbol} ${exercise.num2} = ${exercise.answer}`;
+            answerText = `${this.t('yourAnswer')} ${this.formatUserAnswer(exercise)}`;
+        }
+
+        return { questionText, answerText };
+    }
+
     showResults() {
         this.resultsDetails.innerHTML = '';
         
@@ -1907,42 +1984,7 @@ class MultiplicationApp {
             const resultDiv = document.createElement('div');
             resultDiv.className = `result-item ${exercise.isCorrect ? 'correct' : 'incorrect'}`;
             
-            let questionText = '';
-            let answerText = '';
-            
-            if (exercise.operation && exercise.operation.startsWith('cijferen')) {
-                // Cijferen exercises
-                questionText = `${exercise.num1} ${exercise.operator} ${exercise.num2} = ${exercise.answer}`;
-                answerText = `${this.t('yourAnswer')} ${exercise.userAnswer !== null ? exercise.userAnswer : this.t('noAnswer')}`;
-            } else if (exercise.operation === 'fractionSimplify') {
-                questionText = `<span class="fraction"><sup>${exercise.startNum}</sup><sub>${exercise.startDen}</sub></span> = <span class="fraction"><sup>${exercise.answer}</sup><sub>${exercise.targetDen}</sub></span>`;
-                answerText = `${this.t('yourAnswer')} ${exercise.userAnswer || this.t('noAnswer')}`;
-            } else if (exercise.operation === 'fractionAddSub') {
-                const symbol = exercise.isAddition ? '+' : '-';
-                questionText = `<span class="fraction"><sup>${exercise.num1}</sup><sub>${exercise.den1}</sub></span> ${symbol} <span class="fraction"><sup>${exercise.num2}</sup><sub>${exercise.den2}</sub></span> = ${exercise.answer}`;
-                answerText = `${this.t('yourAnswer')} ${exercise.userAnswer || this.t('noAnswer')}`;
-            } else if (exercise.operation === 'fractionMultiply') {
-                questionText = `<span class="fraction"><sup>${exercise.num1}</sup><sub>${exercise.den1}</sub></span> × <span class="fraction"><sup>${exercise.num2}</sup><sub>${exercise.den2}</sub></span> = ${exercise.answer}`;
-                answerText = `${this.t('yourAnswer')} ${exercise.userAnswer || this.t('noAnswer')}`;
-            } else if (exercise.operation === 'fractionVisual') {
-                questionText = `Visual fraction: ${exercise.numerator}/${exercise.denominator}`;
-                answerText = `${this.t('yourAnswer')} ${exercise.userAnswer || this.t('noAnswer')}`;
-            } else {
-                let symbol;
-                if (exercise.operation === 'division') {
-                    symbol = '÷';
-                } else if (exercise.operation === 'multiplication') {
-                    symbol = '×';
-                } else if (exercise.operation === 'addition') {
-                    symbol = '+';
-                } else if (exercise.operation === 'subtraction') {
-                    symbol = '−';
-                } else {
-                    symbol = '×'; // default
-                }
-                questionText = `${exercise.num1} ${symbol} ${exercise.num2} = ${exercise.answer}`;
-                answerText = `${this.t('yourAnswer')} ${exercise.userAnswer || this.t('noAnswer')}`;
-            }
+            const { questionText, answerText } = this.getReviewInfo(exercise);
             
             const questionSpan = document.createElement('span');
             questionSpan.className = 'result-question';

@@ -951,6 +951,8 @@ h2 {
 
 .result-answer {
     font-weight: bold;
+    margin-left: 1rem;
+    text-align: right;
 }
 
 /* Responsive Design */

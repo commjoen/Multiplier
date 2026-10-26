@@ -74,3 +74,52 @@ describe('Geometry practice', () => {
     cy.get('.geometry-figure').first().should('have.attr', 'aria-label').and('contain', 'afmetingen');
   });
 });
+
+describe('Answer review screen', () => {
+  const finish = () => {
+    cy.get('#finish-button').click();
+    cy.get('#results-screen').should('have.class', 'active');
+  };
+
+  it('shows operands, operator and answer for multiplication', () => {
+    start('multiplication', { min: '2', max: '9' });
+    finish();
+    cy.get('.result-item').should('have.length', 20);
+    cy.get('.result-question').each($q => {
+      expect($q.text().trim()).to.match(/^\d+ × \d+ = \d+$/);
+    });
+    cy.get('.result-answer').first().should('contain', 'No answer');
+  });
+
+  it('shows the formula, result and unit for geometry', () => {
+    start('geometry', { min: '2', max: '9' });
+    finish();
+    cy.get('.result-item').should('have.length', 20);
+    cy.get('.result-question').each($q => {
+      const text = $q.text();
+      expect(text).to.not.match(/undefined|NaN/);
+      expect(text).to.match(/(Triangle|Square|Trapezoid|Parallelogram|Circle)/);
+      expect(text).to.match(/[=≈] [\d.]+ (cm|cm²)$/);
+    });
+    cy.get('.result-answer').first().should('contain', 'No answer');
+  });
+
+  it('shows the entered geometry answer with its unit', () => {
+    start('geometry', { min: '2', max: '9' });
+    cy.get('.exercise-input').first().type('1');
+    finish();
+    cy.get('.result-answer').first().invoke('text').should('match', /^Your answer: 1 (cm|cm²)$/);
+  });
+
+  it('shows translated geometry review text', () => {
+    cy.visit('/');
+    cy.get('#language-select').select('nl');
+    cy.get('#operation-type').select('geometry');
+    cy.get('#timer-minutes').clear().type('0');
+    cy.get('#start-button').click();
+    finish();
+    cy.get('.result-answer').first().should('contain', 'Geen antwoord');
+    cy.get('.result-question').first().invoke('text')
+      .should('match', /(Driehoek|Vierkant|Trapezium|Parallellogram|Cirkel)/);
+  });
+});
