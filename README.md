@@ -100,6 +100,18 @@ Try the math practice app directly in your browser - no installation required!
 ### Desktop Interface
 ![Desktop Settings](https://github.com/user-attachments/assets/06ac545f-b66e-462a-96af-96c2f20bdc51)
 
+## Testing
+
+```bash
+npm install
+npm run test:unit   # Node unit tests (tests/unit)
+npm run test:e2e    # Cypress E2E tests (starts a local server automatically)
+npm run cy:open     # Interactive Cypress runner (needs `npm start` running)
+npm run test:all    # Static checks + unit + E2E
+```
+
+The same unit and E2E suites run on every push and pull request via `.github/workflows/test.yml`.
+
 ## Deployment
 
 This app is configured for automatic deployment to GitHub Pages via GitHub Actions. The deployment workflow runs on every push to the main branch.

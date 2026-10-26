@@ -57,7 +57,18 @@
     "randomizeBase": "Randomize Base Position",
     "randomizeBaseHelp": "Generate problems like 4×6 or 6×4 randomly",
     "randomizeOrder": "Randomize Order",
-    "randomizeOrderHelp": "Practice numbers in random order instead of sequential (1, 2, 3...)"
+    "randomizeOrderHelp": "Practice numbers in random order instead of sequential (1, 2, 3...)",
+    "geometry": "Geometry (Perimeter & Area)",
+    "measurements": "measurements",
+    "perimeter": "perimeter / circumference",
+    "area": "area",
+    "calculate": "Calculate the",
+    "triangle": "Triangle",
+    "square": "Square",
+    "trapezoid": "Trapezoid",
+    "parallelogram": "Parallelogram",
+    "circle": "Circle",
+    "circumference": "circumference"
   },
   "nl": {
     "title": "Rekenen Oefening",
@@ -117,7 +128,18 @@
     "randomizeBase": "Willekeurige Basis Positie",
     "randomizeBaseHelp": "Genereer opgaven zoals 4×6 of 6×4 willekeurig",
     "randomizeOrder": "Willekeurige Volgorde",
-    "randomizeOrderHelp": "Oefen getallen in willekeurige volgorde in plaats van opeenvolgend (1, 2, 3...)"
+    "randomizeOrderHelp": "Oefen getallen in willekeurige volgorde in plaats van opeenvolgend (1, 2, 3...)",
+    "geometry": "Meetkunde (Omtrek & Oppervlakte)",
+    "measurements": "afmetingen",
+    "perimeter": "omtrek",
+    "area": "oppervlakte",
+    "calculate": "Bereken de",
+    "triangle": "Driehoek",
+    "square": "Vierkant",
+    "trapezoid": "Trapezium",
+    "parallelogram": "Parallellogram",
+    "circle": "Cirkel",
+    "circumference": "omtrek van de cirkel"
   },
   "de": {
     "title": "Mathematik Übung",
@@ -177,6 +199,17 @@
     "randomizeBase": "Basis-Position randomisieren",
     "randomizeBaseHelp": "Generiere Aufgaben wie 4×6 oder 6×4 zufällig",
     "randomizeOrder": "Reihenfolge randomisieren",
-    "randomizeOrderHelp": "Übe Zahlen in zufälliger Reihenfolge statt sequenziell (1, 2, 3...)"
+    "randomizeOrderHelp": "Übe Zahlen in zufälliger Reihenfolge statt sequenziell (1, 2, 3...)",
+    "geometry": "Geometrie (Umfang & Fläche)",
+    "measurements": "Maße",
+    "perimeter": "Umfang",
+    "area": "Fläche",
+    "calculate": "Berechne den/die",
+    "triangle": "Dreieck",
+    "square": "Quadrat",
+    "trapezoid": "Trapez",
+    "parallelogram": "Parallelogramm",
+    "circle": "Kreis",
+    "circumference": "Kreisumfang"
   }
 }

@@ -326,6 +326,15 @@ h2 {
     margin-right: 1rem;
 }
 
+.exercises-container.line-mode .geometry-question {
+    flex-basis: 100%;
+    margin-right: 0;
+}
+
+.exercises-container.line-mode .geometry-mode {
+    flex-wrap: wrap;
+}
+
 .exercises-container.line-mode .exercise-status {
     margin-left: auto;
 }
@@ -364,6 +373,56 @@ h2 {
     color: #2c3e50;
     flex: 1;
     white-space: nowrap;
+}
+
+.geometry-question {
+    min-width: 0;
+    text-align: center;
+    white-space: normal;
+}
+
+.geometry-figure {
+    display: block;
+    width: min(100%, 280px);
+    height: auto;
+    margin: 0.35rem auto 0;
+}
+
+.geometry-drawing {
+    fill: rgba(52, 152, 219, 0.08);
+    stroke: #2c3e50;
+    stroke-width: 3;
+    stroke-linejoin: round;
+}
+
+.geometry-drawing text {
+    fill: #2c3e50;
+    stroke: none;
+    font: 600 13px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.geometry-drawing .geometry-height {
+    fill: none;
+    stroke: #e67e22;
+    stroke-width: 2;
+    stroke-dasharray: 5 4;
+}
+
+.geometry-drawing .geometry-radius {
+    fill: none;
+    stroke: #e67e22;
+    stroke-width: 2;
+}
+
+.geometry-drawing .geometry-center {
+    fill: #e67e22;
+    stroke: none;
+}
+
+.geometry-unit {
+    display: inline-block;
+    font-size: 0.95rem;
+    font-weight: 500;
 }
 
 .exercise-input {
