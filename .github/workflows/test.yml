@@ -32,7 +32,7 @@ jobs:
         node-version: '22'
         cache: npm
     - name: Cache Cypress binary
-      uses: actions/cache@v4
+      uses: actions/cache@v6
       with:
         path: ~/.cache/Cypress
         key: cypress-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
