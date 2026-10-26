@@ -26,3 +26,6 @@ temp/
 # Icon generation scripts
 generate_icons.py
 generate_better_icons.py
+# Cypress artifacts
+cypress/screenshots/
+cypress/videos/

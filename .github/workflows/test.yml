@@ -7,20 +7,36 @@ on:
     branches: [ main ]
 
 jobs:
-  test:
+  unit:
+    name: Unit tests
     runs-on: ubuntu-latest
-    
     steps:
-    - name: Checkout
-      uses: actions/checkout@v7
-
-    - name: Setup Node.js
-      uses: actions/setup-node@v7
+    - uses: actions/checkout@v7
+    - uses: actions/setup-node@v7
       with:
-        node-version: '18'
+        node-version: '22'
+        cache: npm
+    - run: npm ci
+    - name: Static checks
+      run: npm test
+    - name: Unit tests
+      run: npm run test:unit
 
-    - name: Install Node Dependencies
-      run: npm install --production
-
-    - name: Run Tests
-      run: node test-runner.js
+  e2e:
+    name: Cypress E2E tests
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v7
+    - uses: actions/setup-node@v7
+      with:
+        node-version: '22'
+        cache: npm
+    - name: Cache Cypress binary
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/Cypress
+        key: cypress-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+    - run: npm ci
+    - run: npx cypress install
+    - name: Run Cypress
+      run: npm run test:e2e
