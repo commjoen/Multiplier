@@ -1,6 +1,6 @@
 {
   "name": "multiplication-practice",
-  "version": "1.4.0",
+  "version": "1.4.2",
   "description": "A mobile-first Single Page Application for practicing multiplication exercises",
   "homepage": "https://commjoen.github.io/Multiplier/",
   "repository": {
@@ -9,7 +9,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "playwright": "^1.58.2"
+    "playwright": "^1.64.1"
   },
   "scripts": {
     "test": "node test-runner.js",
