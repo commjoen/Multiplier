@@ -7,7 +7,7 @@
     "type": "git",
     "url": "https://github.com/commjoen/Multiplier.git"
   },
-  "license": "MIT",
+  "license": "GNU General Public License",
   "dependencies": {
     "playwright": "^1.64.1"
   },
