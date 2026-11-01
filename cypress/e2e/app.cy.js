@@ -17,7 +17,7 @@ describe('Settings screen', () => {
   it('loads with default values', () => {
     cy.get('#min-multiplier').should('have.value', '1');
     cy.get('#max-multiplier').should('have.value', '10');
-    cy.get('#timer-minutes').should('have.value', '5');
+    cy.get('#timer-minutes').should('have.value', '0');
     cy.get('#total-exercises').should('have.value', '20');
   });
 
