@@ -92,6 +92,31 @@ test('fractionVisual review', () => {
     assert.equal(r.answerText, 'Your answer: 3/5');
 });
 
+test('percentage conversion review shows the prompt, correct answer, and user answer', () => {
+    const r = review({
+        operation: 'percentage',
+        fromType: 'percentage',
+        toType: 'fraction',
+        sourceValue: '25',
+        answer: '1/4',
+        userAnswer: '2/8'
+    });
+    assert.match(r.questionText, /Convert percentage to fraction/);
+    assert.match(r.questionText, /25%/);
+    assert.match(r.questionText, /1.*4/);
+    assert.equal(r.answerText, 'Your answer: 2/8');
+
+    const unanswered = review({
+        operation: 'percentage',
+        fromType: 'number',
+        toType: 'percentage',
+        sourceValue: '0.0001',
+        answer: '0.01',
+        userAnswer: null
+    });
+    assert.equal(unanswered.answerText, 'Your answer: No answer');
+});
+
 const geometryCases = [
     ['triangle', 'perimeter', { a: 3, b: 4, c: 5 }, 12, '3 + 4 + 5 = 12 cm', 'Triangle'],
     ['triangle', 'area', { base: 6, height: 7 }, 21, '(6 × 7) ÷ 2 = 21 cm²', 'Triangle'],
@@ -135,8 +160,9 @@ test('generated geometry exercises always produce a complete review', () => {
     app.translations = translations;
     app.minMultiplier = 2;
     app.maxMultiplier = 9;
+    const shapes = ['triangle', 'square', 'trapezoid', 'parallelogram', 'circle'];
     for (let i = 0; i < 300; i++) {
-        const ex = app.generateGeometryExercise(i);
+        const ex = app.generateGeometryExercise(i, shapes);
         ex.userAnswer = ex.answer;
         const { questionText } = app.getReviewInfo(ex);
         assert.ok(questionText.includes(`${ex.answer} ${ex.kind === 'area' ? 'cm²' : 'cm'}`));

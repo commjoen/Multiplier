@@ -46,7 +46,22 @@ class MultiplicationApp {
                     time: "Time:",
                     yourAnswer: "Your answer:",
                     noAnswer: "No answer",
-                    practiceAgain: "Practice Again"
+                    practiceAgain: "Practice Again",
+                    percentagePractice: "Percentage Conversions",
+                    convert: "Convert",
+                    to: "to",
+                    percentageValue: "percentage",
+                    fractionValue: "fraction",
+                    numberValue: "number",
+                    fractionAnswerHint: "fraction, e.g. 3/4",
+                    numberAnswerHint: "number, up to 4 decimal places",
+                    shapes: "Shapes:",
+                    selectAtLeastOneShape: "Select at least one shape to practice.",
+                    triangle: "Triangle",
+                    square: "Square",
+                    trapezoid: "Trapezoid",
+                    parallelogram: "Parallelogram",
+                    circle: "Circle"
                 }
             };
         }
@@ -79,6 +94,11 @@ class MultiplicationApp {
         this.timerMinutesInput = document.getElementById('timer-minutes');
         this.totalExercisesInput = document.getElementById('total-exercises');
         this.operationTypeInput = document.getElementById('operation-type');
+        this.geometrySettings = document.getElementById('geometry-settings');
+        this.geometrySelectionError = document.getElementById('geometry-selection-error');
+        this.percentageSettings = document.getElementById('percentage-settings');
+        this.minimumNumberValueInput = document.getElementById('minimum-number-value');
+        this.minimumFractionValueInput = document.getElementById('minimum-fraction-value');
         this.displayModeInput = document.getElementById('display-mode');
         this.showKeyboardInput = document.getElementById('show-keyboard');
         this.specificMultiplierModeInput = document.getElementById('specific-multiplier-mode');
@@ -138,11 +158,31 @@ class MultiplicationApp {
         // Input validation
         if (this.minMultiplierInput) this.minMultiplierInput.addEventListener('input', () => this.validateRanges());
         if (this.maxMultiplierInput) this.maxMultiplierInput.addEventListener('input', () => this.validateRanges());
+        [this.minimumNumberValueInput, this.minimumFractionValueInput].forEach(input => {
+            if (input) {
+                input.addEventListener('input', () => this.validatePercentageMinimumInput(input));
+            }
+        });
         
         // Cijferen submodes toggle
         if (this.operationTypeInput) {
-            this.operationTypeInput.addEventListener('change', (e) => this.toggleCijferenSubmodes(e.target.value));
+            this.operationTypeInput.addEventListener('change', (e) => {
+                this.toggleCijferenSubmodes(e.target.value);
+                this.toggleGeometrySettings(e.target.value);
+                this.togglePercentageSettings(e.target.value);
+            });
         }
+
+        ['triangle', 'square', 'trapezoid', 'parallelogram', 'circle'].forEach(shape => {
+            const checkbox = document.getElementById(shape);
+            if (checkbox) {
+                checkbox.addEventListener('change', () => {
+                    if (this.getSelectedGeometryShapes().length && this.geometrySelectionError) {
+                        this.geometrySelectionError.hidden = true;
+                    }
+                });
+            }
+        });
         
         // Specific multiplier mode toggle
         if (this.specificMultiplierModeInput) {
@@ -158,6 +198,21 @@ class MultiplicationApp {
         }
         if (cijferenOvercountDiv) {
             cijferenOvercountDiv.style.display = operationType === 'cijferen' ? 'block' : 'none';
+        }
+    }
+
+    toggleGeometrySettings(operationType) {
+        if (this.geometrySettings) {
+            this.geometrySettings.style.display = operationType === 'geometry' ? 'block' : 'none';
+        }
+        if (operationType !== 'geometry' && this.geometrySelectionError) {
+            this.geometrySelectionError.hidden = true;
+        }
+    }
+
+    togglePercentageSettings(operationType) {
+        if (this.percentageSettings) {
+            this.percentageSettings.style.display = operationType === 'percentage' ? 'block' : 'none';
         }
     }
     
@@ -190,12 +245,26 @@ class MultiplicationApp {
     
     loadSettings() {
         const settings = this.safeParseStorageItem('multiplicationSettings', null);
+        const selectedShapes = Array.isArray(settings?.geometryShapes) ? settings.geometryShapes : null;
+        ['triangle', 'square', 'trapezoid', 'parallelogram', 'circle'].forEach(shape => {
+            const checkbox = document.getElementById(shape);
+            if (checkbox) {
+                checkbox.checked = selectedShapes === null || selectedShapes.includes(shape);
+            }
+        });
+
         if (settings && typeof settings === 'object' && !Array.isArray(settings)) {
             if (this.minMultiplierInput) this.minMultiplierInput.value = settings.minMultiplier || 1;
             if (this.maxMultiplierInput) this.maxMultiplierInput.value = settings.maxMultiplier || 10;
             if (this.timerMinutesInput) this.timerMinutesInput.value = settings.timeLimit || 5;
             if (this.totalExercisesInput) this.totalExercisesInput.value = settings.totalExercises || 20;
             if (this.operationTypeInput) this.operationTypeInput.value = settings.operationType || 'multiplication';
+            if (this.minimumNumberValueInput && settings.minimumNumberValue !== undefined) {
+                this.minimumNumberValueInput.value = settings.minimumNumberValue;
+            }
+            if (this.minimumFractionValueInput && settings.minimumFractionValue !== undefined) {
+                this.minimumFractionValueInput.value = settings.minimumFractionValue;
+            }
             if (this.displayModeInput) this.displayModeInput.value = settings.displayMode || 'grid';
             if (this.showKeyboardInput) this.showKeyboardInput.checked = settings.showKeyboard !== false; // default to true
             this.currentLanguage = settings.language || 'en';
@@ -232,11 +301,14 @@ class MultiplicationApp {
                 this.randomizeOrderInput.checked = settings.randomizeOrder || false;
             }
             
-            // Toggle cijferen submodes visibility
-            this.toggleCijferenSubmodes(settings.operationType || 'multiplication');
             // Toggle specific multiplier input visibility
             this.toggleSpecificMultiplierInput(settings.specificMultiplierMode || false);
         }
+
+        const operationType = this.operationTypeInput ? this.operationTypeInput.value : 'multiplication';
+        this.toggleCijferenSubmodes(operationType);
+        this.toggleGeometrySettings(operationType);
+        this.togglePercentageSettings(operationType);
     }
     
     saveSettings() {
@@ -248,6 +320,9 @@ class MultiplicationApp {
             operationType: this.operationTypeInput ? this.operationTypeInput.value : 'multiplication',
             displayMode: this.displayModeInput ? this.displayModeInput.value : 'grid',
             showKeyboard: this.showKeyboardInput ? this.showKeyboardInput.checked : true,
+            geometryShapes: this.getSelectedGeometryShapes(),
+            minimumNumberValue: this.minimumNumberValueInput ? this.minimumNumberValueInput.value : '0.0001',
+            minimumFractionValue: this.minimumFractionValueInput ? this.minimumFractionValueInput.value : '0.0001',
             language: this.currentLanguage
         };
         
@@ -370,8 +445,15 @@ class MultiplicationApp {
         }
     }
     
-    generateGeometryExercise(index) {
-        const shapes = ['triangle', 'square', 'trapezoid', 'parallelogram', 'circle'];
+    getSelectedGeometryShapes() {
+        return ['triangle', 'square', 'trapezoid', 'parallelogram', 'circle']
+            .filter(shape => document.getElementById(shape)?.checked);
+    }
+
+    generateGeometryExercise(index, shapes = this.getSelectedGeometryShapes()) {
+        if (!shapes.length) {
+            throw new Error('Select at least one shape before generating geometry exercises.');
+        }
         const shape = shapes[Math.floor(Math.random() * shapes.length)];
         const kind = Math.random() < 0.5 ? 'perimeter' : 'area';
         const min = Math.max(1, Math.min(this.minMultiplier || 1, 999));
@@ -454,6 +536,131 @@ class MultiplicationApp {
         };
     }
 
+    formatPercentageNumber(scaledValue) {
+        return (scaledValue / 10000).toFixed(4).replace(/\.?0+$/, '');
+    }
+
+    formatPercentageValue(scaledValue) {
+        return (scaledValue / 100).toFixed(2).replace(/\.?0+$/, '');
+    }
+
+    getPercentageMinimumScaled(input, allowFraction = false) {
+        if (!input) {
+            return 1;
+        }
+        const value = input.value.trim();
+        const fractionMatch = allowFraction ? value.match(/^(\d+)\s*\/\s*(\d+)$/) : null;
+        let minimum;
+        if (fractionMatch) {
+            const numerator = Number(fractionMatch[1]);
+            const denominator = Number(fractionMatch[2]);
+            minimum = numerator / denominator;
+        } else if (/^(?:\d+(?:[.,]\d*)?|[.,]\d+)$/.test(value)) {
+            minimum = Number(value.replace(',', '.'));
+        } else {
+            throw new RangeError('Enter a valid minimum value.');
+        }
+
+        if (!Number.isFinite(minimum) || minimum < 0.0001 || minimum > 1) {
+            throw new RangeError('Percentage minimum values must be between 0.0001 and 1.');
+        }
+        return Math.ceil(minimum * 10000 - Number.EPSILON * 10000);
+    }
+
+    validatePercentageMinimumInput(input) {
+        const allowFraction = input === this.minimumFractionValueInput;
+        try {
+            this.getPercentageMinimumScaled(input, allowFraction);
+            input.setCustomValidity('');
+            return true;
+        } catch (error) {
+            if (!(error instanceof RangeError)) {
+                throw error;
+            }
+            input.setCustomValidity(this.t('percentageMinimumValueError'));
+            return false;
+        }
+    }
+
+    generatePercentageExercise(index) {
+        const conversions = [
+            ['percentage', 'fraction'],
+            ['fraction', 'percentage'],
+            ['number', 'fraction'],
+            ['fraction', 'number'],
+            ['percentage', 'number'],
+            ['number', 'percentage']
+        ];
+        const [fromType, toType] = conversions[index % conversions.length];
+        const minimumNumberScaled = this.getPercentageMinimumScaled(this.minimumNumberValueInput);
+        const minimumFractionScaled = this.getPercentageMinimumScaled(this.minimumFractionValueInput, true);
+        let scaledValue;
+
+        if (fromType === 'fraction' || toType === 'fraction') {
+            const maxDenominator = Math.floor(10000 / minimumFractionScaled);
+            const denominators = Array.from({ length: maxDenominator }, (_, denominator) => denominator + 1)
+                .filter(denominator => 10000 % denominator === 0);
+            const denominatorIndex = this.getRandomNumber(0, denominators.length - 1);
+            const denominator = denominators[denominatorIndex];
+            const minimumValueScaled = Math.max(
+                minimumFractionScaled,
+                fromType === 'number' || toType === 'number' ? minimumNumberScaled : 1
+            );
+            const minimumNumerator = Math.ceil(minimumValueScaled * denominator / 10000);
+            const numerator = this.getRandomNumber(minimumNumerator, denominator);
+            scaledValue = numerator * 10000 / denominator;
+        } else {
+            scaledValue = this.getRandomNumber(minimumNumberScaled, 10000);
+        }
+
+        const divisor = this.gcd(scaledValue, 10000);
+        const fractionNumerator = scaledValue / divisor;
+        const fractionDenominator = 10000 / divisor;
+        const values = {
+            percentage: this.formatPercentageValue(scaledValue),
+            fraction: `${fractionNumerator}/${fractionDenominator}`,
+            number: this.formatPercentageNumber(scaledValue)
+        };
+
+        return {
+            operation: 'percentage',
+            fromType,
+            toType,
+            scaledValue,
+            sourceValue: values[fromType],
+            answer: values[toType],
+            userAnswer: null,
+            isCorrect: null,
+            index
+        };
+    }
+
+    isPercentageAnswerCorrect(exercise, inputValue) {
+        if (exercise.toType === 'fraction') {
+            const match = inputValue.match(/^(\d+)\s*\/\s*(\d+)$/);
+            if (!match) {
+                return false;
+            }
+
+            const numerator = Number(match[1]);
+            const denominator = Number(match[2]);
+            if (!Number.isSafeInteger(numerator) || !Number.isSafeInteger(denominator) || denominator === 0) {
+                return false;
+            }
+
+            const simplified = this.simplifyFraction(numerator, denominator);
+            const [answerNumerator, answerDenominator] = exercise.answer.split('/').map(Number);
+            return simplified.numerator === answerNumerator && simplified.denominator === answerDenominator;
+        }
+
+        if (!/^(?:\d+(?:[.,]\d{1,4})?|[.,]\d{1,4})$/.test(inputValue)) {
+            return false;
+        }
+
+        const userAnswer = Number(inputValue.replace(',', '.'));
+        return Number.isFinite(userAnswer) && Math.abs(userAnswer - Number(exercise.answer)) < 0.00000001;
+    }
+
     renderGeometryFigure(exercise) {
         const d = exercise.dimensions;
         const label = (value, x, y, anchor = 'middle') =>
@@ -511,6 +718,12 @@ class MultiplicationApp {
         this.maxMultiplier = parseInt(this.maxMultiplierInput.value);
         this.totalExercises = parseInt(this.totalExercisesInput.value);
         this.operationType = this.operationTypeInput ? this.operationTypeInput.value : 'multiplication';
+        const selectedGeometryShapes = this.operationType === 'geometry'
+            ? this.getSelectedGeometryShapes()
+            : [];
+        if (this.operationType === 'geometry' && !selectedGeometryShapes.length) {
+            throw new Error('Select at least one shape before generating geometry exercises.');
+        }
         
         for (let i = 0; i < this.totalExercises; i++) {
             let operationType;
@@ -536,7 +749,9 @@ class MultiplicationApp {
             
             let exercise;
             if (operationType === 'geometry') {
-                exercise = this.generateGeometryExercise(i);
+                exercise = this.generateGeometryExercise(i, selectedGeometryShapes);
+            } else if (operationType === 'percentage') {
+                exercise = this.generatePercentageExercise(i);
             } else if (operationType === 'cijferenPlus' || operationType === 'cijferenMinus' || 
                 operationType === 'cijferenMultiply' || operationType === 'cijferenDivision') {
                 exercise = this.generateCijferenExercise(operationType, i);
@@ -941,6 +1156,24 @@ class MultiplicationApp {
     }
     
     startExercise() {
+        if (this.operationTypeInput?.value === 'percentage') {
+            const invalidMinimum = [this.minimumNumberValueInput, this.minimumFractionValueInput]
+                .find(input => input && !this.validatePercentageMinimumInput(input));
+            if (invalidMinimum) {
+                invalidMinimum.reportValidity();
+                return;
+            }
+        }
+        if (this.operationTypeInput?.value === 'geometry' && !this.getSelectedGeometryShapes().length) {
+            if (this.geometrySelectionError) {
+                this.geometrySelectionError.hidden = false;
+            }
+            return;
+        }
+        if (this.geometrySelectionError) {
+            this.geometrySelectionError.hidden = true;
+        }
+
         this.saveSettings();
         this.generateExercises();
         this.timeLimit = parseInt(this.timerMinutesInput.value);
@@ -984,6 +1217,22 @@ class MultiplicationApp {
                     step="any" min="0" placeholder="?" inputmode="decimal"
                     aria-label="${shapeName} ${kindName}"
                     ${exercise.userAnswer !== null ? `value="${exercise.userAnswer}"` : ''}>`;
+            } else if (exercise.operation === 'percentage') {
+                const source = exercise.fromType === 'fraction'
+                    ? `<span class="fraction"><sup>${exercise.sourceValue.split('/')[0]}</sup><sub>${exercise.sourceValue.split('/')[1]}</sub></span>`
+                    : `${exercise.sourceValue}${exercise.fromType === 'percentage' ? '%' : ''}`;
+                const answerHint = exercise.toType === 'fraction'
+                    ? this.t('fractionAnswerHint')
+                    : this.t('numberAnswerHint');
+                const inputMode = exercise.toType === 'fraction' ? 'text' : 'decimal';
+                questionHtml = `<span class="exercise-question percentage-question">
+                    ${this.t('convert')} ${this.t(`${exercise.fromType}Value`)} ${this.t('to')}
+                    ${this.t(`${exercise.toType}Value`)}<br>
+                    <strong>${source}</strong>
+                </span>`;
+                inputHtml = `<input type="text" class="exercise-input percentage-input" data-index="${index}"
+                    placeholder="${answerHint}" aria-label="${this.t(`${exercise.toType}Value`)}"
+                    inputmode="${inputMode}" ${exercise.userAnswer !== null ? `value="${exercise.userAnswer}"` : ''}>`;
             } else if (exercise.operation && exercise.operation.startsWith('cijferen')) {
                 // Cijferen mode: column arithmetic
                 exerciseDiv.classList.add('cijferen-mode');
@@ -1256,6 +1505,7 @@ class MultiplicationApp {
                 <button class="keyboard-btn action-btn" data-action="backspace" data-i18n="backspace">⌫</button>
                 <button class="keyboard-btn number-btn" data-number="0">0</button>
                 <button class="keyboard-btn number-btn" data-number="/">/</button>
+                <button class="keyboard-btn number-btn" data-number=".">.</button>
             </div>
             <div class="keyboard-row">
                 <button class="keyboard-btn action-btn" data-action="enter" data-i18n="enter">Enter</button>
@@ -1695,6 +1945,9 @@ class MultiplicationApp {
                     isCorrect = simplified.numerator === exercise.answerNum && 
                                simplified.denominator === exercise.answerDen;
                 }
+            } else if (exercise.operation === 'percentage') {
+                exercise.userAnswer = inputValue;
+                isCorrect = this.isPercentageAnswerCorrect(exercise, inputValue);
             } else if (exercise.operation === 'geometry') {
                 // Geometry answers may be decimal (especially circle calculations).
                 const normalizedValue = inputValue.replace(',', '.');
@@ -1927,7 +2180,17 @@ class MultiplicationApp {
         let questionText = '';
         let answerText = '';
 
-        if (exercise.operation === 'geometry') {
+        if (exercise.operation === 'percentage') {
+            const source = exercise.fromType === 'fraction'
+                ? `<span class="fraction"><sup>${exercise.sourceValue.split('/')[0]}</sup><sub>${exercise.sourceValue.split('/')[1]}</sub></span>`
+                : `${exercise.sourceValue}${exercise.fromType === 'percentage' ? '%' : ''}`;
+            const answer = exercise.toType === 'fraction'
+                ? `<span class="fraction"><sup>${exercise.answer.split('/')[0]}</sup><sub>${exercise.answer.split('/')[1]}</sub></span>`
+                : `${exercise.answer}${exercise.toType === 'percentage' ? '%' : ''}`;
+            const prompt = `${this.t('convert')} ${this.t(`${exercise.fromType}Value`)} ${this.t('to')} ${this.t(`${exercise.toType}Value`)}`;
+            questionText = `${prompt}: ${source} = ${answer}`;
+            answerText = `${this.t('yourAnswer')} ${this.formatUserAnswer(exercise)}`;
+        } else if (exercise.operation === 'geometry') {
             const unit = exercise.kind === 'area' ? 'cm²' : 'cm';
             const formula = this.getGeometryFormula(exercise);
             const shapeName = this.t(exercise.shape);

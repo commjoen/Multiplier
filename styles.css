@@ -223,6 +223,11 @@ h2 {
     margin-right: 0.5rem;
 }
 
+.settings-error {
+    color: #c0392b;
+    font-weight: 600;
+}
+
 /* Buttons */
 .btn-primary, .btn-secondary {
     width: 100%;

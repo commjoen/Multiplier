@@ -57,7 +57,20 @@ test('t() translates and falls back to the key', () => {
 
 test('every language defines the geometry translation keys', () => {
     const keys = ['geometry', 'measurements', 'perimeter', 'area', 'calculate',
-        'triangle', 'square', 'trapezoid', 'parallelogram', 'circle', 'circumference'];
+        'shapes', 'selectAtLeastOneShape', 'triangle', 'square', 'trapezoid',
+        'parallelogram', 'circle', 'circumference'];
+    for (const lang of ['en', 'nl', 'de']) {
+        for (const key of keys) {
+            assert.ok(translations[lang][key], `${lang} is missing "${key}"`);
+        }
+    }
+});
+
+test('every language defines percentage conversion labels', () => {
+    const keys = ['percentagePractice', 'convert', 'to', 'percentageValue',
+        'fractionValue', 'numberValue', 'fractionAnswerHint', 'numberAnswerHint',
+        'minimumNumberValue', 'minimumFractionValue', 'minimumValueHelp',
+        'minimumFractionValueHelp', 'percentageMinimumValueError'];
     for (const lang of ['en', 'nl', 'de']) {
         for (const key of keys) {
             assert.ok(translations[lang][key], `${lang} is missing "${key}"`);
@@ -68,8 +81,9 @@ test('every language defines the geometry translation keys', () => {
 test('generateGeometryExercise produces correct answers', () => {
     const app = createApp({ minMultiplier: 2, maxMultiplier: 9 });
     const seen = new Set();
+    const shapes = ['triangle', 'square', 'trapezoid', 'parallelogram', 'circle'];
     for (let i = 0; i < 500; i++) {
-        const ex = app.generateGeometryExercise(i);
+        const ex = app.generateGeometryExercise(i, shapes);
         const d = ex.dimensions;
         seen.add(`${ex.shape}-${ex.kind}`);
 
@@ -94,6 +108,93 @@ test('generateGeometryExercise produces correct answers', () => {
         assert.equal(ex.operation, 'geometry');
     }
     assert.equal(seen.size, 10, 'all shape/kind combinations are generated');
+});
+
+test('generateGeometryExercise only uses selected shapes', () => {
+    const app = createApp();
+    for (let i = 0; i < 50; i++) {
+        const exercise = app.generateGeometryExercise(i, ['square', 'circle']);
+        assert.ok(['square', 'circle'].includes(exercise.shape));
+    }
+    assert.throws(() => app.generateGeometryExercise(0, []), /Select at least one shape/);
+});
+
+test('percentage exercises cover all six conversions with up to four decimal places', () => {
+    const app = createApp({
+        getRandomNumber: (min, max) => min === 0 ? max : min
+    });
+    const expectedConversions = [
+        ['percentage', 'fraction', '0.01', '1/10000'],
+        ['fraction', 'percentage', '1/10000', '0.01'],
+        ['number', 'fraction', '0.0001', '1/10000'],
+        ['fraction', 'number', '1/10000', '0.0001'],
+        ['percentage', 'number', '0.01', '0.0001'],
+        ['number', 'percentage', '0.0001', '0.01']
+    ];
+
+    expectedConversions.forEach(([fromType, toType, sourceValue, answer], index) => {
+        const exercise = app.generatePercentageExercise(index);
+        assert.equal(exercise.operation, 'percentage');
+        assert.equal(exercise.fromType, fromType);
+        assert.equal(exercise.toType, toType);
+        assert.equal(exercise.sourceValue, sourceValue);
+        assert.equal(exercise.answer, answer);
+    });
+
+    const largestValue = createApp({ getRandomNumber: (min, max) => max }).generatePercentageExercise(2);
+    assert.equal(largestValue.answer, '1/1');
+});
+
+test('percentage exercises respect decimal and fraction minimum settings', () => {
+    const app = createApp({
+        minimumNumberValueInput: { value: '0.4' },
+        minimumFractionValueInput: { value: '1/8' },
+        getRandomNumber: (min, max) => min === 0 ? max : min
+    });
+    const expectedMinimums = [1250, 1250, 5000, 5000, 4000, 4000];
+    expectedMinimums.forEach((expectedMinimum, index) => {
+        assert.equal(app.generatePercentageExercise(index).scaledValue, expectedMinimum);
+    });
+
+    app.minimumNumberValueInput.value = '0.25';
+    app.minimumFractionValueInput.value = '1/10';
+    assert.equal(app.generatePercentageExercise(2).scaledValue, 3000);
+    assert.equal(app.generatePercentageExercise(3).scaledValue, 3000);
+    app.minimumFractionValueInput.value = '0.1';
+    assert.equal(app.generatePercentageExercise(0).scaledValue, 1000);
+
+    for (let index = 0; index < 6; index++) {
+        const exercise = app.generatePercentageExercise(index);
+        const fraction = exercise.fromType === 'fraction' ? exercise.sourceValue
+            : exercise.toType === 'fraction' ? exercise.answer
+                : null;
+        if (fraction) {
+            const denominator = Number(fraction.split('/')[1]);
+            assert.ok(denominator <= 10, `${fraction} denominator exceeded configured maximum`);
+        }
+    }
+});
+
+test('percentage fraction minimum validation rejects invalid fractions', () => {
+    const app = createApp({
+        minimumFractionValueInput: {
+            value: '1/0',
+            setCustomValidity(message) { this.validationMessage = message; }
+        }
+    });
+    assert.equal(app.validatePercentageMinimumInput(app.minimumFractionValueInput), false);
+    assert.match(app.minimumFractionValueInput.validationMessage, /between 0\.0001 and 1/);
+    app.minimumFractionValueInput.value = '1/8';
+    assert.equal(app.validatePercentageMinimumInput(app.minimumFractionValueInput), true);
+});
+
+test('percentage conversion answers accept equivalent fractions and comma decimals', () => {
+    const app = createApp();
+    assert.equal(app.isPercentageAnswerCorrect({ toType: 'fraction', answer: '3/4' }, '6/8'), true);
+    assert.equal(app.isPercentageAnswerCorrect({ toType: 'fraction', answer: '3/4' }, '3/0'), false);
+    assert.equal(app.isPercentageAnswerCorrect({ toType: 'number', answer: '0.0001' }, '0,0001'), true);
+    assert.equal(app.isPercentageAnswerCorrect({ toType: 'percentage', answer: '25' }, '25.0000'), true);
+    assert.equal(app.isPercentageAnswerCorrect({ toType: 'number', answer: '0.0001' }, '0.00001'), false);
 });
 
 test('renderGeometryFigure labels every measurement in cm', () => {
