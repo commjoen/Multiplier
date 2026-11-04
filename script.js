@@ -2053,10 +2053,10 @@ class MultiplicationApp {
     updateProgress() {
         const answeredCount = this.exercises.filter(ex => ex.userAnswer !== null).length;
         this.progressDisplay.textContent = `${answeredCount}/${this.totalExercises}`;
-        
-        if (answeredCount === this.totalExercises) {
-            setTimeout(() => this.finishExercise(), 1000);
-        }
+        // todo: update code below only if auto-finish is desired and focus is away from any field
+        // if (answeredCount === this.totalExercises) {
+        //     setTimeout(() => this.finishExercise(), 1000);
+        // }
     }
     
     startTimer() {
